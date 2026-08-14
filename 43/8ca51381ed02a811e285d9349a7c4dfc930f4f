@@ -1,0 +1,38 @@
+src/preload/index.ts
+  s_18db1ac29b2110::t_42025f943cf750 8
+src/main/index.ts
+  s_18db1ac29b2110::t_42025f943cf750 99
+src/preload/index.d.ts
+  s_18db1ac29b2110::t_42025f943cf750 6
+src/renderer/src/EditorApp.tsx
+  s_08ef5a905092a7::t_2778f774f3d3bc 1-12,14-457
+  s_08ef5a905092a7::t_bf4e4b1267359e 13
+src/renderer/src/SettingsApp.tsx
+  s_08ef5a905092a7::t_2778f774f3d3bc 1-218
+src/renderer/src/App.tsx
+  s_08ef5a905092a7::t_2778f774f3d3bc 1,4-5,8,11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "438ca51381ed02a811e285d9349a7c4dfc930f4f",
+  "prompts": {},
+  "sessions": {
+    "s_08ef5a905092a7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00097-0678-7340-b13a-36df4f726c1b",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_18db1ac29b2110": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fff75-03b4-7180-bc0b-20fc24204e1c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
