@@ -1,0 +1,19 @@
+src/renderer/src/JsonEditor.tsx
+  s_08ef5a905092a7::t_89ffd2122c3a22 3,7,21-28,40-43,63-71,73,76-86,154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f19d81e5e12b30c1a4a25e448483e22f172b8c17",
+  "prompts": {},
+  "sessions": {
+    "s_08ef5a905092a7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00097-0678-7340-b13a-36df4f726c1b",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
