@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, Menu, shell } from 'electron'
 import { join } from 'path'
 
 let mainWindow: BrowserWindow | null = null
@@ -9,9 +9,10 @@ function createWindow(): void {
     height: 760,
     minWidth: 760,
     minHeight: 520,
-    show: false,
+    show: true,
     autoHideMenuBar: true,
     titleBarStyle: 'hiddenInset',
+    backgroundColor: '#fafafa',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -19,8 +20,6 @@ function createWindow(): void {
       sandbox: false
     }
   })
-
-  mainWindow.once('ready-to-show', () => mainWindow?.show())
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
@@ -36,6 +35,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   app.setName('JSON Tool')
+  Menu.setApplicationMenu(null)
   createWindow()
 
   app.on('activate', () => {

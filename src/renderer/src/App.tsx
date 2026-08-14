@@ -1,5 +1,5 @@
 import Editor, { type OnMount } from '@monaco-editor/react'
-import { Braces, Check, Clipboard, FileCode2, Minimize2, Sparkles, Trash2, WrapText } from 'lucide-react'
+import { Check, Clipboard, Minimize2, Sparkles, Trash2, WrapText } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -114,25 +114,26 @@ function App(): JSX.Element {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <main className="flex h-screen min-h-[520px] flex-col overflow-hidden bg-zinc-950 text-zinc-100">
-        <header className="flex h-14 shrink-0 items-center border-b border-zinc-800 bg-zinc-950 px-4 app-drag-region">
-          <div className="mr-8 flex items-center gap-2.5 app-no-drag">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-500 text-white">
-              <Braces size={17} strokeWidth={2.5} />
-            </div>
-            <span className="text-sm font-semibold tracking-wide text-zinc-100">JSON Tool</span>
-          </div>
-
+      <main className="flex h-screen min-h-[520px] flex-col overflow-hidden bg-white text-zinc-900">
+        <header className="flex h-14 shrink-0 items-center justify-end border-b border-zinc-200 bg-white px-4 app-drag-region">
           <nav className="flex items-center gap-1 app-no-drag" aria-label="JSON actions">
-            <Button onClick={() => transformJson(2)}>
-              <Sparkles size={15} />
-              格式化
-            </Button>
-            <Button variant="outline" onClick={() => transformJson(0)}>
-              <Minimize2 size={15} />
-              压缩
-            </Button>
-            <span className="mx-2 h-5 w-px bg-zinc-800" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" onClick={() => transformJson(2)} aria-label="格式化 JSON">
+                  <Sparkles size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>格式化 JSON</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={() => transformJson(0)} aria-label="压缩 JSON">
+                  <Minimize2 size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>压缩 JSON</TooltipContent>
+            </Tooltip>
+            <span className="mx-2 h-5 w-px bg-zinc-200" />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={copyJson} aria-label="复制 JSON">
@@ -165,18 +166,12 @@ function App(): JSX.Element {
           </nav>
         </header>
 
-        <section className="flex min-h-0 flex-1 flex-col" aria-label="JSON editor">
-          <div className="flex h-10 shrink-0 items-center border-b border-zinc-800 bg-zinc-900/70 px-4">
-            <div className="flex h-full items-center gap-2 border-b-2 border-sky-500 px-1 text-sm font-medium text-zinc-100">
-              <FileCode2 size={15} className="text-sky-400" />
-              <span>未命名 JSON</span>
-            </div>
-          </div>
-          <div className="min-h-0 flex-1 bg-[#18181b]">
+        <section className="min-h-0 flex-1" aria-label="JSON editor">
+          <div className="h-full bg-white">
             <Editor
               height="100%"
               language="json"
-              theme="vs-dark"
+              theme="vs"
               value={value}
               onChange={(nextValue) => updateValue(nextValue ?? '')}
               onMount={handleEditorMount}
@@ -200,17 +195,17 @@ function App(): JSX.Element {
           </div>
         </section>
 
-        <footer className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-800 bg-zinc-900 px-4 text-xs text-zinc-400">
+        <footer className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-200 bg-zinc-50 px-4 text-xs text-zinc-500">
           <div className="flex items-center gap-2">
             <span className={`flex h-1.5 w-1.5 rounded-full ${isValid ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-            <span className={isValid ? 'text-zinc-300' : 'text-rose-300'}>{message}</span>
+            <span className={isValid ? 'text-zinc-600' : 'text-rose-600'}>{message}</span>
           </div>
           <div className="flex items-center gap-4">
             <span>UTF-8</span>
             <span>空格: 2</span>
             <span>{stats.lines} 行</span>
             <span>{stats.chars} 字符</span>
-            <span className="flex items-center gap-1 text-zinc-300"><Check size={13} /> JSON</span>
+            <span className="flex items-center gap-1 text-zinc-600"><Check size={13} /> JSON</span>
           </div>
         </footer>
       </main>

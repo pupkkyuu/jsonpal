@@ -12,10 +12,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:pointer-events-none disabled:opacity-50',
-        variant === 'default' && 'bg-sky-500 text-white shadow-sm hover:bg-sky-400',
-        variant === 'ghost' && 'text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50',
-        variant === 'outline' && 'border border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-zinc-50',
+        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:pointer-events-none disabled:opacity-50',
+        variant === 'default' && 'bg-zinc-900 text-white shadow-sm hover:bg-zinc-700',
+        variant === 'ghost' && 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950',
+        variant === 'outline' && 'border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950',
         size === 'default' && 'h-8 px-3',
         size === 'icon' && 'h-8 w-8',
         className
