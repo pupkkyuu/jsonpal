@@ -1,0 +1,22 @@
+src/renderer/src/EditorApp.tsx
+  s_08ef5a905092a7::t_f0d1741f0e5571 1,48-52
+  s_08ef5a905092a7::t_762ffea3b40883 53
+electron.vite.config.ts
+  s_08ef5a905092a7::t_f0d1741f0e5571 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b435ef8e93d7e997831b041b688788444a96edfa",
+  "prompts": {},
+  "sessions": {
+    "s_08ef5a905092a7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00097-0678-7340-b13a-36df4f726c1b",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
