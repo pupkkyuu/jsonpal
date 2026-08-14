@@ -1,0 +1,19 @@
+electron.vite.config.ts
+  s_18db1ac29b2110::t_dc815d62a7e65f 3,13-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8912f288188a59734d263024a92f5f5a4e126e0c",
+  "prompts": {},
+  "sessions": {
+    "s_18db1ac29b2110": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fff75-03b4-7180-bc0b-20fc24204e1c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
