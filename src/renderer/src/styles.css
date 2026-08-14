@@ -33,3 +33,11 @@ button {
 .app-no-drag {
   -webkit-app-region: no-drag;
 }
+
+.monaco-editor .json-error-line {
+  background-color: rgb(254 226 226 / 72%);
+}
+
+.monaco-editor .json-error-line-number {
+  border-left: 2px solid #dc2626;
+}
