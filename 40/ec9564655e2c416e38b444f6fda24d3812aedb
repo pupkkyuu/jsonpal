@@ -1,0 +1,25 @@
+src/main/index.ts
+  s_18db1ac29b2110::t_d131039eb09108 1,12,15,38
+src/renderer/src/App.tsx
+  s_18db1ac29b2110::t_d131039eb09108 2,117-118,120-136,169-170,174,198,201,208
+src/renderer/src/styles.css
+  s_18db1ac29b2110::t_d131039eb09108 7-8
+src/renderer/src/components/ui/button.tsx
+  s_18db1ac29b2110::t_d131039eb09108 15-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "40ec9564655e2c416e38b444f6fda24d3812aedb",
+  "prompts": {},
+  "sessions": {
+    "s_18db1ac29b2110": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fff75-03b4-7180-bc0b-20fc24204e1c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
