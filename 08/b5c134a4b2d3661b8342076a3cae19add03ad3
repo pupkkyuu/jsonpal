@@ -1,0 +1,48 @@
+.gitignore
+  h_73bfcc563f4feb 1-5
+electron.vite.config.ts
+  h_73bfcc563f4feb 1-14
+package.json
+  h_73bfcc563f4feb 1-43
+postcss.config.js
+  h_73bfcc563f4feb 1-6
+src/main/index.ts
+  h_73bfcc563f4feb 1-48
+src/preload/index.d.ts
+  h_73bfcc563f4feb 1-9
+src/preload/index.ts
+  h_73bfcc563f4feb 1-5
+src/renderer/index.html
+  h_73bfcc563f4feb 1-13
+src/renderer/src/App.tsx
+  h_73bfcc563f4feb 1-221
+src/renderer/src/components/ui/button.tsx
+  h_73bfcc563f4feb 1-30
+src/renderer/src/components/ui/tooltip.tsx
+  h_73bfcc563f4feb 1-24
+src/renderer/src/lib/utils.ts
+  h_73bfcc563f4feb 1-6
+src/renderer/src/main.tsx
+  h_73bfcc563f4feb 1-10
+src/renderer/src/styles.css
+  h_73bfcc563f4feb 1-35
+tailwind.config.js
+  h_73bfcc563f4feb 1-9
+tsconfig.json
+  h_73bfcc563f4feb 1-7
+tsconfig.node.json
+  h_73bfcc563f4feb 1-8
+tsconfig.web.json
+  h_73bfcc563f4feb 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "08b5c134a4b2d3661b8342076a3cae19add03ad3",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
