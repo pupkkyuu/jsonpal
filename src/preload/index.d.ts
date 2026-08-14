@@ -3,6 +3,7 @@ export interface ElectronAPI {
   settings: {
     open: () => Promise<void>
     load: () => Promise<Record<string, unknown>>
+    path: () => Promise<string>
     apply: (settings: unknown) => Promise<Record<string, unknown>>
     onUpdated: (callback: (settings: Record<string, unknown>) => void) => () => void
   }

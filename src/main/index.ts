@@ -96,6 +96,7 @@ app.whenReady().then(() => {
   app.setName('JSON Tool')
   ipcMain.handle('settings:open', () => createSettingsWindow())
   ipcMain.handle('settings:load', () => loadSettings())
+  ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:apply', (_event, settings: unknown) => {
     const savedSettings = saveSettings(settings)
     mainWindow?.webContents.send('settings:updated', savedSettings)
