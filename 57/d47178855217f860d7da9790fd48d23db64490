@@ -1,0 +1,63 @@
+.gitignore
+  s_18db1ac29b2110::t_00f2f326ce9bb8 6
+README.md
+  s_18db1ac29b2110::t_e39fe05d30a9ec 1-90
+tsconfig.web.json
+  s_18db1ac29b2110::t_a19843a9ed88a3 3
+  s_18db1ac29b2110::t_56ad47fed193b4 6
+tsconfig.json
+  s_18db1ac29b2110::t_56ad47fed193b4 3-5
+src/preload/index.d.ts
+  s_18db1ac29b2110::t_759d214d569acb 6
+  s_18db1ac29b2110::t_c8de9d231cfbb3 3-5,7-8
+src/main/index.ts
+  s_18db1ac29b2110::t_c8de9d231cfbb3 1-2,6-35,61-67,69-92,97-103
+  s_18db1ac29b2110::t_cad9a11dabfeb4 45
+  s_18db1ac29b2110::t_a62b8eab6001a8 43
+src/renderer/src/components/ui/switch.tsx
+  s_18db1ac29b2110::t_2c1a92dd559749 1-36
+src/renderer/src/App.tsx
+  s_18db1ac29b2110::t_009a81e36e8bf6 12,14,346-354,362-364,373-374,376-377,379,516-517,520,524-525,528
+  s_18db1ac29b2110::t_2f353f068d51d3 268-276,420,431-449,483-489
+  s_18db1ac29b2110::t_2bb107b334c0b4 365-372
+  s_18db1ac29b2110::t_d7124189275796 36,80-82,85-108,261-262,283-285,287-288,304,306,323,327,375,378,382,459-464,466-467,470-471,473-475,477-478,480
+  s_18db1ac29b2110::t_e48925db060ba5 482,570,579-582,584-596
+  s_18db1ac29b2110::t_e6989af3c075a0 383-388,450-458,583
+  s_18db1ac29b2110::t_fc0d0d13242113 58
+  s_18db1ac29b2110::t_1d8b6e252f6396 355-361
+  s_18db1ac29b2110::t_5d447fb16fbb3f 236-237,494-495
+  s_18db1ac29b2110::t_7fadddcb125d7a 499,507
+  s_18db1ac29b2110::t_8b6344371170c1 20,53,72,194-208,571
+  s_18db1ac29b2110::t_266f2207299dab 23,112
+  s_18db1ac29b2110::t_9d4cc014375ce7 472,476
+  s_18db1ac29b2110::t_2c1a92dd559749 2-11,13,16-19,22,25,38-52,54-56,59-65,67-71,73-75,78-79,83-84,109-111,115-122,224,249,264-267,430,490,547-549,551-555
+  s_18db1ac29b2110::t_0020da49a999fa 66
+  s_18db1ac29b2110::t_4579e0164785be 256-257,286,293,301,389-403,465,468-469,479,481
+  s_18db1ac29b2110::t_8f01b3ba834b49 15,21,57,76-77,113,123-193,209-223,225-235,238-248,258-259
+  s_18db1ac29b2110::t_536cd70905f85c 550
+  s_18db1ac29b2110::t_6bd92557128bb2 114
+  s_18db1ac29b2110::t_470e56cb15ef6b 263
+  s_18db1ac29b2110::t_358e405e79078f 289
+  s_18db1ac29b2110::t_6319e4615bc8b4 529-531
+src/preload/index.ts
+  s_18db1ac29b2110::t_759d214d569acb 8
+  s_18db1ac29b2110::t_c8de9d231cfbb3 1,4-7,9-14
+src/renderer/src/styles.css
+  s_18db1ac29b2110::t_d7124189275796 36-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "57d47178855217f860d7da9790fd48d23db64490",
+  "prompts": {},
+  "sessions": {
+    "s_18db1ac29b2110": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fff75-03b4-7180-bc0b-20fc24204e1c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
