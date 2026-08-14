@@ -1,4 +1,4 @@
-import Editor, { type OnMount } from '@monaco-editor/react'
+import Editor, { loader, type OnMount } from '@monaco-editor/react'
 import {
   Check,
   Clipboard,
@@ -44,6 +44,12 @@ interface EditorSettings {
 }
 
 const IS_MACOS = window.api.platform === 'darwin'
+
+loader.config({
+  paths: {
+    vs: new URL('vs', window.location.href).toString()
+  }
+})
 
 const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   minimap: true,

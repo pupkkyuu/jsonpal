@@ -11,6 +11,7 @@ export default defineConfig({
   },
   renderer: {
     plugins: [react()],
+    publicDir: resolve(__dirname, 'node_modules/monaco-editor/min'),
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src/renderer/src')
