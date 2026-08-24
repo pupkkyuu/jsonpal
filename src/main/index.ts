@@ -40,7 +40,7 @@ function createWindow(): void {
     height: 760,
     minWidth: 760,
     minHeight: 520,
-    title: 'json tool',
+    title: 'JSONPal',
     show: true,
     autoHideMenuBar: false,
     titleBarStyle: 'hiddenInset',
@@ -93,7 +93,7 @@ function createSettingsWindow(): void {
 }
 
 app.whenReady().then(() => {
-  app.setName('JSON Tool')
+  app.setName('JSONPal')
   ipcMain.handle('settings:open', () => createSettingsWindow())
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())

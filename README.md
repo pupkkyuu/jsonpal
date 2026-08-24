@@ -1,4 +1,4 @@
-# JSON Tool
+# JSONPal
 
 一个专注于 JSON 编辑、校验和转换的 Electron 桌面工具。
 
@@ -70,9 +70,9 @@ editor-settings.json
 
 该目录由 Electron 按操作系统管理，通常位于：
 
-- macOS：`~/Library/Application Support/json tool/`
-- Windows：`%APPDATA%/json tool/`
-- Linux：`~/.config/json tool/`
+- macOS：`~/Library/Application Support/JSONPal/`
+- Windows：`%APPDATA%/JSONPal/`
+- Linux：`~/.config/JSONPal/`
 
 ## 测试版提示
 

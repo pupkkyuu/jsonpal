@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const EXAMPLE_JSON = `{
-  "project": "JSON Tool",
+  "project": "JSONPal",
   "version": 1,
   "features": ["format", "compress"],
   "ready": true
@@ -246,13 +246,13 @@ function EditorApp(): JSX.Element {
     refreshMarkerErrorLines()
     editor.onDidDispose(() => markerListener.dispose())
     editor.addAction({
-      id: 'json-tool-format',
+      id: 'jsonpal-format',
       label: '格式化 JSON',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
       run: () => transformJson(2)
     })
     editor.addAction({
-      id: 'json-tool-compress',
+      id: 'jsonpal-compress',
       label: '压缩 JSON',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyM],
       run: () => transformJson(0)
@@ -320,7 +320,7 @@ function EditorApp(): JSX.Element {
     <TooltipProvider delayDuration={250}>
       <main className="flex h-screen min-h-[520px] flex-col overflow-hidden bg-white text-zinc-900">
         <header className={`flex h-10 shrink-0 items-center justify-end border-b border-zinc-200 bg-white pr-4 app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-4'}`}>
-          {IS_MACOS && <span className="mr-auto text-sm font-medium text-zinc-900">json tool</span>}
+          {IS_MACOS && <span className="mr-auto text-sm font-medium text-zinc-900">JSONPal</span>}
           <nav className="flex items-center gap-1 app-no-drag" aria-label="JSON actions">
             <Tooltip>
               <TooltipTrigger asChild>
