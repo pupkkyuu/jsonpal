@@ -1,0 +1,22 @@
+README.md
+  h_73bfcc563f4feb 8-9
+package-lock.json
+  h_73bfcc563f4feb 12-14,370-422,8160-8165
+package.json
+  h_73bfcc563f4feb 18-20
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 1,13,24-25,47-52,55,85,103-125,127-132,134,137-146,157-170,174-176,178,184,187,189,191,194-195,198-199,201,203,211-212,214,220,223,228-232,234,236-285,300,306,326,340,347-371,373-380,382,386-424,428-429,432,434-538
+src/renderer/src/components/TabSidebar.tsx
+  h_73bfcc563f4feb 1-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "074ca5bf48eabbfea56ef34764840ca1d587c035",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
