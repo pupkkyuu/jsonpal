@@ -21,8 +21,6 @@ import { Button } from '@/components/ui/button'
 import type { JsonTab } from '@/jsonUtils'
 import { cn } from '@/lib/utils'
 
-export type { JsonTab } from '@/jsonUtils'
-
 interface SortableTabProps {
   tab: JsonTab
   isActive: boolean

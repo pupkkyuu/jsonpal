@@ -28,7 +28,7 @@ export function getMonacoOptions(settings: EditorSettings): editor.IStandaloneEd
     scrollbar: { verticalScrollbarSize: settings.scrollbarSize },
     bracketPairColorization: {
       enabled: settings.bracketPairColorization,
-      independentColorPoolPerBracketType: true
+      independentColorPoolPerBracketType: false
     },
     guides: { bracketPairs: settings.bracketGuides },
     cursorBlinking: 'smooth'

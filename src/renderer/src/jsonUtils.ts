@@ -18,7 +18,7 @@ export const INITIAL_TAB: JsonTab = { id: 'json-tab-1', title: '未命名 1' }
 
 export const WAITING_FEEDBACK: TabFeedback = { message: '等待输入 JSON', isValid: true, parseErrorLine: null }
 
-export function getJsonErrorLocation(value: string, error: unknown): JsonErrorLocation | null {
+function getJsonErrorLocation(value: string, error: unknown): JsonErrorLocation | null {
   const message = error instanceof Error ? error.message : ''
   const lineColumnMatch = message.match(/line\s+(\d+)\s+column\s+(\d+)/i)
   if (lineColumnMatch) return { line: Number(lineColumnMatch[1]), column: Number(lineColumnMatch[2]) }

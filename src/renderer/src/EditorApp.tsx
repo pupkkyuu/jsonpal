@@ -174,6 +174,15 @@ function EditorApp(): JSX.Element {
 
   const getModel = useCallback((): editor.ITextModel | null => editorRef.current?.getModel() ?? null, [])
 
+  const applyBracketColorization = useCallback((enabled: boolean): void => {
+    editorRef.current?.getModel()?.updateOptions({
+      bracketColorizationOptions: {
+        enabled,
+        independentColorPoolPerBracketType: false
+      }
+    })
+  }, [])
+
   const applyModelValue = useCallback((text: string) => {
     const model = editorRef.current?.getModel()
     if (!model) return
@@ -307,12 +316,7 @@ function EditorApp(): JSX.Element {
   const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
     monacoRef.current = monaco
-    editor.getModel()?.updateOptions({
-      bracketColorizationOptions: {
-        enabled: settings.bracketPairColorization,
-        independentColorPoolPerBracketType: false
-      }
-    })
+    applyBracketColorization(settings.bracketPairColorization)
     editor.addAction({
       id: 'jsonpal-format',
       label: '格式化 JSON',
@@ -377,13 +381,8 @@ function EditorApp(): JSX.Element {
   }, [])
 
   useEffect(() => {
-    editorRef.current?.getModel()?.updateOptions({
-      bracketColorizationOptions: {
-        enabled: settings.bracketPairColorization,
-        independentColorPoolPerBracketType: false
-      }
-    })
-  }, [activeTab.id, settings.bracketPairColorization])
+    applyBracketColorization(settings.bracketPairColorization)
+  }, [activeTab.id, applyBracketColorization, settings.bracketPairColorization])
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => readMarkerState(activeTab.id))
