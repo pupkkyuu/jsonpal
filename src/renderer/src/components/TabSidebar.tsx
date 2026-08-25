@@ -16,16 +16,13 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { FileJson2, GripVertical, Pencil, Plus, Search, Settings, X } from 'lucide-react'
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
+import { memo, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { JsonTab } from '@/jsonUtils'
 import { cn } from '@/lib/utils'
 
-export interface JsonTab {
-  id: string
-  title: string
-  value: string
-}
+export type { JsonTab } from '@/jsonUtils'
 
 interface SortableTabProps {
   tab: JsonTab
@@ -35,7 +32,7 @@ interface SortableTabProps {
   onClose: () => void
 }
 
-function SortableTab({ tab, isActive, onActivate, onRename, onClose }: SortableTabProps): JSX.Element {
+const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose }: SortableTabProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState(tab.title)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -156,7 +153,7 @@ function SortableTab({ tab, isActive, onActivate, onRename, onClose }: SortableT
       </button>
     </div>
   )
-}
+})
 
 interface TabSidebarProps {
   tabs: JsonTab[]
@@ -169,7 +166,7 @@ interface TabSidebarProps {
   onOpenSettings: () => void
 }
 
-export function TabSidebar({
+export const TabSidebar = memo(function TabSidebar({
   tabs,
   activeTabId,
   onActivate,
@@ -280,4 +277,4 @@ export function TabSidebar({
       </div>
     </aside>
   )
-}
+})

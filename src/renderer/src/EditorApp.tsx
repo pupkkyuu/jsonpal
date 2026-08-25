@@ -1,110 +1,99 @@
 import Editor, { loader, type OnMount, type OnValidate } from '@monaco-editor/react'
-import {
-  Check,
-  Clipboard,
-  Minimize2,
-  Quote,
-  RotateCcw,
-  Sparkles,
-  Trash2,
-  WrapText
-} from 'lucide-react'
+import { Check, LoaderCircle, RefreshCw, WifiOff } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { TabSidebar, type JsonTab } from '@/components/TabSidebar'
+import { EditorToolbar } from '@/components/EditorToolbar'
+import { TabSidebar } from '@/components/TabSidebar'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { DEFAULT_EDITOR_SETTINGS, mergeEditorSettings, type EditorSettings } from '@/editorSettings'
-
-const EXAMPLE_JSON = `{
-  "project": "JSONPal",
-  "version": 1,
-  "features": ["format", "compress"],
-  "ready": true
-}`
-
-const INITIAL_TAB: JsonTab = { id: 'json-tab-example', title: '示例', value: EXAMPLE_JSON }
+import { useJsonTabs } from '@/hooks/useJsonTabs'
+import { getTabModelPath, getValidationFeedback } from '@/jsonUtils'
+import { getMonacoOptions } from '@/monacoOptions'
 
 type EditorInstance = Parameters<OnMount>[0]
 type MonacoInstance = Parameters<OnMount>[1]
-interface TabFeedback {
-  message: string
-  isValid: boolean
-  parseErrorLine: number | null
-}
 
 const IS_MACOS = window.api.platform === 'darwin'
 
-loader.config({ paths: { vs: new URL('vs', window.location.href).toString() } })
+// Load Monaco on demand from a pinned CDN version instead of bundling all editor assets.
+loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } })
 
-interface JsonErrorLocation {
-  line: number
-  column: number
+type MonacoLoadState = 'loading' | 'ready' | 'error'
+
+interface MonacoLoadingStateProps {
+  state: MonacoLoadState
+  onRetry: () => void
 }
 
-function getJsonErrorLocation(value: string, error: unknown): JsonErrorLocation | null {
-  const message = error instanceof Error ? error.message : ''
-  const lineColumnMatch = message.match(/line\s+(\d+)\s+column\s+(\d+)/i)
-  if (lineColumnMatch) return { line: Number(lineColumnMatch[1]), column: Number(lineColumnMatch[2]) }
-
-  const positionMatch = message.match(/position\s+(\d+)/i)
-  if (!positionMatch) return null
-
-  const position = Number(positionMatch[1])
-  const beforeError = value.slice(0, position)
-  const line = beforeError.split('\n').length
-  const lastNewline = beforeError.lastIndexOf('\n')
-  return { line, column: position - lastNewline }
-}
-
-function getErrorMessage(value: string, error: unknown): string {
-  if (error instanceof Error && error.message === '内容不是 JSON 字符串') return error.message
-  const location = getJsonErrorLocation(value, error)
-  return location ? `JSON 格式错误：第 ${location.line} 行，第 ${location.column} 列` : 'JSON 格式错误'
-}
-
-function getValidationFeedback(value: string): TabFeedback {
-  if (!value.trim()) return { message: '等待输入 JSON', isValid: true, parseErrorLine: null }
-
-  try {
-    JSON.parse(value)
-    return { message: 'JSON 有效', isValid: true, parseErrorLine: null }
-  } catch (error) {
-    return {
-      message: getErrorMessage(value, error),
-      isValid: false,
-      parseErrorLine: getJsonErrorLocation(value, error)?.line ?? 1
-    }
+function MonacoLoadingState({ state, onRetry }: MonacoLoadingStateProps): JSX.Element {
+  if (state === 'error') {
+    return (
+      <div
+        className="flex h-full flex-col items-center justify-center gap-3 bg-white px-6 text-center"
+        role="alert"
+        aria-live="assertive"
+      >
+        <WifiOff size={24} className="text-[#c72e0f]" aria-hidden="true" />
+        <p className="text-sm font-medium text-[#333333]">编辑器加载失败</p>
+        <p className="max-w-sm text-xs text-[#616161]">无法从网络加载 Monaco 编辑器资源，请检查网络连接后重试。</p>
+        <Button variant="outline" onClick={onRetry}>
+          <RefreshCw size={15} />
+          重试
+        </Button>
+      </div>
+    )
   }
-}
 
-function getTabModelPath(tabId: string): string {
-  return `inmemory://jsonpal/${tabId}.json`
-}
-
-function createTabId(): string {
-  return `json-tab-${crypto.randomUUID()}`
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 bg-white text-center" role="status" aria-live="polite">
+      <LoaderCircle size={24} className="animate-spin text-[#0078d4]" aria-hidden="true" />
+      <p className="text-sm text-[#616161]">正在加载编辑器...</p>
+    </div>
+  )
 }
 
 function EditorApp(): JSX.Element {
-  const [tabs, setTabs] = useState<JsonTab[]>([INITIAL_TAB])
-  const [activeTabId, setActiveTabId] = useState(INITIAL_TAB.id)
-  const [feedbackByTab, setFeedbackByTab] = useState<Record<string, TabFeedback>>({
-    [INITIAL_TAB.id]: getValidationFeedback(INITIAL_TAB.value)
-  })
-  const [markerErrorLinesByTab, setMarkerErrorLinesByTab] = useState<Record<string, number[]>>({})
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
-  const untitledCounterRef = useRef(1)
+  const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
   const errorDecorationIdsRef = useRef<Record<string, string[]>>({})
   const transformJsonRef = useRef<(spacing: number) => void>(() => undefined)
 
-  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]!
-  const activeFeedback = feedbackByTab[activeTab.id] ?? getValidationFeedback(activeTab.value)
-  const markerErrorLines = markerErrorLinesByTab[activeTab.id] ?? []
+  const handleTabClosed = useCallback((tabId: string) => {
+    delete errorDecorationIdsRef.current[tabId]
+  }, [])
+  const {
+    tabs,
+    activeTab,
+    activeFeedback,
+    markerErrorLines,
+    setTabs,
+    setActiveTabId,
+    setTabFeedback,
+    setMarkerErrorLines,
+    updateValue,
+    showJsonError,
+    addTab,
+    renameTab,
+    closeTab
+  } = useJsonTabs(handleTabClosed)
 
-  const setTabFeedback = useCallback((tabId: string, feedback: TabFeedback) => {
-    setFeedbackByTab((current) => ({ ...current, [tabId]: feedback }))
+  useEffect(() => {
+    let isMounted = true
+    const initialization = loader.init()
+    initialization
+      .then(() => {
+        if (isMounted) setMonacoLoadState('ready')
+      })
+      .catch((error: unknown) => {
+        if (isMounted && (error as { type?: string })?.type !== 'cancelation') setMonacoLoadState('error')
+      })
+
+    return () => {
+      isMounted = false
+      initialization.cancel()
+    }
   }, [])
 
   const toggleWordWrap = useCallback(() => {
@@ -115,36 +104,21 @@ function EditorApp(): JSX.Element {
     })
   }, [settings])
 
+  const openSettings = useCallback(() => {
+    void window.api.settings.open()
+  }, [])
+
   const stats = useMemo(() => {
     const lines = activeTab.value ? activeTab.value.split('\n').length : 1
     return { lines, chars: activeTab.value.length }
   }, [activeTab.value])
-
-  const showJsonError = useCallback(
-    (tabId: string, invalidValue: string, error: unknown) => {
-      setTabFeedback(tabId, {
-        isValid: false,
-        parseErrorLine: getJsonErrorLocation(invalidValue, error)?.line ?? 1,
-        message: getErrorMessage(invalidValue, error)
-      })
-    },
-    [setTabFeedback]
-  )
-
-  const updateValue = useCallback(
-    (nextValue: string) => {
-      const tabId = activeTab.id
-      setTabs((current) => current.map((tab) => (tab.id === tabId ? { ...tab, value: nextValue } : tab)))
-      setTabFeedback(tabId, getValidationFeedback(nextValue))
-    },
-    [activeTab.id, setTabFeedback]
-  )
+  const editorOptions = useMemo(() => getMonacoOptions(settings), [settings])
 
   const transformJson = useCallback(
     (spacing: number) => {
       try {
         const transformed = JSON.stringify(JSON.parse(activeTab.value), null, spacing)
-        updateValue(transformed)
+        updateValue(transformed, getValidationFeedback(transformed))
       } catch (error) {
         showJsonError(activeTab.id, activeTab.value, error)
       }
@@ -170,8 +144,7 @@ function EditorApp(): JSX.Element {
   }, [updateValue])
 
   const escapeJson = useCallback(() => {
-    updateValue(JSON.stringify(activeTab.value))
-    setTabFeedback(activeTab.id, { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
+    updateValue(JSON.stringify(activeTab.value), { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
     editorRef.current?.focus()
   }, [activeTab.id, activeTab.value, setTabFeedback, updateValue])
 
@@ -186,9 +159,8 @@ function EditorApp(): JSX.Element {
       }
       if (typeof unescaped !== 'string') throw new Error('内容不是 JSON 字符串')
 
-      updateValue(unescaped)
       const validation = getValidationFeedback(unescaped)
-      setTabFeedback(activeTab.id, {
+      updateValue(unescaped, {
         ...validation,
         message: validation.isValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON'
       })
@@ -198,52 +170,12 @@ function EditorApp(): JSX.Element {
     editorRef.current?.focus()
   }, [activeTab.id, activeTab.value, setTabFeedback, showJsonError, updateValue])
 
-  const addTab = useCallback(() => {
-    const tab: JsonTab = { id: createTabId(), title: `未命名 ${untitledCounterRef.current++}`, value: '' }
-    setTabs((current) => [...current, tab])
-    setTabFeedback(tab.id, getValidationFeedback(tab.value))
-    setActiveTabId(tab.id)
-  }, [setTabFeedback])
-
-  const renameTab = useCallback((tabId: string, title: string) => {
-    setTabs((current) => current.map((tab) => (tab.id === tabId ? { ...tab, title } : tab)))
-  }, [])
-
-  const closeTab = useCallback(
-    (tabId: string) => {
-      const closingIndex = tabs.findIndex((tab) => tab.id === tabId)
-      if (closingIndex === -1) return
-
-      let nextTabs = tabs.filter((tab) => tab.id !== tabId)
-      if (nextTabs.length === 0) {
-        nextTabs = [{ id: createTabId(), title: `未命名 ${untitledCounterRef.current++}`, value: '' }]
-      }
-
-      setTabs(nextTabs)
-      setFeedbackByTab((current) => {
-        const nextFeedback = { ...current }
-        delete nextFeedback[tabId]
-        if (!nextFeedback[nextTabs[0].id]) nextFeedback[nextTabs[0].id] = getValidationFeedback(nextTabs[0].value)
-        return nextFeedback
-      })
-      setMarkerErrorLinesByTab((current) => {
-        const nextLines = { ...current }
-        delete nextLines[tabId]
-        return nextLines
-      })
-      delete errorDecorationIdsRef.current[tabId]
-
-      if (tabId === activeTabId) setActiveTabId(nextTabs[Math.min(closingIndex, nextTabs.length - 1)].id)
-    },
-    [activeTabId, tabs]
-  )
-
   const handleValidate: OnValidate = useCallback(
     (markers) => {
       const lines = [...new Set(markers.filter((marker) => marker.severity === 8).map((marker) => marker.startLineNumber))]
-      setMarkerErrorLinesByTab((current) => ({ ...current, [activeTab.id]: lines }))
+      setMarkerErrorLines(activeTab.id, lines)
     },
-    [activeTab.id]
+    [activeTab.id, setMarkerErrorLines]
   )
 
   const handleEditorMount: OnMount = (editor, monaco) => {
@@ -313,10 +245,10 @@ function EditorApp(): JSX.Element {
         .getModelMarkers({ resource: model.uri })
         .filter((marker) => marker.severity === monaco.MarkerSeverity.Error)
         .map((marker) => marker.startLineNumber)
-      setMarkerErrorLinesByTab((current) => ({ ...current, [activeTab.id]: [...new Set(lines)] }))
+      setMarkerErrorLines(activeTab.id, [...new Set(lines)])
     })
     return () => cancelAnimationFrame(frame)
-  }, [activeTab.id])
+  }, [activeTab.id, setMarkerErrorLines])
 
   useEffect(() => {
     const editor = editorRef.current
@@ -361,122 +293,38 @@ function EditorApp(): JSX.Element {
             onRename={renameTab}
             onClose={closeTab}
             onReorder={setTabs}
-            onOpenSettings={() => void window.api.settings.open()}
+            onOpenSettings={openSettings}
           />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
-            <nav
-              className="flex h-11 shrink-0 items-center justify-end gap-1 border-b border-[#e5e5e5] bg-white px-3"
-              aria-label="JSON actions"
-            >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={() => transformJson(2)} aria-label="格式化 JSON">
-                    <Sparkles size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>格式化 JSON</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={() => transformJson(0)} aria-label="压缩 JSON">
-                    <Minimize2 size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>压缩 JSON</TooltipContent>
-              </Tooltip>
-              <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={escapeJson} aria-label="转义 JSON">
-                    <Quote size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>转义 JSON</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={unescapeJson} aria-label="去除 JSON 转义">
-                    <RotateCcw size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>去除 JSON 转义</TooltipContent>
-              </Tooltip>
-              <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={copyJson} aria-label="复制 JSON">
-                    <Clipboard size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>复制 JSON</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={settings.wordWrap ? 'bg-[#e7e7e7] text-[#333333]' : undefined}
-                    onClick={toggleWordWrap}
-                    aria-label="切换自动换行"
-                  >
-                    <WrapText size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>自动换行</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={clearEditor} aria-label="清空编辑器">
-                    <Trash2 size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>清空</TooltipContent>
-              </Tooltip>
-            </nav>
+            <EditorToolbar
+              wordWrap={settings.wordWrap}
+              onFormat={() => transformJson(2)}
+              onCompress={() => transformJson(0)}
+              onEscape={escapeJson}
+              onUnescape={unescapeJson}
+              onCopy={copyJson}
+              onToggleWordWrap={toggleWordWrap}
+              onClear={clearEditor}
+            />
 
             <div className="min-h-0 flex-1" aria-label="JSON editor">
-              <Editor
-                height="100%"
-                language="json"
-                path={getTabModelPath(activeTab.id)}
-                saveViewState
-                theme="vs"
-                value={activeTab.value}
-                onChange={(nextValue) => updateValue(nextValue ?? '')}
-                onMount={handleEditorMount}
-                onValidate={handleValidate}
-                options={{
-                  automaticLayout: true,
-                  minimap: { enabled: settings.minimap, side: 'right', renderCharacters: settings.minimapCharacters },
-                  fontSize: settings.fontSize,
-                  fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', monospace",
-                  lineHeight: 23,
-                  padding: { top: 16, bottom: 16 },
-                  scrollBeyondLastLine: false,
-                  smoothScrolling: true,
-                  renderLineHighlight: 'gutter',
-                  tabSize: 2,
-                  wordWrap: settings.wordWrap ? 'on' : 'off',
-                  lineNumbers: settings.lineNumbers,
-                  folding: settings.folding,
-                  renderWhitespace: settings.renderWhitespace,
-                  matchBrackets: 'always',
-                  stickyScroll: { enabled: settings.stickyScroll },
-                  formatOnPaste: settings.formatOnPaste,
-                  unicodeHighlight: {
-                    ambiguousCharacters: settings.unicodeHighlight,
-                    invisibleCharacters: settings.unicodeHighlight,
-                    nonBasicASCII: settings.unicodeHighlight
-                  },
-                  scrollbar: { verticalScrollbarSize: settings.scrollbarSize },
-                  bracketPairColorization: {
-                    enabled: settings.bracketPairColorization,
-                    independentColorPoolPerBracketType: true
-                  },
-                  guides: { bracketPairs: settings.bracketGuides },
-                  cursorBlinking: 'smooth'
-                }}
-              />
+              {monacoLoadState === 'ready' ? (
+                <Editor
+                  height="100%"
+                  language="json"
+                  path={getTabModelPath(activeTab.id)}
+                  saveViewState
+                  theme="vs"
+                  value={activeTab.value}
+                  onChange={(nextValue) => updateValue(nextValue ?? '')}
+                  onMount={handleEditorMount}
+                  onValidate={handleValidate}
+                  loading={<MonacoLoadingState state="loading" onRetry={() => window.location.reload()} />}
+                  options={editorOptions}
+                />
+              ) : (
+                <MonacoLoadingState state={monacoLoadState} onRetry={() => window.location.reload()} />
+              )}
             </div>
 
             <footer className="flex h-8 shrink-0 items-center justify-between border-t border-[#e5e5e5] bg-[#f3f3f3] px-4 text-xs text-[#616161]">
