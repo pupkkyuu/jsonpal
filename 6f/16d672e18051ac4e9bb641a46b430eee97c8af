@@ -1,0 +1,62 @@
+src/renderer/src/EditorApp.tsx
+  s_b0716d2818ce14::t_f50cd7cc73016e 340-345
+  s_b0716d2818ce14::t_2c3eb06f43539d 394-399
+  s_b0716d2818ce14::t_b8823abf21b533 21-28
+  s_b0716d2818ce14::t_3e5fab5376cdb4 188-192
+  s_b0716d2818ce14::t_ad5e797d12f51d 117
+  s_b0716d2818ce14::t_f73cd00cae5bcd 3,11,19-20,66-110,112,125-127,129,175-182,185-187,194-200,202,206,209-211,214,216,221,224,226,229-230,238,240,243-245,254,257,261-266,269,272,274-293,295-298,300,303-306,389,391,393,478-483
+  s_b0716d2818ce14::t_98c3e058cf2a4a 231-237
+  s_b0716d2818ce14::t_ac374556ef4668 336,338
+  s_b0716d2818ce14::t_b76a171497da5a 439-440
+  s_b0716d2818ce14::t_0bd97d82fa9676 332-334,337,339,346-360,365
+  s_b0716d2818ce14::t_b8cb024bfb71a1 246-250
+  s_b0716d2818ce14::t_960c7eae8eb106 294
+  s_b0716d2818ce14::t_de0da370b36ed8 111
+  s_b0716d2818ce14::t_f664ba83f7c605 113
+  s_b0716d2818ce14::t_6d70cd821428dc 392
+src/renderer/src/jsonUtils.ts
+  s_b0716d2818ce14::t_509161bfaf9f14 17-19,36-40,42-46,49,52-54
+src/renderer/src/SettingsApp.tsx
+  s_b0716d2818ce14::t_48d71e05bac2aa 9,19
+  s_b0716d2818ce14::t_1c1903f1717c62 30-36
+  s_b0716d2818ce14::t_7fcf93108adc31 254
+  s_b0716d2818ce14::t_2fd400ab13f9ba 312,316,319-320
+  s_b0716d2818ce14::t_2d42497074d26e 213-253,255-267
+src/renderer/src/components/EditorToolbar.tsx
+  s_b0716d2818ce14::t_5aeac0a89def18 30
+  s_b0716d2818ce14::t_33df3445b9d7f6 49
+  s_b0716d2818ce14::t_7cabdec7adea98 56
+  s_b0716d2818ce14::t_ce9f6f8e1224b9 43
+  s_b0716d2818ce14::t_e81fed2cb490fa 1
+src/renderer/src/components/TabSidebar.tsx
+  s_b0716d2818ce14::t_2c573b1c904a2e 258,261,267-271,273-275
+  s_b0716d2818ce14::t_67bea0abc25c7a 19
+  s_b0716d2818ce14::t_30fd1ca24960dc 18
+  s_b0716d2818ce14::t_1e7586cc4b5127 184,190-208
+  s_b0716d2818ce14::t_f2828bf5ed3fff 259-260,262-266,276
+  s_b0716d2818ce14::t_a39e0935fbf367 224-234
+  s_b0716d2818ce14::t_3fc8ae2f9dcd6e 305
+  s_b0716d2818ce14::t_b70bd5cf487dcf 82
+  s_b0716d2818ce14::t_d334ecea858595 161-162,174-175
+  s_b0716d2818ce14::t_f06e37674ac370 209-217,219-223,235-237
+  s_b0716d2818ce14::t_50c9a28dae0817 272
+  s_b0716d2818ce14::t_2b268b661b8004 218
+src/renderer/src/hooks/useJsonTabs.ts
+  s_b0716d2818ce14::t_dd6ff4d16b8404 1-2,22,28,32-43,55,57,72,79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6f16d672e18051ac4e9bb641a46b430eee97c8af",
+  "prompts": {},
+  "sessions": {
+    "s_b0716d2818ce14": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc80bc0d0ffePznTCEVYGqHPFQ",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
