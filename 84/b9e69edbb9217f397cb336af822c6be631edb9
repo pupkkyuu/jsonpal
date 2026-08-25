@@ -1,0 +1,41 @@
+src/renderer/src/EditorApp.tsx
+  s_30414277c8e160::t_7d1d9edde213f4 11
+  s_30414277c8e160::t_0064cb0453f398 13,18,21,82,115,117-118,157-160,164,166,194-196,199-200,207-224,245-249,252,254-263,265-266,323-324,339-341,347,356,383-391,395,397,405-406
+src/renderer/src/components/EditorToolbar.tsx
+  s_30414277c8e160::t_b495aba9900e28 48-61
+  s_30414277c8e160::t_13a27375411746 1,16-19,30-41,44-47,62-63
+src/renderer/src/hooks/useJsonTabs.ts
+  s_30414277c8e160::t_f3b176afc39635 1,4-8,23-32,36-37,40-46,49-51,54,56-57,62-65,72,74,82-83,86,92-98,101-103,105,127-128
+src/renderer/src/lib/utils.ts
+  s_30414277c8e160::t_ee70062a480b5d 7-8
+src/renderer/src/components/TabSidebar.tsx
+  s_30414277c8e160::t_3ac077f3d8e322 27-29,52,61,67
+  s_30414277c8e160::t_29f80ba692421a 309-311
+  s_30414277c8e160::t_294783e9670379 83
+src/renderer/src/SettingsApp.tsx
+  s_30414277c8e160::t_1b8024ef019fcc 29
+src/renderer/src/jsonUtils.ts
+  s_30414277c8e160::t_4e851600979b8d 12-18
+  s_30414277c8e160::t_f21068c4f2b72b 44
+  s_30414277c8e160::t_f046cc07c38129 65-75
+src/renderer/src/editorSettings.ts
+  s_30414277c8e160::t_f41f2e552e28f4 37-54,56-76
+src/main/index.ts
+  s_30414277c8e160::t_4bfa79ae9eb139 2,8-14,19,21,28,31,35-41,62,65,85,88,102,105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "84b9e69edbb9217f397cb336af822c6be631edb9",
+  "prompts": {},
+  "sessions": {
+    "s_30414277c8e160": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc6983fb3ffe4qOvImIhLKTi9V",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
