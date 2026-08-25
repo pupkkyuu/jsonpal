@@ -1,0 +1,29 @@
+src/renderer/src/EditorApp.tsx
+  s_070d4a3f27d7cc::t_027b92ed53ea4a 384-385
+  s_070d4a3f27d7cc::t_574fb5cc6edc33 177-185
+  s_070d4a3f27d7cc::t_b24070e287499a 319
+src/renderer/index.html
+  s_070d4a3f27d7cc::t_ed17bad5017414 6
+src/renderer/src/monacoOptions.ts
+  s_070d4a3f27d7cc::t_e702e166a1acbd 31
+src/renderer/src/jsonUtils.ts
+  s_070d4a3f27d7cc::t_cd61f101e90d6e 21
+README.md
+  s_070d4a3f27d7cc::t_cd08179999b5f5 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "afea61b7eb59b034ff93179134ae51d2c4fc7f79",
+  "prompts": {},
+  "sessions": {
+    "s_070d4a3f27d7cc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc6aa4e4fffev7RT70yu2m81XM",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
