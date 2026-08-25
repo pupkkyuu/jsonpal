@@ -6,6 +6,7 @@ import {
   FileCog,
   FolderOpen,
   Info,
+  Keyboard,
   ListOrdered,
   PanelRight,
   Rows3,
@@ -15,7 +16,7 @@ import {
   SlidersHorizontal,
   Type
 } from 'lucide-react'
-import { type ReactNode, useCallback, useEffect, useState } from 'react'
+import { Fragment, type ReactNode, useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import {
@@ -26,7 +27,13 @@ import {
   type WhitespaceMode
 } from '@/editorSettings'
 
-type SettingsCategory = 'general' | 'editor'
+type SettingsCategory = 'general' | 'editor' | 'shortcuts'
+
+const CATEGORY_LABELS: Record<SettingsCategory, string> = {
+  general: '通用',
+  editor: '编辑器',
+  shortcuts: '快捷键'
+}
 
 const IS_MACOS = window.api.platform === 'darwin'
 
@@ -179,7 +186,6 @@ function GeneralSettings({ configPath, onOpenFolder }: { configPath: string; onO
           <p className="mt-1 text-sm text-[#616161]">管理 JSONPal 的本地配置文件。</p>
         </div>
       </div>
-
       <div className="border-y border-[#e5e5e5]">
         <div className="flex min-h-16 items-center justify-between gap-5 py-4">
           <div className="flex min-w-0 items-center gap-3">
@@ -200,6 +206,61 @@ function GeneralSettings({ configPath, onOpenFolder }: { configPath: string; onO
         <SlidersHorizontal size={17} className="mt-0.5 shrink-0 text-[#0078d4]" />
         <p>编辑器设置会保存到上述配置文件，并在 JSONPal 启动时作为 Monaco 编辑器的默认配置加载。</p>
       </div>
+    </div>
+  )
+}
+
+interface ShortcutRowProps {
+  label: string
+  keys: string[]
+}
+
+function ShortcutRow({ label, keys }: ShortcutRowProps): JSX.Element {
+  return (
+    <div className="flex min-h-14 items-center justify-between gap-6 border-b border-[#e5e5e5] py-3 last:border-b-0">
+      <span className="text-sm font-medium text-[#333333]">{label}</span>
+      <div className="flex shrink-0 items-center gap-1">
+        {keys.map((key, index) => (
+          <Fragment key={`${index}-${key}`}>
+            {index > 0 && <span className="text-xs text-[#858585]">+</span>}
+            <kbd className="rounded-sm border border-[#c8c8c8] bg-[#f3f3f3] px-1.5 py-0.5 font-sans text-xs font-medium text-[#333333]">
+              {key}
+            </kbd>
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ShortcutsSection(): JSX.Element {
+  const modifier = IS_MACOS ? '⌘' : 'Ctrl'
+  const shift = IS_MACOS ? '⇧' : 'Shift'
+
+  return (
+    <div className="max-w-3xl">
+      <div className="mb-6 flex items-start gap-3">
+        <Keyboard size={18} className="mt-0.5 shrink-0 text-[#616161]" />
+        <div>
+          <h2 className="text-base font-semibold text-[#333333]">快捷键</h2>
+          <p className="mt-1 text-sm text-[#616161]">JSONPal 支持的全部键盘快捷键。macOS 使用 ⌘，Windows 和 Linux 使用 Ctrl。</p>
+        </div>
+      </div>
+
+      <div className="border-y border-[#e5e5e5]">
+        <ShortcutRow label="新建 Tab" keys={[modifier, 'T']} />
+        <ShortcutRow label="切换到下一个 Tab" keys={[modifier, 'Tab']} />
+        <ShortcutRow label="切换到第 N 个 Tab" keys={[modifier, '1-9']} />
+        <ShortcutRow label="收起 / 展开侧边栏" keys={[modifier, 'B']} />
+        <ShortcutRow label="格式化 JSON" keys={[modifier, shift, 'F']} />
+        <ShortcutRow label="压缩 JSON" keys={[modifier, shift, 'M']} />
+      </div>
+
+      {IS_MACOS && (
+        <p className="mt-4 text-xs leading-5 text-[#616161]">
+          在 macOS 上，⌘Tab 由系统占用；切换 Tab 的组合键可改用 Control 键（如 Control+Tab、Control+数字）。
+        </p>
+      )}
     </div>
   )
 }
@@ -248,12 +309,15 @@ function SettingsApp(): JSX.Element {
           <div className="space-y-1">
             <CategoryButton active={category === 'general'} icon={Settings2} label="通用" onClick={() => setCategory('general')} />
             <CategoryButton active={category === 'editor'} icon={SlidersHorizontal} label="编辑器" onClick={() => setCategory('editor')} />
+            <CategoryButton active={category === 'shortcuts'} icon={Keyboard} label="快捷键" onClick={() => setCategory('shortcuts')} />
           </div>
         </nav>
 
-        <section className="min-w-0 flex-1 overflow-y-auto px-7 py-6" aria-label={`${category === 'general' ? '通用' : '编辑器'}设置`}>
+        <section className="min-w-0 flex-1 overflow-y-auto px-7 py-6" aria-label={`${CATEGORY_LABELS[category]}设置`}>
           {category === 'general' ? (
             <GeneralSettings configPath={configPath} onOpenFolder={() => void window.api.settings.openFolder()} />
+          ) : category === 'shortcuts' ? (
+            <ShortcutsSection />
           ) : (
             <div className="max-w-3xl">
               <div className="mb-6 flex items-start gap-3">

@@ -1,5 +1,6 @@
 import Editor, { loader, type OnMount, type OnValidate } from '@monaco-editor/react'
 import { Check, LoaderCircle, RefreshCw, WifiOff } from 'lucide-react'
+import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EditorToolbar } from '@/components/EditorToolbar'
 import { TabSidebar } from '@/components/TabSidebar'
@@ -7,13 +8,23 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { DEFAULT_EDITOR_SETTINGS, mergeEditorSettings, type EditorSettings } from '@/editorSettings'
 import { useJsonTabs } from '@/hooks/useJsonTabs'
-import { getTabModelPath, getValidationFeedback } from '@/jsonUtils'
+import { getParseErrorFeedback, getTabModelPath, isValidJson, WAITING_FEEDBACK, type TabFeedback } from '@/jsonUtils'
 import { getMonacoOptions } from '@/monacoOptions'
 
 type EditorInstance = Parameters<OnMount>[0]
 type MonacoInstance = Parameters<OnMount>[1]
 
 const IS_MACOS = window.api.platform === 'darwin'
+
+const STATS_DEBOUNCE_MS = 200
+
+function hasVisibleContent(model: editor.ITextModel): boolean {
+  const lineCount = model.getLineCount()
+  for (let lineNumber = 1; lineNumber <= lineCount; lineNumber++) {
+    if (/\S/.test(model.getLineContent(lineNumber))) return true
+  }
+  return false
+}
 
 // Load Monaco on demand from a pinned CDN version instead of bundling all editor assets.
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } })
@@ -52,9 +63,58 @@ function MonacoLoadingState({ state, onRetry }: MonacoLoadingStateProps): JSX.El
   )
 }
 
+interface EditorStatusBarProps {
+  modelKey: string
+  isReady: boolean
+  getModel: () => editor.ITextModel | null
+  feedback: TabFeedback
+}
+
+function EditorStatusBar({ modelKey, isReady, getModel, feedback }: EditorStatusBarProps): JSX.Element {
+  const [stats, setStats] = useState<{ lines: number; chars: number }>({ lines: 1, chars: 0 })
+
+  useEffect(() => {
+    if (!isReady) return
+    const model = getModel()
+    if (!model) return
+
+    const sync = (): void => setStats({ lines: model.getLineCount(), chars: model.getValueLength() })
+    sync()
+
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const disposable = model.onDidChangeContent(() => {
+      clearTimeout(timer)
+      timer = setTimeout(sync, STATS_DEBOUNCE_MS)
+    })
+    return () => {
+      disposable.dispose()
+      clearTimeout(timer)
+    }
+  }, [getModel, isReady, modelKey])
+
+  return (
+    <footer className="flex h-8 shrink-0 items-center justify-between border-t border-[#e5e5e5] bg-[#f3f3f3] px-4 text-xs text-[#616161]">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className={`flex h-1.5 w-1.5 shrink-0 rounded-full ${feedback.isValid ? 'bg-[#16825d]' : 'bg-[#f14c4c]'}`} />
+        <span className={`truncate ${feedback.isValid ? 'text-[#616161]' : 'text-[#c72e0f]'}`}>{feedback.message}</span>
+      </div>
+      <div className="ml-4 flex shrink-0 items-center gap-4">
+        <span>UTF-8</span>
+        <span>空格: 2</span>
+        <span>{stats.lines} 行</span>
+        <span>{stats.chars} 字符</span>
+        <span className="flex items-center gap-1 text-[#616161]">
+          <Check size={13} /> JSON
+        </span>
+      </div>
+    </footer>
+  )
+}
+
 function EditorApp(): JSX.Element {
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
   const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
   const errorDecorationIdsRef = useRef<Record<string, string[]>>({})
@@ -62,7 +122,11 @@ function EditorApp(): JSX.Element {
 
   const handleTabClosed = useCallback((tabId: string) => {
     delete errorDecorationIdsRef.current[tabId]
+    const monaco = monacoRef.current
+    const model = monaco ? monaco.editor.getModel(monaco.Uri.parse(getTabModelPath(tabId))) : null
+    model?.dispose()
   }, [])
+
   const {
     tabs,
     activeTab,
@@ -72,8 +136,6 @@ function EditorApp(): JSX.Element {
     setActiveTabId,
     setTabFeedback,
     setMarkerErrorLines,
-    updateValue,
-    showJsonError,
     addTab,
     renameTab,
     closeTab
@@ -108,75 +170,139 @@ function EditorApp(): JSX.Element {
     void window.api.settings.open()
   }, [])
 
-  const stats = useMemo(() => {
-    const lines = activeTab.value ? activeTab.value.split('\n').length : 1
-    return { lines, chars: activeTab.value.length }
-  }, [activeTab.value])
   const editorOptions = useMemo(() => getMonacoOptions(settings), [settings])
+
+  const getModel = useCallback((): editor.ITextModel | null => editorRef.current?.getModel() ?? null, [])
+
+  const applyModelValue = useCallback((text: string) => {
+    const model = editorRef.current?.getModel()
+    if (!model) return
+    model.pushEditOperations([], [{ range: model.getFullModelRange(), text }], () => null)
+  }, [])
 
   const transformJson = useCallback(
     (spacing: number) => {
+      const model = editorRef.current?.getModel()
+      if (!model) return
+      const value = model.getValue()
+      if (!value.trim()) {
+        setTabFeedback(activeTab.id, WAITING_FEEDBACK)
+        editorRef.current?.focus()
+        return
+      }
       try {
-        const transformed = JSON.stringify(JSON.parse(activeTab.value), null, spacing)
-        updateValue(transformed, getValidationFeedback(transformed))
+        const transformed = JSON.stringify(JSON.parse(value), null, spacing)
+        applyModelValue(transformed)
+        setTabFeedback(activeTab.id, {
+          message: spacing === 0 ? '已压缩 JSON' : '已格式化 JSON',
+          isValid: true,
+          parseErrorLine: null
+        })
       } catch (error) {
-        showJsonError(activeTab.id, activeTab.value, error)
+        setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
       }
       editorRef.current?.focus()
     },
-    [activeTab.id, activeTab.value, showJsonError, updateValue]
+    [activeTab.id, applyModelValue, setTabFeedback]
   )
 
-  transformJsonRef.current = transformJson
+  useEffect(() => {
+    transformJsonRef.current = transformJson
+  }, [transformJson])
 
   const copyJson = useCallback(async () => {
+    const value = editorRef.current?.getModel()?.getValue() ?? ''
     try {
-      await navigator.clipboard.writeText(activeTab.value)
+      await navigator.clipboard.writeText(value)
       setTabFeedback(activeTab.id, { ...activeFeedback, message: '已复制到剪贴板', isValid: true })
     } catch {
       setTabFeedback(activeTab.id, { ...activeFeedback, message: '无法访问剪贴板', isValid: false })
     }
-  }, [activeFeedback, activeTab.id, activeTab.value, setTabFeedback])
+  }, [activeFeedback, activeTab.id, setTabFeedback])
 
   const clearEditor = useCallback(() => {
-    updateValue('')
+    applyModelValue('')
     editorRef.current?.focus()
-  }, [updateValue])
+  }, [applyModelValue])
 
   const escapeJson = useCallback(() => {
-    updateValue(JSON.stringify(activeTab.value), { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
+    const model = editorRef.current?.getModel()
+    if (!model) return
+    const value = model.getValue()
+    if (!value.trim()) {
+      setTabFeedback(activeTab.id, WAITING_FEEDBACK)
+      editorRef.current?.focus()
+      return
+    }
+    applyModelValue(JSON.stringify(value))
+    setTabFeedback(activeTab.id, { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
     editorRef.current?.focus()
-  }, [activeTab.id, activeTab.value, setTabFeedback, updateValue])
+  }, [activeTab.id, applyModelValue, setTabFeedback])
 
   const unescapeJson = useCallback(() => {
+    const model = editorRef.current?.getModel()
+    if (!model) return
+    const raw = model.getValue()
+    if (!raw.trim()) {
+      setTabFeedback(activeTab.id, WAITING_FEEDBACK)
+      editorRef.current?.focus()
+      return
+    }
     try {
       let unescaped: unknown
       try {
-        unescaped = JSON.parse(activeTab.value)
+        unescaped = JSON.parse(raw)
       } catch {
         // Accept common escaped JSON text that omits the outer string quotes.
-        unescaped = JSON.parse(`"${activeTab.value}"`)
+        unescaped = JSON.parse(`"${raw}"`)
       }
       if (typeof unescaped !== 'string') throw new Error('内容不是 JSON 字符串')
 
-      const validation = getValidationFeedback(unescaped)
-      updateValue(unescaped, {
-        ...validation,
-        message: validation.isValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON'
+      const resultIsValid = isValidJson(unescaped)
+      applyModelValue(unescaped)
+      setTabFeedback(activeTab.id, {
+        message: resultIsValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON',
+        isValid: resultIsValid,
+        parseErrorLine: null
       })
     } catch (error) {
-      showJsonError(activeTab.id, activeTab.value, error)
+      setTabFeedback(activeTab.id, getParseErrorFeedback(raw, error))
     }
     editorRef.current?.focus()
-  }, [activeTab.id, activeTab.value, setTabFeedback, showJsonError, updateValue])
+  }, [activeTab.id, applyModelValue, setTabFeedback])
 
-  const handleValidate: OnValidate = useCallback(
-    (markers) => {
-      const lines = [...new Set(markers.filter((marker) => marker.severity === 8).map((marker) => marker.startLineNumber))]
-      setMarkerErrorLines(activeTab.id, lines)
+  const readMarkerState = useCallback(
+    (tabId: string) => {
+      const editorInstance = editorRef.current
+      const monaco = monacoRef.current
+      const model = editorInstance?.getModel()
+      if (!editorInstance || !monaco || !model) return
+
+      const errors = monaco.editor
+        .getModelMarkers({ resource: model.uri })
+        .filter((marker) => marker.severity === monaco.MarkerSeverity.Error)
+      const errorLines = [...new Set(errors.map((marker) => marker.startLineNumber))].sort((a, b) => a - b)
+      setMarkerErrorLines(tabId, errorLines)
+
+      if (errors.length > 0) {
+        const first = errors[0]!
+        setTabFeedback(tabId, {
+          message: `JSON 格式错误：第 ${first.startLineNumber} 行，第 ${first.startColumn} 列`,
+          isValid: false,
+          parseErrorLine: first.startLineNumber
+        })
+      } else if (!hasVisibleContent(model)) {
+        setTabFeedback(tabId, WAITING_FEEDBACK)
+      } else {
+        setTabFeedback(tabId, { message: 'JSON 有效', isValid: true, parseErrorLine: null })
+      }
     },
-    [activeTab.id, setMarkerErrorLines]
+    [setMarkerErrorLines, setTabFeedback]
   )
+
+  const handleValidate: OnValidate = useCallback(() => {
+    readMarkerState(activeTab.id)
+  }, [activeTab.id, readMarkerState])
 
   const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
@@ -203,14 +329,40 @@ function EditorApp(): JSX.Element {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === 'f') {
+      if (!(event.metaKey || event.ctrlKey) || event.altKey) return
+
+      if (!event.shiftKey && event.key.toLowerCase() === 't') {
         event.preventDefault()
-        transformJson(2)
+        addTab()
+        return
+      }
+
+      if (!event.shiftKey && event.key.toLowerCase() === 'b') {
+        event.preventDefault()
+        setIsSidebarCollapsed((current) => !current)
+        return
+      }
+
+      if (event.key === 'Tab') {
+        event.preventDefault()
+        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab.id)
+        const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % tabs.length
+        setActiveTabId(tabs[nextIndex]!.id)
+        return
+      }
+
+      const digitMatch = /^([1-9])$/.exec(event.key)
+      if (digitMatch) {
+        const target = tabs[Number(digitMatch[1]) - 1]
+        if (target) {
+          event.preventDefault()
+          setActiveTabId(target.id)
+        }
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [transformJson])
+  }, [activeTab.id, addTab, setActiveTabId, tabs])
 
   useEffect(() => {
     let isMounted = true
@@ -234,21 +386,17 @@ function EditorApp(): JSX.Element {
   }, [activeTab.id, settings.bracketPairColorization])
 
   useEffect(() => {
-    const editor = editorRef.current
-    const monaco = monacoRef.current
-    if (!editor || !monaco) return
-
-    const frame = requestAnimationFrame(() => {
-      const model = editor.getModel()
-      if (!model) return
-      const lines = monaco.editor
-        .getModelMarkers({ resource: model.uri })
-        .filter((marker) => marker.severity === monaco.MarkerSeverity.Error)
-        .map((marker) => marker.startLineNumber)
-      setMarkerErrorLines(activeTab.id, [...new Set(lines)])
-    })
+    const frame = requestAnimationFrame(() => readMarkerState(activeTab.id))
     return () => cancelAnimationFrame(frame)
-  }, [activeTab.id, setMarkerErrorLines])
+  }, [activeTab.id, readMarkerState])
+
+  useEffect(() => {
+    if (monacoLoadState !== 'ready') return
+    const model = getModel()
+    if (!model) return
+    const disposable = model.onDidChangeContent(() => readMarkerState(activeTab.id))
+    return () => disposable.dispose()
+  }, [activeTab.id, getModel, monacoLoadState, readMarkerState])
 
   useEffect(() => {
     const editor = editorRef.current
@@ -288,6 +436,8 @@ function EditorApp(): JSX.Element {
           <TabSidebar
             tabs={tabs}
             activeTabId={activeTab.id}
+            isCollapsed={isSidebarCollapsed}
+            onSetCollapsed={setIsSidebarCollapsed}
             onActivate={setActiveTabId}
             onAdd={addTab}
             onRename={renameTab}
@@ -315,8 +465,6 @@ function EditorApp(): JSX.Element {
                   path={getTabModelPath(activeTab.id)}
                   saveViewState
                   theme="vs"
-                  value={activeTab.value}
-                  onChange={(nextValue) => updateValue(nextValue ?? '')}
                   onMount={handleEditorMount}
                   onValidate={handleValidate}
                   loading={<MonacoLoadingState state="loading" onRetry={() => window.location.reload()} />}
@@ -327,25 +475,12 @@ function EditorApp(): JSX.Element {
               )}
             </div>
 
-            <footer className="flex h-8 shrink-0 items-center justify-between border-t border-[#e5e5e5] bg-[#f3f3f3] px-4 text-xs text-[#616161]">
-              <div className="flex min-w-0 items-center gap-2">
-                <span
-                  className={`flex h-1.5 w-1.5 shrink-0 rounded-full ${activeFeedback.isValid ? 'bg-[#16825d]' : 'bg-[#f14c4c]'}`}
-                />
-                <span className={`truncate ${activeFeedback.isValid ? 'text-[#616161]' : 'text-[#c72e0f]'}`}>
-                  {activeFeedback.message}
-                </span>
-              </div>
-              <div className="ml-4 flex shrink-0 items-center gap-4">
-                <span>UTF-8</span>
-                <span>空格: 2</span>
-                <span>{stats.lines} 行</span>
-                <span>{stats.chars} 字符</span>
-                <span className="flex items-center gap-1 text-[#616161]">
-                  <Check size={13} /> JSON
-                </span>
-              </div>
-            </footer>
+            <EditorStatusBar
+              modelKey={activeTab.id}
+              isReady={monacoLoadState === 'ready'}
+              getModel={getModel}
+              feedback={activeFeedback}
+            />
           </div>
         </section>
       </main>

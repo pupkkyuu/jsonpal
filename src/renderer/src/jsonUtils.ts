@@ -1,7 +1,6 @@
 export interface JsonTab {
   id: string
   title: string
-  value: string
 }
 
 export interface TabFeedback {
@@ -15,7 +14,9 @@ interface JsonErrorLocation {
   column: number
 }
 
-export const INITIAL_TAB: JsonTab = { id: 'json-tab-1', title: '未命名 1', value: '' }
+export const INITIAL_TAB: JsonTab = { id: 'json-tab-1', title: '未命名 1' }
+
+export const WAITING_FEEDBACK: TabFeedback = { message: '等待输入 JSON', isValid: true, parseErrorLine: null }
 
 export function getJsonErrorLocation(value: string, error: unknown): JsonErrorLocation | null {
   const message = error instanceof Error ? error.message : ''
@@ -32,24 +33,25 @@ export function getJsonErrorLocation(value: string, error: unknown): JsonErrorLo
   return { line, column: position - lastNewline }
 }
 
-export function getErrorMessage(value: string, error: unknown): string {
-  if (error instanceof Error && error.message === '内容不是 JSON 字符串') return error.message
+export function getParseErrorFeedback(value: string, error: unknown): TabFeedback {
+  if (error instanceof Error && error.message === '内容不是 JSON 字符串') {
+    return { message: error.message, isValid: false, parseErrorLine: 1 }
+  }
+
   const location = getJsonErrorLocation(value, error)
-  return location ? `JSON 格式错误：第 ${location.line} 行，第 ${location.column} 列` : 'JSON 格式错误'
+  return {
+    message: location ? `JSON 格式错误：第 ${location.line} 行，第 ${location.column} 列` : 'JSON 格式错误',
+    isValid: false,
+    parseErrorLine: location?.line ?? 1
+  }
 }
 
-export function getValidationFeedback(value: string): TabFeedback {
-  if (!value.trim()) return { message: '等待输入 JSON', isValid: true, parseErrorLine: null }
-
+export function isValidJson(value: string): boolean {
   try {
     JSON.parse(value)
-    return { message: 'JSON 有效', isValid: true, parseErrorLine: null }
-  } catch (error) {
-    return {
-      message: getErrorMessage(value, error),
-      isValid: false,
-      parseErrorLine: getJsonErrorLocation(value, error)?.line ?? 1
-    }
+    return true
+  } catch {
+    return false
   }
 }
 

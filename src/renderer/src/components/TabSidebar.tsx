@@ -15,10 +15,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { FileJson2, GripVertical, Pencil, Plus, Search, Settings, X } from 'lucide-react'
-import { memo, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
+import { GripVertical, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Search, Settings, X } from 'lucide-react'
+import { memo, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { JsonTab } from '@/jsonUtils'
 import { cn } from '@/lib/utils'
 
@@ -80,6 +79,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
       ref={setNodeRef}
       style={style}
       role="tab"
+      data-tab-id={tab.id}
       tabIndex={isActive ? 0 : -1}
       aria-selected={isActive}
       onClick={onActivate}
@@ -158,6 +158,8 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
 interface TabSidebarProps {
   tabs: JsonTab[]
   activeTabId: string
+  isCollapsed: boolean
+  onSetCollapsed: (collapsed: boolean) => void
   onActivate: (id: string) => void
   onAdd: () => void
   onRename: (id: string, title: string) => void
@@ -169,6 +171,8 @@ interface TabSidebarProps {
 export const TabSidebar = memo(function TabSidebar({
   tabs,
   activeTabId,
+  isCollapsed,
+  onSetCollapsed,
   onActivate,
   onAdd,
   onRename,
@@ -177,14 +181,60 @@ export const TabSidebar = memo(function TabSidebar({
   onOpenSettings
 }: TabSidebarProps): JSX.Element {
   const [searchQuery, setSearchQuery] = useState('')
+  const listRef = useRef<HTMLDivElement | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase()
-  const visibleTabs = normalizedQuery
-    ? tabs.filter((tab) => tab.title.toLocaleLowerCase().includes(normalizedQuery))
-    : tabs
+  const visibleTabs = useMemo(
+    () =>
+      normalizedQuery
+        ? tabs.filter((tab) => tab.title.toLocaleLowerCase().includes(normalizedQuery))
+        : tabs,
+    [normalizedQuery, tabs]
+  )
+
+  useEffect(() => {
+    if (isCollapsed) return
+    const list = listRef.current
+    const activeElement = list?.querySelector<HTMLElement>(`[data-tab-id="${activeTabId}"]`)
+    if (!list || !activeElement) return
+    const listRect = list.getBoundingClientRect()
+    const elementRect = activeElement.getBoundingClientRect()
+    if (elementRect.top < listRect.top || elementRect.bottom > listRect.bottom) {
+      activeElement.scrollIntoView({ block: 'nearest' })
+    }
+  }, [activeTabId, isCollapsed, visibleTabs])
+
+  if (isCollapsed) {
+    return (
+      <aside className="flex w-11 shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]" aria-label="JSON Tab 侧边栏（已收起）">
+        <div className="flex h-11 shrink-0 items-center justify-center border-b border-[#e5e5e5]">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-[#616161]"
+            onClick={() => onSetCollapsed(false)}
+            aria-label="展开侧边栏"
+          >
+            <PanelLeftOpen size={16} />
+          </Button>
+        </div>
+        <div className="mt-auto flex shrink-0 justify-center border-t border-[#e5e5e5] py-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-[#616161]"
+            onClick={onOpenSettings}
+            aria-label="编辑器设置"
+          >
+            <Settings size={16} />
+          </Button>
+        </div>
+      </aside>
+    )
+  }
 
   const handleDragEnd = ({ active, over }: DragEndEvent): void => {
     if (!over || active.id === over.id) return
@@ -205,19 +255,25 @@ export const TabSidebar = memo(function TabSidebar({
 
   return (
     <aside className="flex w-[220px] shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]" aria-label="JSON Tab 侧边栏">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[#e5e5e5] px-3">
-        <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-[#333333]">
-          <FileJson2 size={16} className="shrink-0 text-[#616161]" />
-          <span className="truncate">Tabs</span>
-        </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleAdd} aria-label="新建 Tab">
-              <Plus size={16} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>新建 Tab</TooltipContent>
-        </Tooltip>
+      <div className="flex h-11 shrink-0 items-center gap-1 border-b border-[#e5e5e5] px-2">
+        <Button
+          variant="outline"
+          className="min-w-0 flex-1 justify-center border-[#d4d4d4] text-[#333333]"
+          onClick={handleAdd}
+          aria-label="新建 Tab"
+        >
+          <Plus size={14} />
+          新建
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0 text-[#616161]"
+          onClick={() => onSetCollapsed(true)}
+          aria-label="收起侧边栏"
+        >
+          <PanelLeftClose size={16} />
+        </Button>
       </div>
 
       <div className="border-b border-[#e5e5e5] p-2">
@@ -246,7 +302,7 @@ export const TabSidebar = memo(function TabSidebar({
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={visibleTabs.map((tab) => tab.id)} strategy={verticalListSortingStrategy}>
-          <div className="sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-2" role="tablist" aria-orientation="vertical">
+          <div ref={listRef} className="sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-2" role="tablist" aria-orientation="vertical">
             {visibleTabs.map((tab) => (
               <SortableTab
                 key={tab.id}

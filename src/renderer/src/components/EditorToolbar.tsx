@@ -1,4 +1,4 @@
-import { Clipboard, Minimize2, Quote, RotateCcw, Sparkles, Trash2, WrapText } from 'lucide-react'
+import { Braces, Code, Copy, FileCode, Minimize2, Trash2, WrapText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -27,7 +27,7 @@ export function EditorToolbar({
     <nav className="flex h-11 shrink-0 items-center justify-end gap-1 border-b border-[#e5e5e5] bg-white px-3" aria-label="JSON actions">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onFormat} aria-label="格式化 JSON"><Sparkles size={16} /></Button>
+          <Button variant="ghost" size="icon" onClick={onFormat} aria-label="格式化 JSON"><Braces size={16} /></Button>
         </TooltipTrigger>
         <TooltipContent>格式化 JSON</TooltipContent>
       </Tooltip>
@@ -40,20 +40,20 @@ export function EditorToolbar({
       <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onEscape} aria-label="转义 JSON"><Quote size={16} /></Button>
+          <Button variant="ghost" size="icon" onClick={onEscape} aria-label="转义 JSON"><Code size={16} /></Button>
         </TooltipTrigger>
         <TooltipContent>转义 JSON</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onUnescape} aria-label="去除 JSON 转义"><RotateCcw size={16} /></Button>
+          <Button variant="ghost" size="icon" onClick={onUnescape} aria-label="去除 JSON 转义"><FileCode size={16} /></Button>
         </TooltipTrigger>
         <TooltipContent>去除 JSON 转义</TooltipContent>
       </Tooltip>
       <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onCopy} aria-label="复制 JSON"><Clipboard size={16} /></Button>
+          <Button variant="ghost" size="icon" onClick={onCopy} aria-label="复制 JSON"><Copy size={16} /></Button>
         </TooltipTrigger>
         <TooltipContent>复制 JSON</TooltipContent>
       </Tooltip>
