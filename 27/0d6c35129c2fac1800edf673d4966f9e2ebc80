@@ -1,0 +1,51 @@
+src/renderer/src/styles.css
+  h_73bfcc563f4feb 7-18,47-81,83,87
+src/main/index.ts
+  h_73bfcc563f4feb 3,71,73,100
+src/renderer/src/components/TabSidebar.tsx
+  h_73bfcc563f4feb 1-283
+README.md
+  h_73bfcc563f4feb 8-9
+src/preload/index.d.ts
+  h_73bfcc563f4feb 7
+package.json
+  h_73bfcc563f4feb 18-20
+src/preload/index.ts
+  h_73bfcc563f4feb 9
+src/renderer/src/editorSettings.ts
+  h_73bfcc563f4feb 1-39
+src/renderer/src/SettingsApp.tsx
+  h_73bfcc563f4feb 1-17,21-27,29,41-43,58,80,102,124,127,139,142,149-206,208,232-234,241-243,245-272
+package-lock.json
+  h_73bfcc563f4feb 12-14,370-422,8160-8165
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 1,13,16,25-26,29-32,37,47,65-87,89-94,96,99-108,119-132,136-138,140,146,149,151,153,156-157,160-161,163,165,173-174,176,182,185,190-194,196,198-247,262,268,288,302,309-333,335-342,344,348-370,373-374,377,379-387,390-391,394,396-500
+  s_8fa48b65356e9f::t_dda170df44d753 388-389,392-393,395
+src/renderer/src/components/ui/tooltip.tsx
+  h_73bfcc563f4feb 17
+src/renderer/src/components/ui/switch.tsx
+  h_73bfcc563f4feb 17-18
+src/renderer/src/components/ui/button.tsx
+  h_73bfcc563f4feb 15-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "270d6c35129c2fac1800edf673d4966f9e2ebc80",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  },
+  "sessions": {
+    "s_8fa48b65356e9f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc91071e9ffeAlboUTyTy06RCt",
+        "model": "glm-5"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
