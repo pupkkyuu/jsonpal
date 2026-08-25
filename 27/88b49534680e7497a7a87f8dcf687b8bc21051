@@ -1,0 +1,30 @@
+README.md
+  h_73bfcc563f4feb 17-18
+package-lock.json
+  h_73bfcc563f4feb 33
+package.json
+  h_73bfcc563f4feb 39
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 2,4-5,7,9-11,18-19,21,23-25,28-44,47-52,57,63-80,82-96,107-110,115,121,147,163,176,178,248,251,296,299-308,311-327
+src/renderer/src/components/EditorToolbar.tsx
+  h_73bfcc563f4feb 1-82
+src/renderer/src/components/TabSidebar.tsx
+  h_73bfcc563f4feb 19,22,25,35,156,169,280
+src/renderer/src/hooks/useJsonTabs.ts
+  h_73bfcc563f4feb 1-156
+src/renderer/src/jsonUtils.ts
+  h_73bfcc563f4feb 1-62
+src/renderer/src/monacoOptions.ts
+  h_73bfcc563f4feb 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2788b49534680e7497a7a87f8dcf687b8bc21051",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
