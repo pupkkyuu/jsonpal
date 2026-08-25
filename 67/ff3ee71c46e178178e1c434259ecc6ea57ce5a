@@ -1,0 +1,25 @@
+src/renderer/src/EditorApp.tsx
+  s_f2f77dd059b9e9::t_1f70ad44ac9e11 62,66-69,71-74,76-77,80-110,112-113,115,117-118,121,130,134
+  s_f2f77dd059b9e9::t_9264981895526f 328,335
+  s_f2f77dd059b9e9::t_9de2437547eca7 412,414
+  s_f2f77dd059b9e9::t_cf36ea7c1d661b 422
+  s_f2f77dd059b9e9::t_c51923c4125582 488
+  s_f2f77dd059b9e9::t_bd2902d907ae4f 1
+  s_f2f77dd059b9e9::t_3e564902b3985b 147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "67ff3ee71c46e178178e1c434259ecc6ea57ce5a",
+  "prompts": {},
+  "sessions": {
+    "s_f2f77dd059b9e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc674a49cffe3u24f4uiz37XR8",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
