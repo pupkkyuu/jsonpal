@@ -1,0 +1,34 @@
+src/renderer/src/editorSettings.ts
+  h_73bfcc563f4feb 1-39
+src/renderer/src/components/ui/tooltip.tsx
+  h_73bfcc563f4feb 17
+src/renderer/src/components/ui/switch.tsx
+  h_73bfcc563f4feb 17-18
+src/preload/index.ts
+  h_73bfcc563f4feb 9
+src/preload/index.d.ts
+  h_73bfcc563f4feb 7
+src/renderer/src/components/ui/button.tsx
+  h_73bfcc563f4feb 15-18
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 16,340,348,350,352,368,387,404,418,482,485,487,496
+src/main/index.ts
+  h_73bfcc563f4feb 3,71,73,100
+src/renderer/src/SettingsApp.tsx
+  h_73bfcc563f4feb 1-17,21-27,29,41-43,58,80,102,124,127,139,142,149-206,208,232-234,241-243,245-272
+src/renderer/src/components/TabSidebar.tsx
+  h_73bfcc563f4feb 91-92,98,124,143,153,210-213,226-228,235,242,252,264,270,273
+src/renderer/src/styles.css
+  h_73bfcc563f4feb 7-18,47-81,83,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6853ca32a7fc3512a2421bd94562a2075c51314d",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
