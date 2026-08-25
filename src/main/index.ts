@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { dirname, join } from 'path'
 
 let mainWindow: BrowserWindow | null = null
 let settingsWindow: BrowserWindow | null = null
@@ -68,9 +68,9 @@ function createSettingsWindow(): void {
   }
 
   settingsWindow = new BrowserWindow({
-    width: 560,
+    width: 760,
     height: 720,
-    minWidth: 460,
+    minWidth: 680,
     minHeight: 560,
     parent: mainWindow ?? undefined,
     show: false,
@@ -97,6 +97,7 @@ app.whenReady().then(() => {
   ipcMain.handle('settings:open', () => createSettingsWindow())
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
+  ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))
   ipcMain.handle('settings:apply', (_event, settings: unknown) => {
     const savedSettings = saveSettings(settings)
     mainWindow?.webContents.send('settings:updated', savedSettings)

@@ -1,48 +1,34 @@
-import { AlignJustify, Braces, ClipboardPaste, Eye, ListOrdered, PanelRight, Rows3, Save, ShieldCheck, Type } from 'lucide-react'
+import {
+  AlignJustify,
+  Braces,
+  ClipboardPaste,
+  Eye,
+  FileCog,
+  FolderOpen,
+  Info,
+  ListOrdered,
+  PanelRight,
+  Rows3,
+  Save,
+  Settings2,
+  ShieldCheck,
+  SlidersHorizontal,
+  Type
+} from 'lucide-react'
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import {
+  DEFAULT_EDITOR_SETTINGS,
+  mergeEditorSettings,
+  type EditorSettings,
+  type LineNumberMode,
+  type WhitespaceMode
+} from '@/editorSettings'
 
-type WhitespaceMode = 'none' | 'boundary' | 'all'
-type LineNumberMode = 'on' | 'relative'
-
-interface EditorSettings {
-  minimap: boolean
-  minimapCharacters: boolean
-  stickyScroll: boolean
-  folding: boolean
-  renderWhitespace: WhitespaceMode
-  bracketPairColorization: boolean
-  bracketGuides: boolean
-  wordWrap: boolean
-  lineNumbers: LineNumberMode
-  formatOnPaste: boolean
-  unicodeHighlight: boolean
-  fontSize: number
-  scrollbarSize: number
-}
+type SettingsCategory = 'general' | 'editor'
 
 const IS_MACOS = window.api.platform === 'darwin'
-
-const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
-  minimap: true,
-  minimapCharacters: false,
-  stickyScroll: true,
-  folding: true,
-  renderWhitespace: 'boundary',
-  bracketPairColorization: false,
-  bracketGuides: true,
-  wordWrap: false,
-  lineNumbers: 'on',
-  formatOnPaste: false,
-  unicodeHighlight: true,
-  fontSize: 14,
-  scrollbarSize: 12
-}
-
-function mergeEditorSettings(settings: Record<string, unknown>): EditorSettings {
-  return { ...DEFAULT_EDITOR_SETTINGS, ...settings } as EditorSettings
-}
 
 interface SettingRowProps {
   icon: typeof Eye
@@ -52,9 +38,9 @@ interface SettingRowProps {
 
 function SettingRow({ icon: Icon, label, children }: SettingRowProps): JSX.Element {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-6 border-b border-zinc-200 py-3 last:border-b-0">
-      <div className="flex items-center gap-3 text-sm font-medium text-zinc-800">
-        <Icon size={16} className="text-zinc-500" />
+    <div className="flex min-h-14 items-center justify-between gap-6 border-b border-[#e5e5e5] py-3 last:border-b-0">
+      <div className="flex items-center gap-3 text-sm font-medium text-[#333333]">
+        <Icon size={16} className="text-[#616161]" />
         <span>{label}</span>
       </div>
       {children}
@@ -69,7 +55,7 @@ interface SettingsFormProps {
 
 function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Element {
   return (
-    <div className="border-b border-zinc-200">
+    <div className="border-y border-[#e5e5e5]">
       <SettingRow icon={PanelRight} label="缩略预览">
         <Switch checked={settings.minimap} onCheckedChange={(minimap) => updateSettings({ minimap })} aria-label="缩略预览" />
       </SettingRow>
@@ -91,7 +77,7 @@ function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Elem
         <select
           value={settings.renderWhitespace}
           onChange={(event) => updateSettings({ renderWhitespace: event.target.value as WhitespaceMode })}
-          className="h-8 rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-700 outline-none focus:ring-2 focus:ring-sky-500"
+          className="h-8 rounded-sm border border-[#c8c8c8] bg-white px-2 text-sm text-[#333333] outline-none focus:border-[#0078d4] focus:ring-1 focus:ring-[#0078d4]/30"
           aria-label="空白字符显示方式"
         >
           <option value="none">不显示</option>
@@ -113,7 +99,7 @@ function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Elem
         <select
           value={settings.lineNumbers}
           onChange={(event) => updateSettings({ lineNumbers: event.target.value as LineNumberMode })}
-          className="h-8 rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-700 outline-none focus:ring-2 focus:ring-sky-500"
+          className="h-8 rounded-sm border border-[#c8c8c8] bg-white px-2 text-sm text-[#333333] outline-none focus:border-[#0078d4] focus:ring-1 focus:ring-[#0078d4]/30"
           aria-label="行号显示方式"
         >
           <option value="on">绝对行号</option>
@@ -135,10 +121,10 @@ function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Elem
             step="1"
             value={settings.fontSize}
             onChange={(event) => updateSettings({ fontSize: Number(event.target.value) })}
-            className="w-28 accent-sky-600"
+            className="w-28 accent-[#0078d4]"
             aria-label="字体大小"
           />
-          <output className="w-9 text-right text-sm tabular-nums text-zinc-600">{settings.fontSize}px</output>
+          <output className="w-9 text-right text-sm tabular-nums text-[#616161]">{settings.fontSize}px</output>
         </div>
       </SettingRow>
       <SettingRow icon={Rows3} label="滚动条宽度">
@@ -150,17 +136,76 @@ function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Elem
             step="1"
             value={settings.scrollbarSize}
             onChange={(event) => updateSettings({ scrollbarSize: Number(event.target.value) })}
-            className="w-28 accent-sky-600"
+            className="w-28 accent-[#0078d4]"
             aria-label="滚动条宽度"
           />
-          <output className="w-5 text-right text-sm tabular-nums text-zinc-600">{settings.scrollbarSize}</output>
+          <output className="w-5 text-right text-sm tabular-nums text-[#616161]">{settings.scrollbarSize}</output>
         </div>
       </SettingRow>
     </div>
   )
 }
 
+interface CategoryButtonProps {
+  active: boolean
+  icon: typeof Settings2
+  label: string
+  onClick: () => void
+}
+
+function CategoryButton({ active, icon: Icon, label, onClick }: CategoryButtonProps): JSX.Element {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? 'page' : undefined}
+      className={`flex h-9 w-full items-center gap-2 rounded-sm px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] ${
+        active ? 'bg-[#e7e7e7] font-medium text-[#333333]' : 'text-[#616161] hover:bg-[#e8e8e8] hover:text-[#333333]'
+      }`}
+    >
+      <Icon size={16} />
+      <span>{label}</span>
+    </button>
+  )
+}
+
+function GeneralSettings({ configPath, onOpenFolder }: { configPath: string; onOpenFolder: () => void }): JSX.Element {
+  return (
+    <div className="max-w-3xl">
+      <div className="mb-6 flex items-start gap-3">
+        <Info size={18} className="mt-0.5 text-[#616161]" />
+        <div>
+          <h2 className="text-base font-semibold text-[#333333]">通用</h2>
+          <p className="mt-1 text-sm text-[#616161]">管理 JSONPal 的本地配置文件。</p>
+        </div>
+      </div>
+
+      <div className="border-y border-[#e5e5e5]">
+        <div className="flex min-h-16 items-center justify-between gap-5 py-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <FileCog size={17} className="shrink-0 text-[#616161]" />
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-[#333333]">配置文件</div>
+              <code className="mt-1 block break-all text-xs text-[#616161]">{configPath || '正在读取...'}</code>
+            </div>
+          </div>
+          <Button variant="outline" className="shrink-0" onClick={onOpenFolder} disabled={!configPath}>
+            <FolderOpen size={16} />
+            打开文件夹
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-6 flex gap-3 border-l-2 border-[#0078d4] bg-[#f3f8fc] px-4 py-3 text-sm text-[#616161]">
+        <SlidersHorizontal size={17} className="mt-0.5 shrink-0 text-[#0078d4]" />
+        <p>编辑器设置会保存到上述配置文件，并在 JSONPal 启动时作为 Monaco 编辑器的默认配置加载。</p>
+      </div>
+    </div>
+  )
+}
+
 function SettingsApp(): JSX.Element {
+  const [category, setCategory] = useState<SettingsCategory>('general')
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
   const [configPath, setConfigPath] = useState('')
   const [isApplying, setIsApplying] = useState(false)
@@ -184,28 +229,47 @@ function SettingsApp(): JSX.Element {
     void window.api.settings.load().then((savedSettings) => {
       if (isMounted) setSettings(mergeEditorSettings(savedSettings))
     })
+    void window.api.settings.path().then((path) => {
+      if (isMounted) setConfigPath(path)
+    })
     return () => {
       isMounted = false
     }
   }, [])
 
-  useEffect(() => {
-    void window.api.settings.path().then(setConfigPath)
-  }, [])
-
   return (
-    <main className="flex h-screen min-h-[560px] flex-col overflow-hidden bg-white text-zinc-900">
-      <header className={`flex h-10 shrink-0 items-center border-b border-zinc-200 pr-5 app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-5'}`}>
-        <h1 className="text-sm font-medium">编辑器设置</h1>
+    <main className="flex h-screen min-h-[560px] flex-col overflow-hidden bg-white text-[#333333]">
+      <header className={`flex h-10 shrink-0 items-center border-b border-[#e5e5e5] pr-5 app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-5'}`}>
+        <h1 className="text-sm font-medium">设置</h1>
       </header>
-      <section className="min-h-0 flex-1 overflow-y-auto px-5" aria-label="编辑器设置">
-        <SettingsForm settings={settings} updateSettings={updateSettings} />
-      </section>
-      <footer className="flex min-h-16 shrink-0 items-center justify-between gap-4 border-t border-zinc-200 px-5 py-3 app-no-drag">
-        <div className="min-w-0 text-xs text-zinc-500">
-          <span className="mr-2 whitespace-nowrap text-zinc-700">配置文件</span>
-          <code className="break-all text-zinc-500">{configPath || '正在读取...'}</code>
-        </div>
+
+      <div className="flex min-h-0 flex-1">
+        <nav className="w-44 shrink-0 border-r border-[#e5e5e5] bg-[#f3f3f3] p-3" aria-label="设置分类">
+          <div className="space-y-1">
+            <CategoryButton active={category === 'general'} icon={Settings2} label="通用" onClick={() => setCategory('general')} />
+            <CategoryButton active={category === 'editor'} icon={SlidersHorizontal} label="编辑器" onClick={() => setCategory('editor')} />
+          </div>
+        </nav>
+
+        <section className="min-w-0 flex-1 overflow-y-auto px-7 py-6" aria-label={`${category === 'general' ? '通用' : '编辑器'}设置`}>
+          {category === 'general' ? (
+            <GeneralSettings configPath={configPath} onOpenFolder={() => void window.api.settings.openFolder()} />
+          ) : (
+            <div className="max-w-3xl">
+              <div className="mb-6 flex items-start gap-3">
+                <SlidersHorizontal size={18} className="mt-0.5 text-[#616161]" />
+                <div>
+                  <h2 className="text-base font-semibold text-[#333333]">编辑器</h2>
+                  <p className="mt-1 text-sm text-[#616161]">配置当前 Monaco JSON 编辑器的显示和行为。</p>
+                </div>
+              </div>
+              <SettingsForm settings={settings} updateSettings={updateSettings} />
+            </div>
+          )}
+        </section>
+      </div>
+
+      <footer className="flex min-h-16 shrink-0 items-center justify-end gap-4 border-t border-[#e5e5e5] px-5 py-3 app-no-drag">
         <Button className="shrink-0" onClick={applySettings} disabled={isApplying}>
           <Save size={16} />
           {isApplying ? '正在应用' : '应用设置'}
