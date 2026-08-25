@@ -1,0 +1,27 @@
+src/renderer/index.html
+  s_2d9a4bf747c671::t_d0dfb20ae232e6 7
+README.md
+  s_2d9a4bf747c671::t_d0dfb20ae232e6 1,73-75
+package.json
+  s_2d9a4bf747c671::t_d0dfb20ae232e6 2
+src/main/index.ts
+  s_2d9a4bf747c671::t_d0dfb20ae232e6 43,96
+src/renderer/src/EditorApp.tsx
+  s_2d9a4bf747c671::t_d0dfb20ae232e6 18,249,255,323
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2271ca0048b4299a2cf58a2d91ce25067e3e576e",
+  "prompts": {},
+  "sessions": {
+    "s_2d9a4bf747c671": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03251-57b7-7fc0-8f64-fcbf24af9ed9",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
