@@ -1,4 +1,4 @@
-import { Braces, Code, Copy, FileCode, Minimize2, Trash2, WrapText } from 'lucide-react'
+import { Braces, Code, Copy, FileCode, Minimize2, Trash2, WrapText, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -13,6 +13,10 @@ interface EditorToolbarProps {
   onClear: () => void
 }
 
+type ToolbarItem =
+  | { kind: 'divider' }
+  | { kind: 'action'; icon: LucideIcon; label: string; onClick: () => void; active?: boolean }
+
 export function EditorToolbar({
   wordWrap,
   onFormat,
@@ -23,60 +27,40 @@ export function EditorToolbar({
   onToggleWordWrap,
   onClear
 }: EditorToolbarProps): JSX.Element {
+  const items: ToolbarItem[] = [
+    { kind: 'action', icon: Braces, label: '格式化 JSON', onClick: onFormat },
+    { kind: 'action', icon: Minimize2, label: '压缩 JSON', onClick: onCompress },
+    { kind: 'divider' },
+    { kind: 'action', icon: Code, label: '转义 JSON', onClick: onEscape },
+    { kind: 'action', icon: FileCode, label: '去除 JSON 转义', onClick: onUnescape },
+    { kind: 'divider' },
+    { kind: 'action', icon: Copy, label: '复制 JSON', onClick: onCopy },
+    { kind: 'action', icon: WrapText, label: '自动换行', onClick: onToggleWordWrap, active: wordWrap },
+    { kind: 'action', icon: Trash2, label: '清空', onClick: onClear }
+  ]
+
   return (
     <nav className="flex h-11 shrink-0 items-center justify-end gap-1 border-b border-[#e5e5e5] bg-white px-3" aria-label="JSON actions">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onFormat} aria-label="格式化 JSON"><Braces size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>格式化 JSON</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onCompress} aria-label="压缩 JSON"><Minimize2 size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>压缩 JSON</TooltipContent>
-      </Tooltip>
-      <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onEscape} aria-label="转义 JSON"><Code size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>转义 JSON</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onUnescape} aria-label="去除 JSON 转义"><FileCode size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>去除 JSON 转义</TooltipContent>
-      </Tooltip>
-      <span className="mx-2 h-5 w-px bg-[#e5e5e5]" />
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onCopy} aria-label="复制 JSON"><Copy size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>复制 JSON</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={wordWrap ? 'bg-[#e7e7e7] text-[#333333]' : undefined}
-            onClick={onToggleWordWrap}
-            aria-label="切换自动换行"
-          >
-            <WrapText size={16} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>自动换行</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={onClear} aria-label="清空编辑器"><Trash2 size={16} /></Button>
-        </TooltipTrigger>
-        <TooltipContent>清空</TooltipContent>
-      </Tooltip>
+      {items.map((item, index) =>
+        item.kind === 'divider' ? (
+          <span key={index} className="mx-2 h-5 w-px bg-[#e5e5e5]" />
+        ) : (
+          <Tooltip key={item.label}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={item.active ? 'bg-[#e7e7e7] text-[#333333]' : undefined}
+                onClick={item.onClick}
+                aria-label={item.label}
+              >
+                <item.icon size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{item.label}</TooltipContent>
+          </Tooltip>
+        )
+      )}
     </nav>
   )
 }

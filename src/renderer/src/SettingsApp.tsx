@@ -26,6 +26,7 @@ import {
   type LineNumberMode,
   type WhitespaceMode
 } from '@/editorSettings'
+import { IS_MACOS } from '@/lib/utils'
 
 type SettingsCategory = 'general' | 'editor' | 'shortcuts'
 
@@ -34,8 +35,6 @@ const CATEGORY_LABELS: Record<SettingsCategory, string> = {
   editor: '编辑器',
   shortcuts: '快捷键'
 }
-
-const IS_MACOS = window.api.platform === 'darwin'
 
 interface SettingRowProps {
   icon: typeof Eye

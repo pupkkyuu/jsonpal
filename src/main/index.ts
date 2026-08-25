@@ -1,28 +1,42 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
-import { readFileSync, writeFileSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
 
 let mainWindow: BrowserWindow | null = null
 let settingsWindow: BrowserWindow | null = null
 
+const WEB_PREFERENCES = {
+  preload: join(__dirname, '../preload/index.js'),
+  contextIsolation: true,
+  nodeIntegration: false,
+  sandbox: true
+} as const
+
 function getSettingsPath(): string {
   return join(app.getPath('userData'), 'editor-settings.json')
 }
 
-function loadSettings(): Record<string, unknown> {
+async function loadSettings(): Promise<Record<string, unknown>> {
   try {
-    const settings = JSON.parse(readFileSync(getSettingsPath(), 'utf8'))
+    const settings = JSON.parse(await readFile(getSettingsPath(), 'utf8'))
     return typeof settings === 'object' && settings !== null ? settings : {}
   } catch {
     return {}
   }
 }
 
-function saveSettings(settings: unknown): Record<string, unknown> {
+async function saveSettings(settings: unknown): Promise<Record<string, unknown>> {
   if (typeof settings !== 'object' || settings === null || Array.isArray(settings)) return loadSettings()
 
-  writeFileSync(getSettingsPath(), JSON.stringify(settings), 'utf8')
+  await writeFile(getSettingsPath(), JSON.stringify(settings), 'utf8')
   return settings as Record<string, unknown>
+}
+
+function attachWindowOpenGuard(window: BrowserWindow): void {
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//i.test(url)) shell.openExternal(url)
+    return { action: 'deny' }
+  })
 }
 
 function loadRendererWindow(window: BrowserWindow, isSettingsWindow = false): void {
@@ -45,19 +59,10 @@ function createWindow(): void {
     autoHideMenuBar: false,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#fafafa',
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: false
-    }
+    webPreferences: WEB_PREFERENCES
   })
 
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
-    return { action: 'deny' }
-  })
-
+  attachWindowOpenGuard(mainWindow)
   loadRendererWindow(mainWindow)
 }
 
@@ -77,14 +82,10 @@ function createSettingsWindow(): void {
     autoHideMenuBar: false,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#fafafa',
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: false
-    }
+    webPreferences: { ...WEB_PREFERENCES }
   })
 
+  attachWindowOpenGuard(settingsWindow)
   settingsWindow.once('ready-to-show', () => settingsWindow?.show())
   settingsWindow.on('closed', () => {
     settingsWindow = null
@@ -98,11 +99,10 @@ app.whenReady().then(() => {
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))
-  ipcMain.handle('settings:apply', (_event, settings: unknown) => {
-    const savedSettings = saveSettings(settings)
+  ipcMain.handle('settings:apply', (_event, settings: unknown) => saveSettings(settings).then((savedSettings) => {
     mainWindow?.webContents.send('settings:updated', savedSettings)
     return savedSettings
-  })
+  }))
   createWindow()
 
   app.on('activate', () => {

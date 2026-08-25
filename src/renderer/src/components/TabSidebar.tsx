@@ -24,9 +24,9 @@ import { cn } from '@/lib/utils'
 interface SortableTabProps {
   tab: JsonTab
   isActive: boolean
-  onActivate: () => void
-  onRename: (title: string) => void
-  onClose: () => void
+  onActivate: (tabId: string) => void
+  onRename: (tabId: string, title: string) => void
+  onClose: (tabId: string) => void
 }
 
 const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose }: SortableTabProps): JSX.Element {
@@ -49,7 +49,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
 
   const commitRename = (): void => {
     const nextTitle = draftTitle.trim()
-    if (nextTitle) onRename(nextTitle)
+    if (nextTitle) onRename(tab.id, nextTitle)
     else setDraftTitle(tab.title)
     setIsEditing(false)
   }
@@ -58,13 +58,13 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
     if (isEditing || event.target !== event.currentTarget) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      onActivate()
+      onActivate(tab.id)
     }
   }
 
   const handleClose = (event: MouseEvent<HTMLButtonElement>): void => {
     event.stopPropagation()
-    onClose()
+    onClose(tab.id)
   }
 
   const handleEdit = (event: MouseEvent<HTMLButtonElement>): void => {
@@ -80,7 +80,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
       data-tab-id={tab.id}
       tabIndex={isActive ? 0 : -1}
       aria-selected={isActive}
-      onClick={onActivate}
+      onClick={() => onActivate(tab.id)}
       onKeyDown={handleItemKeyDown}
       className={cn(
         'group flex h-9 w-full items-center gap-1 rounded-sm border border-transparent px-1 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0078d4]',
@@ -306,9 +306,9 @@ export const TabSidebar = memo(function TabSidebar({
                 key={tab.id}
                 tab={tab}
                 isActive={tab.id === activeTabId}
-                onActivate={() => onActivate(tab.id)}
-                onRename={(title) => onRename(tab.id, title)}
-                onClose={() => onClose(tab.id)}
+                onActivate={onActivate}
+                onRename={onRename}
+                onClose={onClose}
               />
             ))}
             {visibleTabs.length === 0 && (

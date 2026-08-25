@@ -9,6 +9,13 @@ export interface TabFeedback {
   parseErrorLine: number | null
 }
 
+export class NotJsonStringError extends Error {
+  constructor() {
+    super('内容不是 JSON 字符串')
+    this.name = 'NotJsonStringError'
+  }
+}
+
 interface JsonErrorLocation {
   line: number
   column: number
@@ -34,7 +41,7 @@ function getJsonErrorLocation(value: string, error: unknown): JsonErrorLocation 
 }
 
 export function getParseErrorFeedback(value: string, error: unknown): TabFeedback {
-  if (error instanceof Error && error.message === '内容不是 JSON 字符串') {
+  if (error instanceof NotJsonStringError) {
     return { message: error.message, isValid: false, parseErrorLine: 1 }
   }
 
@@ -52,6 +59,17 @@ export function isValidJson(value: string): boolean {
     return true
   } catch {
     return false
+  }
+}
+
+export function unescapeJsonText(value: string): string {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (typeof parsed !== 'string') throw new NotJsonStringError()
+    return parsed
+  } catch (error) {
+    if (error instanceof NotJsonStringError) throw error
+    return JSON.parse(`"${value}"`) as string
   }
 }
 

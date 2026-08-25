@@ -8,22 +8,17 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { DEFAULT_EDITOR_SETTINGS, mergeEditorSettings, type EditorSettings } from '@/editorSettings'
 import { useJsonTabs } from '@/hooks/useJsonTabs'
-import { getParseErrorFeedback, getTabModelPath, isValidJson, WAITING_FEEDBACK, type TabFeedback } from '@/jsonUtils'
+import { getParseErrorFeedback, getTabModelPath, isValidJson, unescapeJsonText, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
 import { getMonacoOptions } from '@/monacoOptions'
+import { IS_MACOS } from '@/lib/utils'
 
 type EditorInstance = Parameters<OnMount>[0]
 type MonacoInstance = Parameters<OnMount>[1]
 
-const IS_MACOS = window.api.platform === 'darwin'
-
-const STATS_DEBOUNCE_MS = 200
+const CONTENT_DEBOUNCE_MS = 200
 
 function hasVisibleContent(model: editor.ITextModel): boolean {
-  const lineCount = model.getLineCount()
-  for (let lineNumber = 1; lineNumber <= lineCount; lineNumber++) {
-    if (/\S/.test(model.getLineContent(lineNumber))) return true
-  }
-  return false
+  return /\S/.test(model.getValue())
 }
 
 // Load Monaco on demand from a pinned CDN version instead of bundling all editor assets.
@@ -84,7 +79,7 @@ function EditorStatusBar({ modelKey, isReady, getModel, feedback }: EditorStatus
     let timer: ReturnType<typeof setTimeout> | undefined
     const disposable = model.onDidChangeContent(() => {
       clearTimeout(timer)
-      timer = setTimeout(sync, STATS_DEBOUNCE_MS)
+      timer = setTimeout(sync, CONTENT_DEBOUNCE_MS)
     })
     return () => {
       disposable.dispose()
@@ -117,11 +112,12 @@ function EditorApp(): JSX.Element {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
-  const errorDecorationIdsRef = useRef<Record<string, string[]>>({})
+  const errorDecorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null)
   const transformJsonRef = useRef<(spacing: number) => void>(() => undefined)
+  const toggleSequenceRef = useRef(0)
+  const navigationRef = useRef({ tabs: [] as JsonTab[], activeTabId: '' })
 
   const handleTabClosed = useCallback((tabId: string) => {
-    delete errorDecorationIdsRef.current[tabId]
     const monaco = monacoRef.current
     const model = monaco ? monaco.editor.getModel(monaco.Uri.parse(getTabModelPath(tabId))) : null
     model?.dispose()
@@ -158,10 +154,16 @@ function EditorApp(): JSX.Element {
     }
   }, [])
 
+  useEffect(() => {
+    navigationRef.current = { tabs, activeTabId: activeTab.id }
+  }, [tabs, activeTab.id])
+
   const toggleWordWrap = useCallback(() => {
     const nextSettings = { ...settings, wordWrap: !settings.wordWrap }
     setSettings(nextSettings)
+    const sequence = ++toggleSequenceRef.current
     void window.api.settings.apply(nextSettings).then((savedSettings) => {
+      if (toggleSequenceRef.current !== sequence) return
       setSettings(mergeEditorSettings(savedSettings))
     })
   }, [settings])
@@ -189,30 +191,35 @@ function EditorApp(): JSX.Element {
     model.pushEditOperations([], [{ range: model.getFullModelRange(), text }], () => null)
   }, [])
 
-  const transformJson = useCallback(
-    (spacing: number) => {
-      const model = editorRef.current?.getModel()
-      if (!model) return
-      const value = model.getValue()
+  const withEditorValue = useCallback(
+    (handler: (value: string, apply: (text: string) => void) => void): void => {
+      const value = editorRef.current?.getModel()?.getValue() ?? ''
       if (!value.trim()) {
         setTabFeedback(activeTab.id, WAITING_FEEDBACK)
-        editorRef.current?.focus()
-        return
-      }
-      try {
-        const transformed = JSON.stringify(JSON.parse(value), null, spacing)
-        applyModelValue(transformed)
-        setTabFeedback(activeTab.id, {
-          message: spacing === 0 ? '已压缩 JSON' : '已格式化 JSON',
-          isValid: true,
-          parseErrorLine: null
-        })
-      } catch (error) {
-        setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
+      } else {
+        handler(value, applyModelValue)
       }
       editorRef.current?.focus()
     },
     [activeTab.id, applyModelValue, setTabFeedback]
+  )
+
+  const transformJson = useCallback(
+    (spacing: number) => {
+      withEditorValue((value, apply) => {
+        try {
+          apply(JSON.stringify(JSON.parse(value), null, spacing))
+          setTabFeedback(activeTab.id, {
+            message: spacing === 0 ? '已压缩 JSON' : '已格式化 JSON',
+            isValid: true,
+            parseErrorLine: null
+          })
+        } catch (error) {
+          setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
+        }
+      })
+    },
+    [activeTab.id, setTabFeedback, withEditorValue]
   )
 
   useEffect(() => {
@@ -235,50 +242,28 @@ function EditorApp(): JSX.Element {
   }, [applyModelValue])
 
   const escapeJson = useCallback(() => {
-    const model = editorRef.current?.getModel()
-    if (!model) return
-    const value = model.getValue()
-    if (!value.trim()) {
-      setTabFeedback(activeTab.id, WAITING_FEEDBACK)
-      editorRef.current?.focus()
-      return
-    }
-    applyModelValue(JSON.stringify(value))
-    setTabFeedback(activeTab.id, { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
-    editorRef.current?.focus()
-  }, [activeTab.id, applyModelValue, setTabFeedback])
+    withEditorValue((value, apply) => {
+      apply(JSON.stringify(value))
+      setTabFeedback(activeTab.id, { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
+    })
+  }, [activeTab.id, setTabFeedback, withEditorValue])
 
   const unescapeJson = useCallback(() => {
-    const model = editorRef.current?.getModel()
-    if (!model) return
-    const raw = model.getValue()
-    if (!raw.trim()) {
-      setTabFeedback(activeTab.id, WAITING_FEEDBACK)
-      editorRef.current?.focus()
-      return
-    }
-    try {
-      let unescaped: unknown
+    withEditorValue((value, apply) => {
       try {
-        unescaped = JSON.parse(raw)
-      } catch {
-        // Accept common escaped JSON text that omits the outer string quotes.
-        unescaped = JSON.parse(`"${raw}"`)
+        const unescaped = unescapeJsonText(value)
+        const resultIsValid = isValidJson(unescaped)
+        apply(unescaped)
+        setTabFeedback(activeTab.id, {
+          message: resultIsValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON',
+          isValid: resultIsValid,
+          parseErrorLine: null
+        })
+      } catch (error) {
+        setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
       }
-      if (typeof unescaped !== 'string') throw new Error('内容不是 JSON 字符串')
-
-      const resultIsValid = isValidJson(unescaped)
-      applyModelValue(unescaped)
-      setTabFeedback(activeTab.id, {
-        message: resultIsValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON',
-        isValid: resultIsValid,
-        parseErrorLine: null
-      })
-    } catch (error) {
-      setTabFeedback(activeTab.id, getParseErrorFeedback(raw, error))
-    }
-    editorRef.current?.focus()
-  }, [activeTab.id, applyModelValue, setTabFeedback])
+    })
+  }, [activeTab.id, setTabFeedback, withEditorValue])
 
   const readMarkerState = useCallback(
     (tabId: string) => {
@@ -335,6 +320,8 @@ function EditorApp(): JSX.Element {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (!(event.metaKey || event.ctrlKey) || event.altKey) return
 
+      const { tabs: currentTabs, activeTabId: currentActiveId } = navigationRef.current
+
       if (!event.shiftKey && event.key.toLowerCase() === 't') {
         event.preventDefault()
         addTab()
@@ -349,15 +336,15 @@ function EditorApp(): JSX.Element {
 
       if (event.key === 'Tab') {
         event.preventDefault()
-        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab.id)
-        const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % tabs.length
-        setActiveTabId(tabs[nextIndex]!.id)
+        const currentIndex = currentTabs.findIndex((tab) => tab.id === currentActiveId)
+        const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % currentTabs.length
+        setActiveTabId(currentTabs[nextIndex]!.id)
         return
       }
 
       const digitMatch = /^([1-9])$/.exec(event.key)
       if (digitMatch) {
-        const target = tabs[Number(digitMatch[1]) - 1]
+        const target = currentTabs[Number(digitMatch[1]) - 1]
         if (target) {
           event.preventDefault()
           setActiveTabId(target.id)
@@ -366,7 +353,7 @@ function EditorApp(): JSX.Element {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [activeTab.id, addTab, setActiveTabId, tabs])
+  }, [addTab, setActiveTabId])
 
   useEffect(() => {
     let isMounted = true
@@ -393,14 +380,21 @@ function EditorApp(): JSX.Element {
     if (monacoLoadState !== 'ready') return
     const model = getModel()
     if (!model) return
-    const disposable = model.onDidChangeContent(() => readMarkerState(activeTab.id))
-    return () => disposable.dispose()
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const disposable = model.onDidChangeContent(() => {
+      clearTimeout(timer)
+      timer = setTimeout(() => readMarkerState(activeTab.id), CONTENT_DEBOUNCE_MS)
+    })
+    return () => {
+      disposable.dispose()
+      clearTimeout(timer)
+    }
   }, [activeTab.id, getModel, monacoLoadState, readMarkerState])
 
   useEffect(() => {
-    const editor = editorRef.current
+    const editorInstance = editorRef.current
     const monaco = monacoRef.current
-    if (!editor || !monaco) return
+    if (!editorInstance || !monaco) return
 
     const errorLines = [
       ...new Set([
@@ -408,8 +402,8 @@ function EditorApp(): JSX.Element {
         ...(activeFeedback.parseErrorLine === null ? [] : [activeFeedback.parseErrorLine])
       ])
     ]
-    errorDecorationIdsRef.current[activeTab.id] = editor.deltaDecorations(
-      errorDecorationIdsRef.current[activeTab.id] ?? [],
+    errorDecorationsRef.current ??= editorInstance.createDecorationsCollection()
+    errorDecorationsRef.current.set(
       errorLines.map((line) => ({
         range: new monaco.Range(line, 1, line, 1),
         options: {

@@ -1,5 +1,10 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createTabId, INITIAL_TAB, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
+
+interface TabState {
+  feedback: TabFeedback
+  errorLines: number[]
+}
 
 interface UseJsonTabsResult {
   tabs: JsonTab[]
@@ -15,48 +20,58 @@ interface UseJsonTabsResult {
   closeTab: (tabId: string) => void
 }
 
+const EMPTY_ERROR_LINES: number[] = []
+
+function areFeedbacksEqual(a: TabFeedback, b: TabFeedback): boolean {
+  return a.message === b.message && a.isValid === b.isValid && a.parseErrorLine === b.parseErrorLine
+}
+
+function areErrorLinesEqual(a: number[], b: number[]): boolean {
+  return a.length === b.length && a.every((line, index) => line === b[index])
+}
+
 export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsResult {
   const [tabs, setTabs] = useState<JsonTab[]>([INITIAL_TAB])
   const [activeTabId, setActiveTabId] = useState(INITIAL_TAB.id)
-  const [feedbackByTab, setFeedbackByTab] = useState<Record<string, TabFeedback>>({
-    [INITIAL_TAB.id]: WAITING_FEEDBACK
+  const [statesByTab, setStatesByTab] = useState<Record<string, TabState>>({
+    [INITIAL_TAB.id]: { feedback: WAITING_FEEDBACK, errorLines: EMPTY_ERROR_LINES }
   })
-  const [markerErrorLinesByTab, setMarkerErrorLinesByTab] = useState<Record<string, number[]>>({})
   const untitledCounterRef = useRef(2)
+  const tabsRef = useRef(tabs)
+  const activeTabIdRef = useRef(activeTabId)
+
+  useEffect(() => {
+    tabsRef.current = tabs
+    activeTabIdRef.current = activeTabId
+  }, [tabs, activeTabId])
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]!
-  const activeFeedback = feedbackByTab[activeTab.id] ?? WAITING_FEEDBACK
-  const markerErrorLines = markerErrorLinesByTab[activeTab.id] ?? []
+  const activeState = statesByTab[activeTab.id]
+  const activeFeedback = activeState?.feedback ?? WAITING_FEEDBACK
+  const markerErrorLines = activeState?.errorLines ?? EMPTY_ERROR_LINES
 
   const setTabFeedback = useCallback((tabId: string, feedback: TabFeedback) => {
-    setFeedbackByTab((current) => {
+    setStatesByTab((current) => {
       const previous = current[tabId]
-      if (
-        previous &&
-        previous.message === feedback.message &&
-        previous.isValid === feedback.isValid &&
-        previous.parseErrorLine === feedback.parseErrorLine
-      ) {
-        return current
-      }
-      return { ...current, [tabId]: feedback }
+      if (previous && areFeedbacksEqual(previous.feedback, feedback)) return current
+      return { ...current, [tabId]: { feedback, errorLines: previous?.errorLines ?? EMPTY_ERROR_LINES } }
     })
   }, [])
 
   const setMarkerErrorLines = useCallback((tabId: string, lines: number[]) => {
-    setMarkerErrorLinesByTab((current) => {
-      const previous = current[tabId] ?? []
-      if (previous.length === lines.length && previous.every((line, index) => line === lines[index])) return current
-      return { ...current, [tabId]: lines }
+    setStatesByTab((current) => {
+      const previous = current[tabId]?.errorLines ?? EMPTY_ERROR_LINES
+      if (areErrorLinesEqual(previous, lines)) return current
+      return { ...current, [tabId]: { feedback: current[tabId]?.feedback ?? WAITING_FEEDBACK, errorLines: lines } }
     })
   }, [])
 
   const addTab = useCallback(() => {
     const tab: JsonTab = { id: createTabId(), title: `未命名 ${untitledCounterRef.current++}` }
     setTabs((current) => [...current, tab])
-    setTabFeedback(tab.id, WAITING_FEEDBACK)
+    setStatesByTab((current) => ({ ...current, [tab.id]: { feedback: WAITING_FEEDBACK, errorLines: EMPTY_ERROR_LINES } }))
     setActiveTabId(tab.id)
-  }, [setTabFeedback])
+  }, [])
 
   const renameTab = useCallback((tabId: string, title: string) => {
     setTabs((current) => current.map((tab) => (tab.id === tabId ? { ...tab, title } : tab)))
@@ -64,30 +79,30 @@ export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsR
 
   const closeTab = useCallback(
     (tabId: string) => {
-      const closingIndex = tabs.findIndex((tab) => tab.id === tabId)
+      const currentTabs = tabsRef.current
+      const closingIndex = currentTabs.findIndex((tab) => tab.id === tabId)
       if (closingIndex === -1) return
 
-      let nextTabs = tabs.filter((tab) => tab.id !== tabId)
+      let nextTabs = currentTabs.filter((tab) => tab.id !== tabId)
       if (nextTabs.length === 0) {
         nextTabs = [{ id: createTabId(), title: `未命名 ${untitledCounterRef.current++}` }]
       }
 
       setTabs(nextTabs)
-      setFeedbackByTab((current) => {
-        const nextFeedback = { ...current }
-        delete nextFeedback[tabId]
-        if (!nextFeedback[nextTabs[0].id]) nextFeedback[nextTabs[0].id] = WAITING_FEEDBACK
-        return nextFeedback
-      })
-      setMarkerErrorLinesByTab((current) => {
-        const nextLines = { ...current }
-        delete nextLines[tabId]
-        return nextLines
+      setStatesByTab((current) => {
+        const nextStates = { ...current }
+        delete nextStates[tabId]
+        if (!nextStates[nextTabs[0].id]) {
+          nextStates[nextTabs[0].id] = { feedback: WAITING_FEEDBACK, errorLines: EMPTY_ERROR_LINES }
+        }
+        return nextStates
       })
       onTabClosed?.(tabId)
-      if (tabId === activeTabId) setActiveTabId(nextTabs[Math.min(closingIndex, nextTabs.length - 1)].id)
+      if (tabId === activeTabIdRef.current) {
+        setActiveTabId(nextTabs[Math.min(closingIndex, nextTabs.length - 1)].id)
+      }
     },
-    [activeTabId, onTabClosed, tabs]
+    [onTabClosed]
   )
 
   return useMemo(
@@ -109,6 +124,8 @@ export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsR
       activeTab,
       activeFeedback,
       markerErrorLines,
+      setTabs,
+      setActiveTabId,
       setTabFeedback,
       setMarkerErrorLines,
       addTab,
