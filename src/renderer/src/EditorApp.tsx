@@ -1,4 +1,4 @@
-import Editor, { loader, type OnMount, type OnValidate } from '@monaco-editor/react'
+import Editor, { loader, type OnMount } from '@monaco-editor/react'
 import { Check, LoaderCircle, RefreshCw, WifiOff } from 'lucide-react'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -59,33 +59,66 @@ function MonacoLoadingState({ state, onRetry }: MonacoLoadingStateProps): JSX.El
 }
 
 interface EditorStatusBarProps {
-  modelKey: string
-  isReady: boolean
-  getModel: () => editor.ITextModel | null
+  editor: EditorInstance | null
   feedback: TabFeedback
 }
 
-function EditorStatusBar({ modelKey, isReady, getModel, feedback }: EditorStatusBarProps): JSX.Element {
-  const [stats, setStats] = useState<{ lines: number; chars: number }>({ lines: 1, chars: 0 })
+interface ModelStats {
+  lines: number
+  chars: number
+}
+
+function EditorStatusBar({ editor, feedback }: EditorStatusBarProps): JSX.Element {
+  const [stats, setStats] = useState<ModelStats>({ lines: 1, chars: 0 })
+  const [indent, setIndent] = useState<{ insertSpaces: boolean; tabSize: number }>({ insertSpaces: true, tabSize: 2 })
+  const [languageId, setLanguageId] = useState('json')
 
   useEffect(() => {
-    if (!isReady) return
-    const model = getModel()
-    if (!model) return
-
-    const sync = (): void => setStats({ lines: model.getLineCount(), chars: model.getValueLength() })
-    sync()
+    if (!editor) return
 
     let timer: ReturnType<typeof setTimeout> | undefined
-    const disposable = model.onDidChangeContent(() => {
+    let modelDisposables: { dispose(): void }[] = []
+
+    const sync = (): void => {
+      const model = editor.getModel()
+      if (!model) return
+      setStats({ lines: model.getLineCount(), chars: model.getValueLength() })
+      const { insertSpaces, tabSize } = model.getOptions()
+      setIndent((prev) => (prev.insertSpaces === insertSpaces && prev.tabSize === tabSize ? prev : { insertSpaces, tabSize }))
+      setLanguageId((prev) => {
+        const current = model.getLanguageId()
+        return prev === current ? prev : current
+      })
+    }
+
+    const attachModel = (model: editor.ITextModel | null): void => {
+      modelDisposables.forEach((disposable) => disposable.dispose())
+      modelDisposables = []
+      if (!model) return
+      modelDisposables.push(
+        model.onDidChangeContent(() => {
+          clearTimeout(timer)
+          timer = setTimeout(sync, CONTENT_DEBOUNCE_MS)
+        }),
+        model.onDidChangeOptions(sync),
+        model.onDidChangeLanguage(sync)
+      )
+    }
+
+    sync()
+    attachModel(editor.getModel())
+    const onDidChangeModelDisposable = editor.onDidChangeModel(() => {
       clearTimeout(timer)
-      timer = setTimeout(sync, CONTENT_DEBOUNCE_MS)
+      sync()
+      attachModel(editor.getModel())
     })
+
     return () => {
-      disposable.dispose()
+      onDidChangeModelDisposable.dispose()
+      modelDisposables.forEach((disposable) => disposable.dispose())
       clearTimeout(timer)
     }
-  }, [getModel, isReady, modelKey])
+  }, [editor])
 
   return (
     <footer className="flex h-8 shrink-0 items-center justify-between border-t border-[#e5e5e5] bg-[#f3f3f3] px-4 text-xs text-[#616161]">
@@ -94,12 +127,11 @@ function EditorStatusBar({ modelKey, isReady, getModel, feedback }: EditorStatus
         <span className={`truncate ${feedback.isValid ? 'text-[#616161]' : 'text-[#c72e0f]'}`}>{feedback.message}</span>
       </div>
       <div className="ml-4 flex shrink-0 items-center gap-4">
-        <span>UTF-8</span>
-        <span>空格: 2</span>
+        <span>{indent.insertSpaces ? `空格: ${indent.tabSize}` : `Tab 大小: ${indent.tabSize}`}</span>
         <span>{stats.lines} 行</span>
         <span>{stats.chars} 字符</span>
         <span className="flex items-center gap-1 text-[#616161]">
-          <Check size={13} /> JSON
+          <Check size={13} /> {languageId.toUpperCase()}
         </span>
       </div>
     </footer>
@@ -112,6 +144,7 @@ function EditorApp(): JSX.Element {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
+  const [editorInstance, setEditorInstance] = useState<EditorInstance | null>(null)
   const errorDecorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null)
   const transformJsonRef = useRef<(spacing: number) => void>(() => undefined)
   const toggleSequenceRef = useRef(0)
@@ -173,8 +206,6 @@ function EditorApp(): JSX.Element {
   }, [])
 
   const editorOptions = useMemo(() => getMonacoOptions(settings), [settings])
-
-  const getModel = useCallback((): editor.ITextModel | null => editorRef.current?.getModel() ?? null, [])
 
   const applyBracketColorization = useCallback((enabled: boolean): void => {
     editorRef.current?.getModel()?.updateOptions({
@@ -267,10 +298,10 @@ function EditorApp(): JSX.Element {
 
   const readMarkerState = useCallback(
     (tabId: string) => {
-      const editorInstance = editorRef.current
+      const currentEditor = editorRef.current
       const monaco = monacoRef.current
-      const model = editorInstance?.getModel()
-      if (!editorInstance || !monaco || !model) return
+      const model = currentEditor?.getModel()
+      if (!currentEditor || !monaco || !model) return
 
       const errors = monaco.editor
         .getModelMarkers({ resource: model.uri })
@@ -294,13 +325,14 @@ function EditorApp(): JSX.Element {
     [setMarkerErrorLines, setTabFeedback]
   )
 
-  const handleValidate: OnValidate = useCallback(() => {
+  const handleValidate = useCallback((): void => {
     readMarkerState(activeTab.id)
   }, [activeTab.id, readMarkerState])
 
   const handleEditorMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
     monacoRef.current = monaco
+    setEditorInstance(editor)
     applyBracketColorization(settings.bracketPairColorization)
     editor.addAction({
       id: 'jsonpal-format',
@@ -377,24 +409,9 @@ function EditorApp(): JSX.Element {
   }, [activeTab.id, readMarkerState])
 
   useEffect(() => {
-    if (monacoLoadState !== 'ready') return
-    const model = getModel()
-    if (!model) return
-    let timer: ReturnType<typeof setTimeout> | undefined
-    const disposable = model.onDidChangeContent(() => {
-      clearTimeout(timer)
-      timer = setTimeout(() => readMarkerState(activeTab.id), CONTENT_DEBOUNCE_MS)
-    })
-    return () => {
-      disposable.dispose()
-      clearTimeout(timer)
-    }
-  }, [activeTab.id, getModel, monacoLoadState, readMarkerState])
-
-  useEffect(() => {
-    const editorInstance = editorRef.current
+    const currentEditor = editorRef.current
     const monaco = monacoRef.current
-    if (!editorInstance || !monaco) return
+    if (!currentEditor || !monaco) return
 
     const errorLines = [
       ...new Set([
@@ -402,7 +419,7 @@ function EditorApp(): JSX.Element {
         ...(activeFeedback.parseErrorLine === null ? [] : [activeFeedback.parseErrorLine])
       ])
     ]
-    errorDecorationsRef.current ??= editorInstance.createDecorationsCollection()
+    errorDecorationsRef.current ??= currentEditor.createDecorationsCollection()
     errorDecorationsRef.current.set(
       errorLines.map((line) => ({
         range: new monaco.Range(line, 1, line, 1),
@@ -468,12 +485,7 @@ function EditorApp(): JSX.Element {
               )}
             </div>
 
-            <EditorStatusBar
-              modelKey={activeTab.id}
-              isReady={monacoLoadState === 'ready'}
-              getModel={getModel}
-              feedback={activeFeedback}
-            />
+            <EditorStatusBar editor={editorInstance} feedback={activeFeedback} />
           </div>
         </section>
       </main>
