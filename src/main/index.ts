@@ -99,8 +99,12 @@ app.whenReady().then(() => {
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))
-  ipcMain.handle('settings:apply', (_event, settings: unknown) => saveSettings(settings).then((savedSettings) => {
-    mainWindow?.webContents.send('settings:updated', savedSettings)
+  ipcMain.handle('settings:apply', (event, settings: unknown) => saveSettings(settings).then((savedSettings) => {
+    for (const window of BrowserWindow.getAllWindows()) {
+      if (!window.isDestroyed() && window.webContents !== event.sender) {
+        window.webContents.send('settings:updated', savedSettings)
+      }
+    }
     return savedSettings
   }))
   createWindow()

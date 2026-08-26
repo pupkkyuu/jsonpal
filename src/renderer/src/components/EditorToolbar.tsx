@@ -1,4 +1,5 @@
 import { Braces, Code, Copy, FileCode, Minimize2, Trash2, WrapText, type LucideIcon } from 'lucide-react'
+import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -17,7 +18,7 @@ type ToolbarItem =
   | { kind: 'divider' }
   | { kind: 'action'; icon: LucideIcon; label: string; onClick: () => void; active?: boolean }
 
-export function EditorToolbar({
+export const EditorToolbar = memo(function EditorToolbar({
   wordWrap,
   onFormat,
   onCompress,
@@ -63,4 +64,4 @@ export function EditorToolbar({
       )}
     </nav>
   )
-}
+})

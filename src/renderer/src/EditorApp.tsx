@@ -193,7 +193,6 @@ function EditorApp(): JSX.Element {
 
   const toggleWordWrap = useCallback(() => {
     const nextSettings = { ...settings, wordWrap: !settings.wordWrap }
-    setSettings(nextSettings)
     const sequence = ++toggleSequenceRef.current
     void window.api.settings.apply(nextSettings).then((savedSettings) => {
       if (toggleSequenceRef.current !== sequence) return
@@ -257,15 +256,24 @@ function EditorApp(): JSX.Element {
     transformJsonRef.current = transformJson
   }, [transformJson])
 
+  const formatJson = useCallback(() => transformJson(2), [transformJson])
+  const compressJson = useCallback(() => transformJson(0), [transformJson])
+
+  const activeFeedbackRef = useRef(activeFeedback)
+
+  useEffect(() => {
+    activeFeedbackRef.current = activeFeedback
+  }, [activeFeedback])
+
   const copyJson = useCallback(async () => {
     const value = editorRef.current?.getModel()?.getValue() ?? ''
     try {
       await navigator.clipboard.writeText(value)
-      setTabFeedback(activeTab.id, { ...activeFeedback, message: '已复制到剪贴板', isValid: true })
+      setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '已复制到剪贴板', isValid: true })
     } catch {
-      setTabFeedback(activeTab.id, { ...activeFeedback, message: '无法访问剪贴板', isValid: false })
+      setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '无法访问剪贴板', isValid: false })
     }
-  }, [activeFeedback, activeTab.id, setTabFeedback])
+  }, [activeTab.id, setTabFeedback])
 
   const clearEditor = useCallback(() => {
     applyModelValue('')
@@ -333,7 +341,6 @@ function EditorApp(): JSX.Element {
     editorRef.current = editor
     monacoRef.current = monaco
     setEditorInstance(editor)
-    applyBracketColorization(settings.bracketPairColorization)
     editor.addAction({
       id: 'jsonpal-format',
       label: '格式化 JSON',
@@ -401,7 +408,7 @@ function EditorApp(): JSX.Element {
 
   useEffect(() => {
     applyBracketColorization(settings.bracketPairColorization)
-  }, [activeTab.id, applyBracketColorization, settings.bracketPairColorization])
+  }, [activeTab.id, applyBracketColorization, editorInstance, settings.bracketPairColorization])
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => readMarkerState(activeTab.id))
@@ -458,8 +465,8 @@ function EditorApp(): JSX.Element {
           <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
             <EditorToolbar
               wordWrap={settings.wordWrap}
-              onFormat={() => transformJson(2)}
-              onCompress={() => transformJson(0)}
+              onFormat={formatJson}
+              onCompress={compressJson}
               onEscape={escapeJson}
               onUnescape={unescapeJson}
               onCopy={copyJson}
