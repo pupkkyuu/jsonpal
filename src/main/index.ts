@@ -77,7 +77,7 @@ function createSettingsWindow(): void {
     height: 720,
     minWidth: 680,
     minHeight: 560,
-    parent: mainWindow ?? undefined,
+    
     show: false,
     autoHideMenuBar: false,
     titleBarStyle: 'hiddenInset',
