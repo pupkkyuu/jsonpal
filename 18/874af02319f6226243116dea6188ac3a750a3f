@@ -1,0 +1,19 @@
+src/renderer/src/editorSettings.ts
+  s_73f7583870f4eb::t_1f4ff842323fa7 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "18874af02319f6226243116dea6188ac3a750a3f",
+  "prompts": {},
+  "sessions": {
+    "s_73f7583870f4eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04287-cb5d-7291-9ec1-0eec2f390c97",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
