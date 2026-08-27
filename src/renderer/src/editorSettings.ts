@@ -29,7 +29,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   wordWrap: false,
   lineNumbers: 'on',
   formatOnPaste: false,
-  unicodeHighlight: true,
+  unicodeHighlight: false,
   fontSize: 14,
   scrollbarSize: 12
 }
