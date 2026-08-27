@@ -1,0 +1,19 @@
+src/main/index.ts
+  s_5a4b937dd8c29b::t_69372e1b0aea9e 80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "58dde824b4fec7a79be634868440ee1cde4a744a",
+  "prompts": {},
+  "sessions": {
+    "s_5a4b937dd8c29b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbd708715ffeyyNcoPkg7yg2V1",
+        "model": "glm-5"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
