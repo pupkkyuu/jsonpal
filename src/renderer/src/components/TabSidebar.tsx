@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Search, Settings, X } from 'lucide-react'
-import { memo, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import type { JsonTab } from '@/jsonUtils'
 import { cn } from '@/lib/utils'
@@ -157,6 +157,8 @@ interface TabSidebarProps {
   tabs: JsonTab[]
   activeTabId: string
   isCollapsed: boolean
+  width: number
+  onWidthChange: (width: number) => void
   onSetCollapsed: (collapsed: boolean) => void
   onActivate: (id: string) => void
   onAdd: () => void
@@ -170,6 +172,8 @@ export const TabSidebar = memo(function TabSidebar({
   tabs,
   activeTabId,
   isCollapsed,
+  width,
+  onWidthChange,
   onSetCollapsed,
   onActivate,
   onAdd,
@@ -180,6 +184,10 @@ export const TabSidebar = memo(function TabSidebar({
 }: TabSidebarProps): JSX.Element {
   const [searchQuery, setSearchQuery] = useState('')
   const listRef = useRef<HTMLDivElement | null>(null)
+  const isResizingRef = useRef(false)
+  const resizeStartRef = useRef({ x: 0, width })
+  const MIN_WIDTH = 180
+  const MAX_WIDTH = 420
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -192,6 +200,44 @@ export const TabSidebar = memo(function TabSidebar({
         : tabs,
     [normalizedQuery, tabs]
   )
+
+  const clampWidth = useCallback((nextWidth: number): number => {
+    const maxWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - 400))
+    return Math.min(maxWidth, Math.max(MIN_WIDTH, nextWidth))
+  }, [])
+
+  const handleResizeStart = (event: PointerEvent<HTMLDivElement>): void => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    isResizingRef.current = true
+    resizeStartRef.current = { x: event.clientX, width }
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+  }
+
+  useEffect(() => {
+    const handlePointerMove = (event: globalThis.PointerEvent): void => {
+      if (!isResizingRef.current) return
+      onWidthChange(clampWidth(resizeStartRef.current.width + event.clientX - resizeStartRef.current.x))
+    }
+    const handlePointerUp = (): void => {
+      isResizingRef.current = false
+    }
+    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerUp)
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerUp)
+    }
+  }, [clampWidth, onWidthChange])
+
+  const handleResizeKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    const delta = event.key === 'ArrowLeft' ? -10 : 10
+    onWidthChange(clampWidth(width + delta))
+  }
 
   useEffect(() => {
     if (isCollapsed) return
@@ -252,7 +298,23 @@ export const TabSidebar = memo(function TabSidebar({
   }
 
   return (
-    <aside className="flex w-[220px] shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]" aria-label="JSON Tab 侧边栏">
+    <aside
+      className="relative flex shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]"
+      style={{ width }}
+      aria-label="JSON Tab 侧边栏"
+    >
+      <div
+        className="absolute inset-y-0 -right-1 z-20 w-2 cursor-col-resize touch-none outline-none hover:bg-[#0078d4]/30 focus-visible:bg-[#0078d4]/40"
+        role="separator"
+        aria-label="调整侧边栏宽度"
+        aria-orientation="vertical"
+        aria-valuemin={MIN_WIDTH}
+        aria-valuemax={MAX_WIDTH}
+        aria-valuenow={Math.round(width)}
+        tabIndex={0}
+        onPointerDown={handleResizeStart}
+        onKeyDown={handleResizeKeyDown}
+      />
       <div className="flex h-11 shrink-0 items-center gap-1 border-b border-[#e5e5e5] px-2">
         <Button
           variant="outline"

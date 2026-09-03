@@ -142,6 +142,7 @@ function EditorApp(): JSX.Element {
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
   const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(220)
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
   const [editorInstance, setEditorInstance] = useState<EditorInstance | null>(null)
@@ -454,6 +455,8 @@ function EditorApp(): JSX.Element {
             tabs={tabs}
             activeTabId={activeTab.id}
             isCollapsed={isSidebarCollapsed}
+            width={sidebarWidth}
+            onWidthChange={setSidebarWidth}
             onSetCollapsed={setIsSidebarCollapsed}
             onActivate={setActiveTabId}
             onAdd={addTab}
