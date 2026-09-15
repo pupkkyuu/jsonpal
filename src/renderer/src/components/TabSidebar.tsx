@@ -27,9 +27,10 @@ interface SortableTabProps {
   onActivate: (tabId: string) => void
   onRename: (tabId: string, title: string) => void
   onClose: (tabId: string) => void
+  onContextMenu: (event: MouseEvent<HTMLDivElement>, tabId: string) => void
 }
 
-const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose }: SortableTabProps): JSX.Element {
+const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose, onContextMenu }: SortableTabProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState(tab.title)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -82,6 +83,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
       aria-selected={isActive}
       onClick={() => onActivate(tab.id)}
       onKeyDown={handleItemKeyDown}
+      onContextMenu={(event) => onContextMenu(event, tab.id)}
       className={cn(
         'group flex h-9 w-full items-center gap-1 rounded-sm border border-transparent px-1 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0078d4]',
         isActive ? 'border-[#d4d4d4] bg-[#e7e7e7] text-[#333333]' : 'text-[#616161] hover:bg-[#e8e8e8] hover:text-[#333333]',
@@ -164,6 +166,8 @@ interface TabSidebarProps {
   onAdd: () => void
   onRename: (id: string, title: string) => void
   onClose: (id: string) => void
+  onCloseOthers: (id: string) => void
+  onCloseAll: () => void
   onReorder: (tabs: JsonTab[]) => void
   onOpenSettings: () => void
 }
@@ -179,11 +183,15 @@ export const TabSidebar = memo(function TabSidebar({
   onAdd,
   onRename,
   onClose,
+  onCloseOthers,
+  onCloseAll,
   onReorder,
   onOpenSettings
 }: TabSidebarProps): JSX.Element {
   const [searchQuery, setSearchQuery] = useState('')
+  const [contextMenu, setContextMenu] = useState<{ tabId: string; x: number; y: number } | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const isResizingRef = useRef(false)
   const resizeStartRef = useRef({ x: 0, width })
   const MIN_WIDTH = 180
@@ -200,6 +208,45 @@ export const TabSidebar = memo(function TabSidebar({
         : tabs,
     [normalizedQuery, tabs]
   )
+
+  useEffect(() => {
+    if (!contextMenu) return
+    const handlePointerDown = (event: globalThis.PointerEvent): void => {
+      if (menuRef.current?.contains(event.target as Node)) return
+      setContextMenu(null)
+    }
+    const handleKeyDown = (event: globalThis.KeyboardEvent): void => {
+      if (event.key === 'Escape') setContextMenu(null)
+    }
+    const closeMenu = (): void => setContextMenu(null)
+    window.addEventListener('pointerdown', handlePointerDown)
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('resize', closeMenu)
+    window.addEventListener('blur', closeMenu)
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown)
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('resize', closeMenu)
+      window.removeEventListener('blur', closeMenu)
+    }
+  }, [contextMenu])
+
+  const handleContextMenu = (event: MouseEvent<HTMLDivElement>, tabId: string): void => {
+    event.preventDefault()
+    event.stopPropagation()
+    setContextMenu({
+      tabId,
+      x: Math.min(event.clientX, window.innerWidth - 176),
+      y: Math.min(event.clientY, window.innerHeight - 116)
+    })
+  }
+
+  const runContextAction = (action: (tabId: string) => void): void => {
+    if (!contextMenu) return
+    const { tabId } = contextMenu
+    setContextMenu(null)
+    action(tabId)
+  }
 
   const clampWidth = useCallback((nextWidth: number): number => {
     const maxWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - 400))
@@ -371,6 +418,7 @@ export const TabSidebar = memo(function TabSidebar({
                 onActivate={onActivate}
                 onRename={onRename}
                 onClose={onClose}
+                onContextMenu={handleContextMenu}
               />
             ))}
             {visibleTabs.length === 0 && (
@@ -379,6 +427,44 @@ export const TabSidebar = memo(function TabSidebar({
           </div>
         </SortableContext>
       </DndContext>
+
+      {contextMenu && (
+        <div
+          role="menu"
+          aria-label="标签操作"
+          ref={menuRef}
+          className="fixed z-50 w-44 rounded-sm border border-[#c8c8c8] bg-white py-1 shadow-lg"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            onClick={() => runContextAction(onClose)}
+          >
+            关闭标签
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            onClick={() => runContextAction(onCloseOthers)}
+          >
+            关闭其他标签
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            onClick={() => {
+              setContextMenu(null)
+              onCloseAll()
+            }}
+          >
+            关闭所有标签
+          </button>
+        </div>
+      )}
 
       <div className="shrink-0 border-t border-[#e5e5e5] p-2">
         <Button

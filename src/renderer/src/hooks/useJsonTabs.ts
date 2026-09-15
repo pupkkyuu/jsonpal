@@ -18,6 +18,8 @@ interface UseJsonTabsResult {
   addTab: () => void
   renameTab: (tabId: string, title: string) => void
   closeTab: (tabId: string) => void
+  closeOtherTabs: (tabId: string) => void
+  closeAllTabs: () => void
 }
 
 const EMPTY_ERROR_LINES: number[] = []
@@ -105,6 +107,36 @@ export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsR
     [onTabClosed]
   )
 
+  const closeOtherTabs = useCallback(
+    (tabId: string) => {
+      const currentTabs = tabsRef.current
+      const remainingTab = currentTabs.find((tab) => tab.id === tabId)
+      if (!remainingTab) return
+
+      const closedTabIds = currentTabs.filter((tab) => tab.id !== tabId).map((tab) => tab.id)
+      if (closedTabIds.length === 0) return
+
+      setTabs([remainingTab])
+      setStatesByTab((current) => {
+        const remainingState = current[tabId] ?? { feedback: WAITING_FEEDBACK, errorLines: EMPTY_ERROR_LINES }
+        return { [tabId]: remainingState }
+      })
+      setActiveTabId(tabId)
+      closedTabIds.forEach((closedTabId) => onTabClosed?.(closedTabId))
+    },
+    [onTabClosed]
+  )
+
+  const closeAllTabs = useCallback(() => {
+    const closedTabIds = tabsRef.current.map((tab) => tab.id)
+    const replacementTab: JsonTab = { id: createTabId(), title: `未命名 ${untitledCounterRef.current++}` }
+
+    setTabs([replacementTab])
+    setStatesByTab({ [replacementTab.id]: { feedback: WAITING_FEEDBACK, errorLines: EMPTY_ERROR_LINES } })
+    setActiveTabId(replacementTab.id)
+    closedTabIds.forEach((closedTabId) => onTabClosed?.(closedTabId))
+  }, [onTabClosed])
+
   return useMemo(
     () => ({
       tabs,
@@ -117,7 +149,9 @@ export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsR
       setMarkerErrorLines,
       addTab,
       renameTab,
-      closeTab
+      closeTab,
+      closeOtherTabs,
+      closeAllTabs
     }),
     [
       tabs,
@@ -130,7 +164,9 @@ export function useJsonTabs(onTabClosed?: (tabId: string) => void): UseJsonTabsR
       setMarkerErrorLines,
       addTab,
       renameTab,
-      closeTab
+      closeTab,
+      closeOtherTabs,
+      closeAllTabs
     ]
   )
 }

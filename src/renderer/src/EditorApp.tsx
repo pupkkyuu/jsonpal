@@ -168,7 +168,9 @@ function EditorApp(): JSX.Element {
     setMarkerErrorLines,
     addTab,
     renameTab,
-    closeTab
+    closeTab,
+    closeOtherTabs,
+    closeAllTabs
   } = useJsonTabs(handleTabClosed)
 
   useEffect(() => {
@@ -462,6 +464,8 @@ function EditorApp(): JSX.Element {
             onAdd={addTab}
             onRename={renameTab}
             onClose={closeTab}
+            onCloseOthers={closeOtherTabs}
+            onCloseAll={closeAllTabs}
             onReorder={setTabs}
             onOpenSettings={openSettings}
           />
