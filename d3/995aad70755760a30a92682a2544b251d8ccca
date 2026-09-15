@@ -1,0 +1,27 @@
+src/renderer/src/components/TabSidebar.tsx
+  s_9e785c8f5862d1::t_6a47124d2b112f 30,33,86,169-170,186-187,192,212-213,221,224-226,229-249
+  s_9e785c8f5862d1::t_e4a023500cfe73 194,214-220,222-223,227-228,435
+  s_9e785c8f5862d1::t_c917b8b4a70d53 421,431-434,436-467
+  s_9e785c8f5862d1::t_1d6dcf0080cf85 250
+  s_9e785c8f5862d1::t_fb3c6da0fe1aff 468
+src/renderer/src/EditorApp.tsx
+  s_9e785c8f5862d1::t_6a47124d2b112f 171-173,467-468
+src/renderer/src/hooks/useJsonTabs.ts
+  s_9e785c8f5862d1::t_6a47124d2b112f 21-22,110-139,152-154,167-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d3995aad70755760a30a92682a2544b251d8ccca",
+  "prompts": {},
+  "sessions": {
+    "s_9e785c8f5862d1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a54c-f134-7e41-8897-274c6db90999",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
