@@ -1,6 +1,7 @@
 {
   "name": "jsonpal",
-  "version": "2026.08.27",
+  "productName": "JSONPal",
+  "version": "2026.9.16",
   "description": "A focused JSON formatting desktop tool.",
   "main": "./out/main/index.js",
   "author": "scum",

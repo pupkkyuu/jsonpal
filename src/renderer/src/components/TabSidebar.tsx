@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Search, Settings, X } from 'lucide-react'
+import { GripVertical, Pencil, Search, Settings, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import type { JsonTab } from '@/jsonUtils'
@@ -85,14 +85,14 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
       onKeyDown={handleItemKeyDown}
       onContextMenu={(event) => onContextMenu(event, tab.id)}
       className={cn(
-        'group flex h-9 w-full items-center gap-1 rounded-sm border border-transparent px-1 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#0078d4]',
-        isActive ? 'border-[#d4d4d4] bg-[#e7e7e7] text-[#333333]' : 'text-[#616161] hover:bg-[#e8e8e8] hover:text-[#333333]',
+        'group relative flex h-10 w-full items-center gap-1 rounded-lg border border-transparent px-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#5b5bd6]',
+        isActive ? 'border-[#d9dcfa] bg-[#eeefff] text-[#34349b] shadow-sm shadow-[#5b5bd6]/5' : 'text-[#667085] hover:bg-white hover:text-[#344054]',
         isDragging && 'z-10 opacity-60 shadow-md'
       )}
     >
       <button
         type="button"
-        className="flex h-7 w-6 shrink-0 cursor-grab items-center justify-center rounded-sm text-[#858585] outline-none hover:text-[#333333] focus-visible:ring-2 focus-visible:ring-[#0078d4] active:cursor-grabbing"
+        className="flex h-7 w-6 shrink-0 cursor-grab items-center justify-center rounded-md text-[#98a2b3] outline-none hover:text-[#475467] focus-visible:ring-2 focus-visible:ring-[#5b5bd6] active:cursor-grabbing"
         aria-label={`拖动 ${tab.title}`}
         onClick={(event) => event.stopPropagation()}
         {...attributes}
@@ -118,7 +118,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
               setIsEditing(false)
             }
           }}
-          className="h-7 min-w-0 flex-1 rounded-sm border border-[#0078d4] bg-white px-1.5 text-sm text-[#333333] outline-none ring-1 ring-[#0078d4]/30"
+          className="h-7 min-w-0 flex-1 rounded-md border border-[#5b5bd6] bg-white px-1.5 text-sm text-[#172033] outline-none ring-2 ring-[#5b5bd6]/15"
         />
       ) : (
         <span
@@ -137,7 +137,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
         aria-label={`重命名 ${tab.title}`}
         onClick={handleEdit}
         onPointerDown={(event) => event.stopPropagation()}
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm text-[#858585] opacity-0 outline-none transition-opacity hover:bg-[#dcdcdc] hover:text-[#333333] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#0078d4] group-hover:opacity-100"
+        className={`absolute right-8 flex h-7 w-7 items-center justify-center rounded-md bg-white text-[#98a2b3] opacity-0 outline-none transition-opacity hover:text-[#4646bc] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#5b5bd6] group-hover:opacity-100 ${isEditing ? 'hidden' : ''}`}
       >
         <Pencil size={13} />
       </button>
@@ -147,7 +147,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
         aria-label={`关闭 ${tab.title}`}
         onClick={handleClose}
         onPointerDown={(event) => event.stopPropagation()}
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm text-[#858585] opacity-0 outline-none transition-opacity hover:bg-[#dcdcdc] hover:text-[#333333] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#0078d4] group-hover:opacity-100"
+        className={`absolute right-1 flex h-7 w-7 items-center justify-center rounded-md bg-white text-[#98a2b3] opacity-0 outline-none transition-opacity hover:text-[#4646bc] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#5b5bd6] group-hover:opacity-100 ${isEditing ? 'hidden' : ''}`}
       >
         <X size={14} />
       </button>
@@ -161,9 +161,7 @@ interface TabSidebarProps {
   isCollapsed: boolean
   width: number
   onWidthChange: (width: number) => void
-  onSetCollapsed: (collapsed: boolean) => void
   onActivate: (id: string) => void
-  onAdd: () => void
   onRename: (id: string, title: string) => void
   onClose: (id: string) => void
   onCloseOthers: (id: string) => void
@@ -178,9 +176,7 @@ export const TabSidebar = memo(function TabSidebar({
   isCollapsed,
   width,
   onWidthChange,
-  onSetCollapsed,
   onActivate,
-  onAdd,
   onRename,
   onClose,
   onCloseOthers,
@@ -193,6 +189,7 @@ export const TabSidebar = memo(function TabSidebar({
   const listRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const isResizingRef = useRef(false)
+  const [isResizing, setIsResizing] = useState(false)
   const resizeStartRef = useRef({ x: 0, width })
   const MIN_WIDTH = 180
   const MAX_WIDTH = 420
@@ -202,13 +199,9 @@ export const TabSidebar = memo(function TabSidebar({
   )
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase()
   const visibleTabs = useMemo(
-    () =>
-      normalizedQuery
-        ? tabs.filter((tab) => tab.title.toLocaleLowerCase().includes(normalizedQuery))
-        : tabs,
+    () => (normalizedQuery ? tabs.filter((tab) => tab.title.toLocaleLowerCase().includes(normalizedQuery)) : tabs),
     [normalizedQuery, tabs]
   )
-
   useEffect(() => {
     if (!contextMenu) return
     const handlePointerDown = (event: globalThis.PointerEvent): void => {
@@ -230,6 +223,10 @@ export const TabSidebar = memo(function TabSidebar({
       window.removeEventListener('blur', closeMenu)
     }
   }, [contextMenu])
+
+  useEffect(() => {
+    if (isCollapsed) setContextMenu(null)
+  }, [isCollapsed])
 
   const handleContextMenu = (event: MouseEvent<HTMLDivElement>, tabId: string): void => {
     event.preventDefault()
@@ -257,6 +254,7 @@ export const TabSidebar = memo(function TabSidebar({
     if (event.button !== 0) return
     event.preventDefault()
     isResizingRef.current = true
+    setIsResizing(true)
     resizeStartRef.current = { x: event.clientX, width }
     event.currentTarget.setPointerCapture?.(event.pointerId)
   }
@@ -268,6 +266,7 @@ export const TabSidebar = memo(function TabSidebar({
     }
     const handlePointerUp = (): void => {
       isResizingRef.current = false
+      setIsResizing(false)
     }
     window.addEventListener('pointermove', handlePointerMove)
     window.addEventListener('pointerup', handlePointerUp)
@@ -298,60 +297,25 @@ export const TabSidebar = memo(function TabSidebar({
     }
   }, [activeTabId, isCollapsed, visibleTabs])
 
-  if (isCollapsed) {
-    return (
-      <aside className="flex w-11 shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]" aria-label="JSON Tab 侧边栏（已收起）">
-        <div className="flex h-11 shrink-0 items-center justify-center border-b border-[#e5e5e5]">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-[#616161]"
-            onClick={() => onSetCollapsed(false)}
-            aria-label="展开侧边栏"
-          >
-            <PanelLeftOpen size={16} />
-          </Button>
-        </div>
-        <div className="mt-auto flex shrink-0 justify-center border-t border-[#e5e5e5] py-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-[#616161]"
-            onClick={onOpenSettings}
-            aria-label="编辑器设置"
-          >
-            <Settings size={16} />
-          </Button>
-        </div>
-      </aside>
-    )
-  }
-
   const handleDragEnd = ({ active, over }: DragEndEvent): void => {
     if (!over || active.id === over.id) return
     const oldIndex = visibleTabs.findIndex((tab) => tab.id === active.id)
     const newIndex = visibleTabs.findIndex((tab) => tab.id === over.id)
     if (oldIndex === -1 || newIndex === -1) return
-
     const reorderedVisibleTabs = arrayMove(visibleTabs, oldIndex, newIndex)
     const visibleTabIds = new Set(visibleTabs.map((tab) => tab.id))
     let visibleIndex = 0
     onReorder(tabs.map((tab) => (visibleTabIds.has(tab.id) ? reorderedVisibleTabs[visibleIndex++] : tab)))
   }
 
-  const handleAdd = (): void => {
-    setSearchQuery('')
-    onAdd()
-  }
-
   return (
     <aside
-      className="relative flex shrink-0 flex-col border-r border-[#e5e5e5] bg-[#f3f3f3]"
-      style={{ width }}
-      aria-label="JSON Tab 侧边栏"
+      className={`app-panel tab-sidebar relative flex shrink-0 flex-col overflow-hidden ${isResizing ? 'transition-none' : 'transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none'} ${isCollapsed ? 'border-r-0' : 'border-r'}`}
+      style={{ width: isCollapsed ? 0 : width }}
+      aria-label={isCollapsed ? 'JSON Tab 侧边栏（已收起）' : 'JSON Tab 侧边栏'}
     >
       <div
-        className="absolute inset-y-0 -right-1 z-20 w-2 cursor-col-resize touch-none outline-none hover:bg-[#0078d4]/30 focus-visible:bg-[#0078d4]/40"
+        className={`absolute inset-y-0 -right-1 z-20 w-2 cursor-col-resize touch-none outline-none transition-opacity hover:bg-[#5b5bd6]/30 focus-visible:bg-[#5b5bd6]/40 ${isCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
         role="separator"
         aria-label="调整侧边栏宽度"
         aria-orientation="vertical"
@@ -362,54 +326,27 @@ export const TabSidebar = memo(function TabSidebar({
         onPointerDown={handleResizeStart}
         onKeyDown={handleResizeKeyDown}
       />
-      <div className="flex h-11 shrink-0 items-center gap-1 border-b border-[#e5e5e5] px-2">
-        <Button
-          variant="outline"
-          className="min-w-0 flex-1 justify-center border-[#d4d4d4] text-[#333333]"
-          onClick={handleAdd}
-          aria-label="新建 Tab"
-        >
-          <Plus size={14} />
-          新建
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0 text-[#616161]"
-          onClick={() => onSetCollapsed(true)}
-          aria-label="收起侧边栏"
-        >
-          <PanelLeftClose size={16} />
-        </Button>
-      </div>
-
-      <div className="border-b border-[#e5e5e5] p-2">
-        <div className="flex h-8 items-center gap-2 rounded-sm border border-[#c8c8c8] bg-white px-2 focus-within:border-[#0078d4] focus-within:ring-1 focus-within:ring-[#0078d4]/30">
-          <Search size={14} className="shrink-0 text-[#858585]" aria-hidden="true" />
+      <div className={`flex h-10 shrink-0 items-center border-b border-[#e4e7ef] px-3 transition-all duration-200 ${isCollapsed ? 'pointer-events-none -translate-x-2 opacity-0' : 'translate-x-0 opacity-100'}`} aria-hidden={isCollapsed}>
+        <div className="flex h-7 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[#dfe3ee] bg-white px-2.5 shadow-sm focus-within:border-[#8b8ce9] focus-within:ring-2 focus-within:ring-[#5b5bd6]/15">
+          <Search size={14} className="shrink-0 text-[#98a2b3]" aria-hidden="true" />
           <input
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="搜索 Tab"
             aria-label="搜索 Tab"
-            className="min-w-0 flex-1 bg-transparent text-sm text-[#333333] outline-none placeholder:text-[#858585] [&::-webkit-search-cancel-button]:hidden"
+            className="min-w-0 flex-1 bg-transparent text-xs text-[#344054] outline-none placeholder:text-[#98a2b3] [&::-webkit-search-cancel-button]:hidden"
           />
           {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              aria-label="清空搜索"
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-[#858585] outline-none hover:bg-[#e8e8e8] hover:text-[#333333] focus-visible:ring-2 focus-visible:ring-[#0078d4]"
-            >
+            <button type="button" onClick={() => setSearchQuery('')} aria-label="清空搜索" className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]">
               <X size={12} />
             </button>
           )}
         </div>
       </div>
-
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={visibleTabs.map((tab) => tab.id)} strategy={verticalListSortingStrategy}>
-          <div ref={listRef} className="sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-2" role="tablist" aria-orientation="vertical">
+          <div ref={listRef} className={`sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-3 transition-all duration-200 ${isCollapsed ? 'pointer-events-none -translate-x-2 opacity-0' : 'translate-x-0 opacity-100'}`} role="tablist" aria-orientation="vertical" aria-hidden={isCollapsed}>
             {visibleTabs.map((tab) => (
               <SortableTab
                 key={tab.id}
@@ -422,7 +359,7 @@ export const TabSidebar = memo(function TabSidebar({
               />
             ))}
             {visibleTabs.length === 0 && (
-              <p className="px-2 py-6 text-center text-xs text-[#858585]">没有匹配的 Tab</p>
+              <p className="px-2 py-6 text-center text-xs text-[#98a2b3]">没有匹配的 Tab</p>
             )}
           </div>
         </SortableContext>
@@ -433,13 +370,13 @@ export const TabSidebar = memo(function TabSidebar({
           role="menu"
           aria-label="标签操作"
           ref={menuRef}
-          className="fixed z-50 w-44 rounded-sm border border-[#c8c8c8] bg-white py-1 shadow-lg"
+          className="fixed z-50 w-44 rounded-xl border border-[#e1e4f0] bg-white py-1.5 shadow-xl shadow-[#28304d]/15"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           <button
             type="button"
             role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
             onClick={() => runContextAction(onClose)}
           >
             关闭标签
@@ -447,7 +384,7 @@ export const TabSidebar = memo(function TabSidebar({
           <button
             type="button"
             role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
             onClick={() => runContextAction(onCloseOthers)}
           >
             关闭其他标签
@@ -455,7 +392,7 @@ export const TabSidebar = memo(function TabSidebar({
           <button
             type="button"
             role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#333333] outline-none hover:bg-[#e8e8e8] focus:bg-[#e8e8e8]"
+            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
             onClick={() => {
               setContextMenu(null)
               onCloseAll()
@@ -466,10 +403,10 @@ export const TabSidebar = memo(function TabSidebar({
         </div>
       )}
 
-      <div className="shrink-0 border-t border-[#e5e5e5] p-2">
+      <div className="h-9 shrink-0 border-t border-[#e4e7ef]">
         <Button
           variant="ghost"
-          className="w-full justify-start px-2 text-[#616161]"
+          className="h-full w-full justify-start rounded-none px-3 text-[#667085]"
           onClick={onOpenSettings}
           aria-label="编辑器设置"
         >

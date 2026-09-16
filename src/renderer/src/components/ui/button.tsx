@@ -12,10 +12,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0078d4] disabled:pointer-events-none disabled:opacity-50',
-        variant === 'default' && 'bg-[#0078d4] text-white shadow-sm hover:bg-[#006cbe]',
-        variant === 'ghost' && 'text-[#616161] hover:bg-[#e8e8e8] hover:text-[#333333]',
-        variant === 'outline' && 'border border-[#e5e5e5] bg-white text-[#616161] hover:bg-[#e8e8e8] hover:text-[#333333]',
+        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5b5bd6] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        variant === 'default' && 'bg-[#5b5bd6] text-white shadow-sm shadow-[#5b5bd6]/25 hover:-translate-y-px hover:bg-[#4646bc] hover:shadow-md hover:shadow-[#5b5bd6]/25 active:translate-y-0',
+        variant === 'ghost' && 'text-[#667085] hover:bg-[#eeefff] hover:text-[#4646bc]',
+        variant === 'outline' && 'border border-[#dfe3ee] bg-white text-[#475467] shadow-sm hover:border-[#c9cdf5] hover:bg-[#f8f8ff] hover:text-[#4646bc]',
         size === 'default' && 'h-8 px-3',
         size === 'icon' && 'h-8 w-8',
         className

@@ -1,5 +1,5 @@
 import Editor, { loader, type OnMount } from '@monaco-editor/react'
-import { Check, LoaderCircle, RefreshCw, WifiOff } from 'lucide-react'
+import { Check, LoaderCircle, PanelLeftClose, PanelLeftOpen, RefreshCw, WifiOff } from 'lucide-react'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EditorToolbar } from '@/components/EditorToolbar'
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { DEFAULT_EDITOR_SETTINGS, mergeEditorSettings, type EditorSettings } from '@/editorSettings'
 import { useJsonTabs } from '@/hooks/useJsonTabs'
-import { getParseErrorFeedback, getTabModelPath, isValidJson, unescapeJsonText, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
+import { getParseErrorFeedback, getTabModelPath, INITIAL_TAB, isValidJson, unescapeJsonText, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
 import { getMonacoOptions } from '@/monacoOptions'
 import { IS_MACOS } from '@/lib/utils'
 
@@ -16,6 +16,12 @@ type EditorInstance = Parameters<OnMount>[0]
 type MonacoInstance = Parameters<OnMount>[1]
 
 const CONTENT_DEBOUNCE_MS = 200
+const SIDEBAR_TRANSITION_MS = 300
+const JSON_STARTER = `{
+  "message": "在这里粘贴或输入 JSON",
+  "example": true,
+  "items": []
+}`
 
 function hasVisibleContent(model: editor.ITextModel): boolean {
   return /\S/.test(model.getValue())
@@ -120,17 +126,21 @@ function EditorStatusBar({ editor, feedback }: EditorStatusBarProps): JSX.Elemen
     }
   }, [editor])
 
+  const isWaiting = feedback.message === WAITING_FEEDBACK.message
+  const statusColor = isWaiting ? 'bg-[#98a2b3]' : feedback.isValid ? 'bg-[#138a62]' : 'bg-[#d44857]'
+  const statusText = isWaiting ? 'text-[#667085]' : feedback.isValid ? 'text-[#426a5b]' : 'text-[#b42318]'
+
   return (
-    <footer className="flex h-8 shrink-0 items-center justify-between border-t border-[#e5e5e5] bg-[#f3f3f3] px-4 text-xs text-[#616161]">
+    <footer className="flex h-9 shrink-0 items-center justify-between border-t border-[#e4e7ef] px-4 text-xs text-[#667085]">
       <div className="flex min-w-0 items-center gap-2">
-        <span className={`flex h-1.5 w-1.5 shrink-0 rounded-full ${feedback.isValid ? 'bg-[#16825d]' : 'bg-[#f14c4c]'}`} />
-        <span className={`truncate ${feedback.isValid ? 'text-[#616161]' : 'text-[#c72e0f]'}`}>{feedback.message}</span>
+        <span className={`flex h-1.5 w-1.5 shrink-0 rounded-full ${statusColor}`} />
+        <span className={`truncate ${statusText}`}>{feedback.message}</span>
       </div>
       <div className="ml-4 flex shrink-0 items-center gap-4">
         <span>{indent.insertSpaces ? `空格: ${indent.tabSize}` : `Tab 大小: ${indent.tabSize}`}</span>
         <span>{stats.lines} 行</span>
         <span>{stats.chars} 字符</span>
-        <span className="flex items-center gap-1 text-[#616161]">
+        <span className="flex items-center gap-1 text-[#667085]">
           <Check size={13} /> {languageId.toUpperCase()}
         </span>
       </div>
@@ -142,13 +152,16 @@ function EditorApp(): JSX.Element {
   const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
   const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [sidebarWidth, setSidebarWidth] = useState(220)
+  const [sidebarWidth, setSidebarWidth] = useState(200)
+  const [toast, setToast] = useState<{ message: string; tone: 'success' | 'error' } | null>(null)
   const editorRef = useRef<EditorInstance | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
   const [editorInstance, setEditorInstance] = useState<EditorInstance | null>(null)
   const errorDecorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null)
   const transformJsonRef = useRef<(spacing: number) => void>(() => undefined)
   const toggleSequenceRef = useRef(0)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>()
+  const sidebarTransitionFrameRef = useRef<number | undefined>()
   const navigationRef = useRef({ tabs: [] as JsonTab[], activeTabId: '' })
 
   const handleTabClosed = useCallback((tabId: string) => {
@@ -209,6 +222,28 @@ function EditorApp(): JSX.Element {
 
   const editorOptions = useMemo(() => getMonacoOptions(settings), [settings])
 
+  const toggleSidebar = useCallback((): void => {
+    cancelAnimationFrame(sidebarTransitionFrameRef.current ?? 0)
+    setIsSidebarCollapsed((collapsed) => !collapsed)
+    const startedAt = performance.now()
+    const syncLayout = (now: number): void => {
+      editorRef.current?.layout()
+      if (now - startedAt < SIDEBAR_TRANSITION_MS) {
+        sidebarTransitionFrameRef.current = requestAnimationFrame(syncLayout)
+      }
+    }
+    sidebarTransitionFrameRef.current = requestAnimationFrame(syncLayout)
+  }, [])
+
+  const showToast = useCallback((message: string, tone: 'success' | 'error' = 'success'): void => {
+    clearTimeout(toastTimerRef.current)
+    setToast({ message, tone })
+    toastTimerRef.current = setTimeout(() => setToast(null), 2400)
+  }, [])
+
+  useEffect(() => () => clearTimeout(toastTimerRef.current), [])
+  useEffect(() => () => cancelAnimationFrame(sidebarTransitionFrameRef.current ?? 0), [])
+
   const applyBracketColorization = useCallback((enabled: boolean): void => {
     editorRef.current?.getModel()?.updateOptions({
       bracketColorizationOptions: {
@@ -247,12 +282,13 @@ function EditorApp(): JSX.Element {
             isValid: true,
             parseErrorLine: null
           })
+          showToast(spacing === 0 ? 'JSON 已压缩' : 'JSON 已格式化')
         } catch (error) {
           setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
         }
       })
     },
-    [activeTab.id, setTabFeedback, withEditorValue]
+    [activeTab.id, setTabFeedback, showToast, withEditorValue]
   )
 
   useEffect(() => {
@@ -273,22 +309,26 @@ function EditorApp(): JSX.Element {
     try {
       await navigator.clipboard.writeText(value)
       setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '已复制到剪贴板', isValid: true })
+      showToast('JSON 已复制到剪贴板')
     } catch {
       setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '无法访问剪贴板', isValid: false })
+      showToast('无法访问剪贴板', 'error')
     }
-  }, [activeTab.id, setTabFeedback])
+  }, [activeTab.id, setTabFeedback, showToast])
 
   const clearEditor = useCallback(() => {
     applyModelValue('')
     editorRef.current?.focus()
-  }, [applyModelValue])
+    showToast('编辑器已清空')
+  }, [applyModelValue, showToast])
 
   const escapeJson = useCallback(() => {
     withEditorValue((value, apply) => {
       apply(JSON.stringify(value))
       setTabFeedback(activeTab.id, { message: '已转义 JSON 文本', isValid: true, parseErrorLine: null })
+      showToast('JSON 文本已转义')
     })
-  }, [activeTab.id, setTabFeedback, withEditorValue])
+  }, [activeTab.id, setTabFeedback, showToast, withEditorValue])
 
   const unescapeJson = useCallback(() => {
     withEditorValue((value, apply) => {
@@ -301,11 +341,12 @@ function EditorApp(): JSX.Element {
           isValid: resultIsValid,
           parseErrorLine: null
         })
+        showToast(resultIsValid ? '已去除 JSON 转义' : '已去除 JSON 转义')
       } catch (error) {
         setTabFeedback(activeTab.id, getParseErrorFeedback(value, error))
       }
     })
-  }, [activeTab.id, setTabFeedback, withEditorValue])
+  }, [activeTab.id, setTabFeedback, showToast, withEditorValue])
 
   const readMarkerState = useCallback(
     (tabId: string) => {
@@ -356,7 +397,19 @@ function EditorApp(): JSX.Element {
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyM],
       run: () => transformJsonRef.current(0)
     })
+    requestAnimationFrame(() => editor.layout())
   }
+
+  useEffect(() => {
+    if (!editorInstance) return
+    const layout = (): void => editorInstance.layout()
+    window.addEventListener('resize', layout)
+    return () => window.removeEventListener('resize', layout)
+  }, [editorInstance])
+
+  useEffect(() => {
+    editorInstance?.layout()
+  }, [editorInstance, sidebarWidth])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -372,7 +425,7 @@ function EditorApp(): JSX.Element {
 
       if (!event.shiftKey && event.key.toLowerCase() === 'b') {
         event.preventDefault()
-        setIsSidebarCollapsed((current) => !current)
+        toggleSidebar()
         return
       }
 
@@ -395,7 +448,7 @@ function EditorApp(): JSX.Element {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [addTab, setActiveTabId])
+  }, [addTab, setActiveTabId, toggleSidebar])
 
   useEffect(() => {
     let isMounted = true
@@ -416,7 +469,7 @@ function EditorApp(): JSX.Element {
   useEffect(() => {
     const frame = requestAnimationFrame(() => readMarkerState(activeTab.id))
     return () => cancelAnimationFrame(frame)
-  }, [activeTab.id, readMarkerState])
+  }, [activeTab.id, editorInstance, readMarkerState])
 
   useEffect(() => {
     const currentEditor = editorRef.current
@@ -445,11 +498,22 @@ function EditorApp(): JSX.Element {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <main className="flex h-screen min-h-[520px] min-w-[760px] flex-col overflow-hidden bg-white text-[#333333]">
-        <header
-          className={`flex h-10 shrink-0 items-center border-b border-[#e5e5e5] bg-white app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-4'}`}
-        >
-          {IS_MACOS && <span className="text-sm font-medium text-[#333333]">JSONPal</span>}
+      <main className="app-shell flex h-screen min-h-[520px] min-w-[760px] flex-col overflow-hidden">
+        <header className={`app-panel relative flex h-9 shrink-0 items-center border-b app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-3'}`}>
+          <div className="app-no-drag relative z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-[#667085]"
+              onClick={toggleSidebar}
+              aria-label={isSidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
+            >
+              {isSidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            </Button>
+          </div>
+          <span className="pointer-events-none absolute inset-x-20 truncate px-3 text-center text-xs font-medium text-[#475467]" title={activeTab.title}>
+            {activeTab.title}
+          </span>
         </header>
 
         <section className="flex min-h-0 flex-1" aria-label="JSON workspace">
@@ -459,9 +523,7 @@ function EditorApp(): JSX.Element {
             isCollapsed={isSidebarCollapsed}
             width={sidebarWidth}
             onWidthChange={setSidebarWidth}
-            onSetCollapsed={setIsSidebarCollapsed}
             onActivate={setActiveTabId}
-            onAdd={addTab}
             onRename={renameTab}
             onClose={closeTab}
             onCloseOthers={closeOtherTabs}
@@ -469,9 +531,10 @@ function EditorApp(): JSX.Element {
             onReorder={setTabs}
             onOpenSettings={openSettings}
           />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-white">
             <EditorToolbar
               wordWrap={settings.wordWrap}
+              onAdd={addTab}
               onFormat={formatJson}
               onCompress={compressJson}
               onEscape={escapeJson}
@@ -481,12 +544,13 @@ function EditorApp(): JSX.Element {
               onClear={clearEditor}
             />
 
-            <div className="min-h-0 flex-1" aria-label="JSON editor">
+            <div className="relative min-h-0 flex-1" aria-label="JSON editor">
               {monacoLoadState === 'ready' ? (
                 <Editor
                   height="100%"
                   language="json"
                   path={getTabModelPath(activeTab.id)}
+                  defaultValue={activeTab.id === INITIAL_TAB.id ? JSON_STARTER : ''}
                   saveViewState
                   theme="vs"
                   onMount={handleEditorMount}
@@ -502,6 +566,11 @@ function EditorApp(): JSX.Element {
             <EditorStatusBar editor={editorInstance} feedback={activeFeedback} />
           </div>
         </section>
+        {toast && (
+          <div className={`toast-notice fixed bottom-14 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-xl border px-3 py-2 text-sm ${toast.tone === 'success' ? 'border-[#b7ead7] bg-white text-[#176b4e]' : 'border-[#f5c8cf] bg-white text-[#b42318]'}`} role="status" aria-live="polite">
+            <Check size={16} className={toast.tone === 'success' ? 'text-[#138a62]' : 'text-[#d44857]'} />{toast.message}
+          </div>
+        )}
       </main>
     </TooltipProvider>
   )

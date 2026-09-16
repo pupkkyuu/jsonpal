@@ -4,11 +4,21 @@
 
 :root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #333333;
-  background: #ffffff;
-  --vscode-foreground: #333333;
-  --vscode-accent-soft: #dbeeff;
-  --vscode-error: #f14c4c;
+  color: #172033;
+  background: #f7f8fc;
+  --vscode-foreground: #172033;
+  --vscode-accent-soft: #e9edff;
+  --vscode-error: #d44857;
+  --surface: #ffffff;
+  --surface-subtle: #f7f8fc;
+  --surface-raised: #fbfbff;
+  --border: #e4e7ef;
+  --border-strong: #d6dbe8;
+  --muted: #667085;
+  --brand: #5b5bd6;
+  --brand-strong: #4646bc;
+  --brand-soft: #eeefff;
+  --success: #138a62;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -29,6 +39,12 @@ button {
   font: inherit;
 }
 
+button,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .app-drag-region {
   -webkit-app-region: drag;
 }
@@ -47,10 +63,58 @@ button {
   background: var(--vscode-accent-soft);
 }
 
+.app-shell {
+  background: var(--surface);
+  color: var(--vscode-foreground);
+}
+
+.app-panel {
+  background: color-mix(in srgb, var(--surface) 94%, #f8f8ff);
+  border-color: var(--border);
+}
+
+.settings-navigation {
+  background: var(--surface-subtle);
+}
+
+.tab-sidebar {
+  background: var(--surface-subtle);
+}
+
+.toast-notice {
+  animation: toast-in 180ms ease-out;
+  box-shadow: 0 12px 28px rgb(24 32 58 / 14%);
+}
+
+.toolbar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border-radius: 0.5rem;
+  color: #475467;
+  font-size: 0.8125rem;
+  text-align: left;
+  outline: none;
+}
+
+.toolbar-menu-item:hover,
+.toolbar-menu-item:focus {
+  color: #4646bc;
+  background: #eeefff;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Keep the sidebar scrollbar visible against its light background. */
 .sidebar-tab-list {
   scrollbar-width: auto;
-  scrollbar-color: #9e9e9e #e1e1e1;
+  scrollbar-color: #b7becd transparent;
 }
 
 .sidebar-tab-list::-webkit-scrollbar {
@@ -58,22 +122,22 @@ button {
 }
 
 .sidebar-tab-list::-webkit-scrollbar-track {
-  background: #e1e1e1;
+  background: transparent;
 }
 
 .sidebar-tab-list::-webkit-scrollbar-thumb {
   min-height: 40px;
-  border: 3px solid #e1e1e1;
+  border: 3px solid transparent;
   border-radius: 6px;
-  background: #9e9e9e;
+  background: #b7becd;
 }
 
 .sidebar-tab-list::-webkit-scrollbar-thumb:hover {
-  background: #6f6f6f;
+  background: #8d96aa;
 }
 
 .monaco-editor .json-error-line {
-  background-color: rgb(241 76 76 / 12%);
+  background-color: rgb(212 72 87 / 10%);
 }
 
 .monaco-editor .json-error-line-number {

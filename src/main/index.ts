@@ -2,6 +2,10 @@ import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
 
+// macOS creates the application menu during startup, before the `ready` event.
+// Set this here so the menu shows JSONPal instead of Electron in development too.
+app.setName('JSONPal')
+
 let mainWindow: BrowserWindow | null = null
 let settingsWindow: BrowserWindow | null = null
 
@@ -94,7 +98,13 @@ function createSettingsWindow(): void {
 }
 
 app.whenReady().then(() => {
-  app.setName('JSONPal')
+  app.setAboutPanelOptions({
+    applicationName: 'JSONPal',
+    applicationVersion: app.getVersion(),
+    version: app.getVersion(),
+    copyright: 'Copyright © 2026 kkyuu'
+  })
+
   ipcMain.handle('settings:open', () => createSettingsWindow())
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
