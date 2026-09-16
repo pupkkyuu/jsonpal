@@ -1,0 +1,98 @@
+src/main/index.ts
+  s_86ca007534cd20::t_e82a4d004ec66e 5-8
+  s_86ca007534cd20::t_3501b069da265e 101-104,106-107
+  h_73bfcc563f4feb 105
+src/renderer/src/monacoOptions.ts
+  s_624d4720555c72::t_c0181fce7a91fd 6
+src/renderer/src/EditorApp.tsx
+  s_624d4720555c72::t_3117c50bfac5f4 20-24
+  s_624d4720555c72::t_e1a0e775406027 225,227,236,428,451,508
+  s_624d4720555c72::t_c0181fce7a91fd 400,403-412
+  s_c917a32234ad95::t_3f039fdf436a0b 134
+  s_624d4720555c72::t_1e5ec2f08f84ee 413
+  s_c917a32234ad95::t_d3c6e62053a21b 155
+  s_624d4720555c72::t_ea9b64d93d2906 19,164,226,228-235,245
+  s_624d4720555c72::t_c487074f81ece2 472
+  s_624d4720555c72::t_545b0f33603a0a 2,504-507,509-513
+  s_c917a32234ad95::t_06da3302bfb283 537
+  s_624d4720555c72::t_546192b68e77c2 129-132,136-137,143,156,163,237-244,246,285,291,312,315,317,322-323,329,331,344,349,501,534,547,569-573
+  s_624d4720555c72::t_6eb62852a6c987 11,553
+  s_624d4720555c72::t_1a10acb9079007 502-503,514-516
+src/renderer/src/components/ui/switch.tsx
+  s_624d4720555c72::t_ee9d928ee96c9e 17-18
+src/renderer/src/components/ui/button.tsx
+  s_624d4720555c72::t_ee9d928ee96c9e 15-18
+src/renderer/src/components/TabSidebar.tsx
+  s_c917a32234ad95::t_68d98c977bc615 192,257,269
+  s_c917a32234ad95::t_90128306db62f8 18,202,329-331,338,341,362
+  s_c917a32234ad95::t_db0630df000a80 313
+  s_624d4720555c72::t_3713835382583b 89,95,121,373,379,387,395
+  s_624d4720555c72::t_357377eb2d0ad8 227-230
+  s_624d4720555c72::t_c80e5c2d8f8c1b 315,318,349
+  s_624d4720555c72::t_545b0f33603a0a 314
+  s_624d4720555c72::t_51502679c366c7 406,409
+  s_c917a32234ad95::t_44e17425b25c7e 88,140,150
+src/renderer/src/components/EditorToolbar.tsx
+  s_c917a32234ad95::t_43a7c7c7978d50 55
+  s_c917a32234ad95::t_06da3302bfb283 1,8,20,54,56-58
+  s_624d4720555c72::t_ffeba28f2f1b73 59-61,68-69,75-76,79
+  s_c917a32234ad95::t_3e25320c07dbe5 62-65
+  s_624d4720555c72::t_82a1b543fbf299 2,29-51,66-67,70-74,77-78,80-86
+src/renderer/src/SettingsApp.tsx
+  s_c917a32234ad95::t_63accec1a167f0 229-230,232-233
+  s_c917a32234ad95::t_d00701b0a26677 186,371
+  s_c917a32234ad95::t_e26ff8e7ba2827 59-60,64,76,225-227,300-302,363,378-380
+  s_c917a32234ad95::t_9587cfb98e1ca2 388-390
+  s_c917a32234ad95::t_81682483d6a718 234-251,266
+  s_624d4720555c72::t_6e07729d106152 357,359
+  s_c917a32234ad95::t_a2cbe1cb5294a2 6,213,216-222,231,255-263
+  s_624d4720555c72::t_168f69e75b6157 47-49,57-58,61-63,65-68,77-78,80-81,88-89,91-92,94-95,99,106-109,115-116,118-119,123,129-130,132-135,137-138,147,150,152-153,162,165,167-168,187
+  s_c917a32234ad95::t_e1a6569e4da4cd 4,196-210,212,214-215,252
+  s_624d4720555c72::t_545b0f33603a0a 358
+  s_c917a32234ad95::t_e8eab57911710b 264
+package.json
+  s_86ca007534cd20::t_e82a4d004ec66e 3
+  h_73bfcc563f4feb 4
+src/renderer/src/styles.css
+  s_c917a32234ad95::t_e26ff8e7ba2827 67,74-77
+  s_c917a32234ad95::t_db0630df000a80 80-83
+  s_624d4720555c72::t_ee9d928ee96c9e 7-21,42-47,66,68-73,78-79,84-88,109-113,117,125,130,132,136,140
+  s_624d4720555c72::t_82a1b543fbf299 89-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bcce360f101e192e69d57ac95615b47aaabd8d18",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  },
+  "sessions": {
+    "s_624d4720555c72": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a552-56c2-7282-92d7-fb75db051ee1",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_86ca007534cd20": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a932-2fd1-7f22-948e-16c2c40541e8",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_c917a32234ad95": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a8e7-deb8-7981-bf05-6f6307703404",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
