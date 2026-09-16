@@ -1,0 +1,52 @@
+src/renderer/src/jsonTransformTypes.ts
+  s_a345307d8f211f::t_b03f6b90c31d95 1-18
+src/renderer/src/hooks/useJsonTransformWorker.ts
+  s_a345307d8f211f::t_b03f6b90c31d95 1-45
+electron.vite.config.ts
+  s_a345307d8f211f::t_09564520178579 3,6-28,37
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_883472e7e447ba::t_bee707f80d8fc7 1-2,10-15,17-22,32-36,47-49,51-52,54-99,102-110,113-120,123-137
+src/renderer/src/SettingsApp.tsx
+  s_883472e7e447ba::t_01856cb5781011 29,327-329,332-333
+src/renderer/src/EditorApp.tsx
+  s_a345307d8f211f::t_75ac35c65337a9 47
+  s_a345307d8f211f::t_31c2f232000d37 43-46
+  s_a345307d8f211f::t_ebac44e14e1998 395
+  s_a345307d8f211f::t_3b1d1bf99b8199 173,390-394,396-424,440
+  s_a345307d8f211f::t_9f901507512a43 10-11,13,32-42,174,211,318-337,339-359,425-426,446
+  s_a345307d8f211f::t_e618e1610b70f3 28-29,381
+  s_883472e7e447ba::t_7feb55863f99b2 9,268
+  s_883472e7e447ba::t_4dcb01ed65149e 15,179-204,213-219
+  s_883472e7e447ba::t_cbc10ac7ea1f10 259
+  s_a345307d8f211f::t_1503c99cfe199b 427
+src/renderer/src/jsonTransform.worker.ts
+  s_a345307d8f211f::t_b03f6b90c31d95 1-62
+package.json
+  s_883472e7e447ba::t_6802b158d286bc 28-29
+package-lock.json
+  s_883472e7e447ba::t_7e813e5b87d6bb 3,9,21-22,8554-8582
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d42f806aa13f8bcabb12d8c44182850968a00a05",
+  "prompts": {},
+  "sessions": {
+    "s_883472e7e447ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a98b-a735-7091-9baa-b782296e5935",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_a345307d8f211f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a94c-2185-75b2-815e-7de6cb168837",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
