@@ -8,9 +8,14 @@ export function getMonacoOptions(settings: EditorSettings): editor.IStandaloneEd
     fontSize: settings.fontSize,
     fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', monospace",
     lineHeight: 23,
-    padding: { top: 16, bottom: 16 },
+    // Keep the first line flush with the editor's top edge. The toolbar is
+    // already a separate row, so extra top padding reads as an unintended gap.
+    padding: { top: 0, bottom: 16 },
     scrollBeyondLastLine: false,
     smoothScrolling: true,
+    // Keep find/replace as an overlay. Monaco otherwise inserts a view zone
+    // above the first line (and expands it again when replace is enabled).
+    find: { addExtraSpaceOnTop: false },
     renderLineHighlight: 'gutter',
     tabSize: 2,
     wordWrap: settings.wordWrap ? 'on' : 'off',

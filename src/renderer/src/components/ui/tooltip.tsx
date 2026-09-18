@@ -9,7 +9,7 @@ function TooltipContent({
   className = '',
   sideOffset = 6,
   ...props
-}: ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>): JSX.Element {
+}: ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>): React.JSX.Element {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content

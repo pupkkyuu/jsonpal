@@ -1,4 +1,4 @@
-import { Braces, Code, Copy, FileCode, MoreHorizontal, Plus, Trash2, WrapText } from 'lucide-react'
+import { Braces, ChevronsDownUp, ChevronsUpDown, Code, Copy, FileCode, MoreHorizontal, Plus, Trash2, WrapText } from 'lucide-react'
 import { memo, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -11,6 +11,8 @@ interface EditorToolbarProps {
   onEscape: () => void
   onUnescape: () => void
   onCopy: () => void
+  onFoldAll: () => void
+  onUnfoldAll: () => void
   onToggleWordWrap: () => void
   onClear: () => void
 }
@@ -23,9 +25,11 @@ export const EditorToolbar = memo(function EditorToolbar({
   onEscape,
   onUnescape,
   onCopy,
+  onFoldAll,
+  onUnfoldAll,
   onToggleWordWrap,
   onClear
-}: EditorToolbarProps): JSX.Element {
+}: EditorToolbarProps): React.JSX.Element {
   const [isMoreOpen, setIsMoreOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
@@ -63,6 +67,22 @@ export const EditorToolbar = memo(function EditorToolbar({
           <Trash2 size={15} />
           <span className="hidden md:inline">清空</span>
         </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onFoldAll} aria-label="全部折叠">
+              <ChevronsDownUp size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>全部折叠</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onUnfoldAll} aria-label="全部展开">
+              <ChevronsUpDown size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>全部展开</TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className={wordWrap ? 'h-7 w-7 bg-[#eeefff] text-[#4646bc]' : 'h-7 w-7'} onClick={onToggleWordWrap} aria-label="自动换行" aria-pressed={wordWrap}>

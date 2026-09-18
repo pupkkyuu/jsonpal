@@ -20,13 +20,13 @@ import { Fragment, type ReactNode, useCallback, useEffect, useState } from 'reac
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import {
-  DEFAULT_EDITOR_SETTINGS,
   mergeEditorSettings,
   type EditorSettings,
   type LineNumberMode,
   type WhitespaceMode
 } from '@/editorSettings'
 import { IS_MACOS } from '@/lib/utils'
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
 type SettingsCategory = 'general' | 'editor' | 'shortcuts'
 
@@ -42,7 +42,7 @@ interface SettingRowProps {
   children: ReactNode
 }
 
-function SettingRow({ icon: Icon, label, children }: SettingRowProps): JSX.Element {
+function SettingRow({ icon: Icon, label, children }: SettingRowProps): React.JSX.Element {
   return (
     <div className="flex min-h-12 items-center justify-between gap-6 border-b border-[#edf0f5] py-2.5 last:border-b-0">
       <div className="flex items-center gap-3 text-sm font-medium text-[#344054]">
@@ -54,7 +54,7 @@ function SettingRow({ icon: Icon, label, children }: SettingRowProps): JSX.Eleme
   )
 }
 
-function SettingsGroup({ title, description, children }: { title: string; description: string; children: ReactNode }): JSX.Element {
+function SettingsGroup({ title, description, children }: { title: string; description: string; children: ReactNode }): React.JSX.Element {
   return (
     <section className="border-t border-[#e4e7ef] first:border-t-0">
       <div className="py-3">
@@ -71,7 +71,7 @@ interface SettingsFormProps {
   updateSettings: (patch: Partial<EditorSettings>) => void
 }
 
-function SettingsForm({ settings, updateSettings }: SettingsFormProps): JSX.Element {
+function SettingsForm({ settings, updateSettings }: SettingsFormProps): React.JSX.Element {
   return (
     <div className="space-y-5">
       <SettingsGroup title="显示" description="控制编辑器中的辅助信息与布局。">
@@ -177,7 +177,7 @@ interface CategoryButtonProps {
   onClick: () => void
 }
 
-function CategoryButton({ active, icon: Icon, label, onClick }: CategoryButtonProps): JSX.Element {
+function CategoryButton({ active, icon: Icon, label, onClick }: CategoryButtonProps): React.JSX.Element {
   return (
     <button
       type="button"
@@ -208,7 +208,7 @@ function getConfigPathDisplay(configPath: string): { filename: string; directory
   }
 }
 
-function GeneralSettings({ configPath, onOpenFolder }: { configPath: string; onOpenFolder: () => void }): JSX.Element {
+function GeneralSettings({ configPath, onOpenFolder }: { configPath: string; onOpenFolder: () => void }): React.JSX.Element {
   const [isPathExpanded, setIsPathExpanded] = useState(false)
   const [isPathCopied, setIsPathCopied] = useState(false)
   const { filename, directory } = getConfigPathDisplay(configPath)
@@ -273,7 +273,7 @@ interface ShortcutRowProps {
   keys: string[]
 }
 
-function ShortcutRow({ label, keys }: ShortcutRowProps): JSX.Element {
+function ShortcutRow({ label, keys }: ShortcutRowProps): React.JSX.Element {
   return (
     <div className="flex min-h-14 items-center justify-between gap-6 border-b border-[#e5e5e5] py-3 last:border-b-0">
       <span className="text-sm font-medium text-[#333333]">{label}</span>
@@ -291,7 +291,7 @@ function ShortcutRow({ label, keys }: ShortcutRowProps): JSX.Element {
   )
 }
 
-function ShortcutsSection(): JSX.Element {
+function ShortcutsSection(): React.JSX.Element {
   const modifier = IS_MACOS ? '⌘' : 'Ctrl'
   const shift = IS_MACOS ? '⇧' : 'Shift'
 
@@ -320,15 +320,17 @@ function ShortcutsSection(): JSX.Element {
   )
 }
 
-function SettingsApp(): JSX.Element {
+function SettingsApp(): React.JSX.Element {
   const [category, setCategory] = useState<SettingsCategory>('general')
-  const [settings, setSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS)
   const [configPath, setConfigPath] = useState('')
   const [isApplying, setIsApplying] = useState(false)
+  const settings = useWorkspaceStore((state) => state.settings)
+  const setSettings = useWorkspaceStore((state) => state.setSettings)
+  const updateStoredSettings = useWorkspaceStore((state) => state.updateSettings)
 
   const updateSettings = useCallback((patch: Partial<EditorSettings>) => {
-    setSettings((current) => ({ ...current, ...patch }))
-  }, [])
+    updateStoredSettings(patch)
+  }, [updateStoredSettings])
 
   const applySettings = useCallback(async () => {
     setIsApplying(true)

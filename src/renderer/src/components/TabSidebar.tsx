@@ -30,7 +30,7 @@ interface SortableTabProps {
   onContextMenu: (event: MouseEvent<HTMLDivElement>, tabId: string) => void
 }
 
-const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose, onContextMenu }: SortableTabProps): JSX.Element {
+const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRename, onClose, onContextMenu }: SortableTabProps): React.JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState(tab.title)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -86,7 +86,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
       onContextMenu={(event) => onContextMenu(event, tab.id)}
       className={cn(
         'group relative flex h-10 w-full items-center gap-1 rounded-lg border border-transparent px-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#5b5bd6]',
-        isActive ? 'border-[#d9dcfa] bg-[#eeefff] text-[#34349b] shadow-sm shadow-[#5b5bd6]/5' : 'text-[#667085] hover:bg-white hover:text-[#344054]',
+        isActive ? 'border-[#d9dcfa] bg-[#eeefff] text-[#34349b] shadow-sm shadow-[#5b5bd6]/5' : 'text-[#667085] hover:bg-[#f0f1f6] hover:text-[#344054] focus-within:bg-[#f0f1f6]',
         isDragging && 'z-10 opacity-60 shadow-md'
       )}
     >
@@ -132,25 +132,33 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
         </span>
       )}
 
-      <button
-        type="button"
-        aria-label={`重命名 ${tab.title}`}
-        onClick={handleEdit}
-        onPointerDown={(event) => event.stopPropagation()}
-        className={`absolute right-8 flex h-7 w-7 items-center justify-center rounded-md bg-white text-[#98a2b3] opacity-0 outline-none transition-opacity hover:text-[#4646bc] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#5b5bd6] group-hover:opacity-100 ${isEditing ? 'hidden' : ''}`}
+      <div
+        className={cn(
+          'absolute right-1 flex items-center gap-1 rounded-md pl-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100',
+          isActive ? 'bg-[#eeefff]' : 'bg-[#f0f1f6]',
+          isEditing && 'hidden'
+        )}
       >
-        <Pencil size={13} />
-      </button>
+        <button
+          type="button"
+          aria-label={`重命名 ${tab.title}`}
+          onClick={handleEdit}
+          onPointerDown={(event) => event.stopPropagation()}
+          className="flex h-7 w-6 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#e1e3ec] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]"
+        >
+          <Pencil size={13} />
+        </button>
 
-      <button
-        type="button"
-        aria-label={`关闭 ${tab.title}`}
-        onClick={handleClose}
-        onPointerDown={(event) => event.stopPropagation()}
-        className={`absolute right-1 flex h-7 w-7 items-center justify-center rounded-md bg-white text-[#98a2b3] opacity-0 outline-none transition-opacity hover:text-[#4646bc] focus:opacity-100 focus-visible:ring-2 focus-visible:ring-[#5b5bd6] group-hover:opacity-100 ${isEditing ? 'hidden' : ''}`}
-      >
-        <X size={14} />
-      </button>
+        <button
+          type="button"
+          aria-label={`关闭 ${tab.title}`}
+          onClick={handleClose}
+          onPointerDown={(event) => event.stopPropagation()}
+          className="flex h-7 w-6 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#e1e3ec] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]"
+        >
+          <X size={14} />
+        </button>
+      </div>
     </div>
   )
 })
@@ -183,14 +191,18 @@ export const TabSidebar = memo(function TabSidebar({
   onCloseAll,
   onReorder,
   onOpenSettings
-}: TabSidebarProps): JSX.Element {
+}: TabSidebarProps): React.JSX.Element {
   const [searchQuery, setSearchQuery] = useState('')
   const [contextMenu, setContextMenu] = useState<{ tabId: string; x: number; y: number } | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const sidebarRef = useRef<HTMLElement | null>(null)
   const isResizingRef = useRef(false)
   const [isResizing, setIsResizing] = useState(false)
   const resizeStartRef = useRef({ x: 0, width })
+  const previewWidthRef = useRef(width)
+  const pendingWidthRef = useRef<number | null>(null)
+  const resizeFrameRef = useRef<number | undefined>(undefined)
   const MIN_WIDTH = 180
   const MAX_WIDTH = 420
   const sensors = useSensors(
@@ -256,17 +268,35 @@ export const TabSidebar = memo(function TabSidebar({
     isResizingRef.current = true
     setIsResizing(true)
     resizeStartRef.current = { x: event.clientX, width }
+    previewWidthRef.current = width
+    pendingWidthRef.current = width
     event.currentTarget.setPointerCapture?.(event.pointerId)
   }
 
   useEffect(() => {
     const handlePointerMove = (event: globalThis.PointerEvent): void => {
       if (!isResizingRef.current) return
-      onWidthChange(clampWidth(resizeStartRef.current.width + event.clientX - resizeStartRef.current.x))
+      pendingWidthRef.current = clampWidth(resizeStartRef.current.width + event.clientX - resizeStartRef.current.x)
+      if (resizeFrameRef.current !== undefined) return
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        resizeFrameRef.current = undefined
+        const nextWidth = pendingWidthRef.current
+        if (nextWidth === null) return
+        previewWidthRef.current = nextWidth
+        sidebarRef.current?.style.setProperty('width', `${nextWidth}px`)
+      })
     }
     const handlePointerUp = (): void => {
+      if (!isResizingRef.current) return
       isResizingRef.current = false
       setIsResizing(false)
+      cancelAnimationFrame(resizeFrameRef.current ?? 0)
+      resizeFrameRef.current = undefined
+      const nextWidth = pendingWidthRef.current ?? previewWidthRef.current
+      pendingWidthRef.current = null
+      previewWidthRef.current = nextWidth
+      sidebarRef.current?.style.setProperty('width', `${nextWidth}px`)
+      onWidthChange(nextWidth)
     }
     window.addEventListener('pointermove', handlePointerMove)
     window.addEventListener('pointerup', handlePointerUp)
@@ -275,6 +305,7 @@ export const TabSidebar = memo(function TabSidebar({
       window.removeEventListener('pointermove', handlePointerMove)
       window.removeEventListener('pointerup', handlePointerUp)
       window.removeEventListener('pointercancel', handlePointerUp)
+      cancelAnimationFrame(resizeFrameRef.current ?? 0)
     }
   }, [clampWidth, onWidthChange])
 
@@ -310,6 +341,7 @@ export const TabSidebar = memo(function TabSidebar({
 
   return (
     <aside
+      ref={sidebarRef}
       className={`app-panel tab-sidebar relative flex shrink-0 flex-col overflow-hidden ${isResizing ? 'transition-none' : 'transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none'} ${isCollapsed ? 'border-r-0' : 'border-r'}`}
       style={{ width: isCollapsed ? 0 : width }}
       aria-label={isCollapsed ? 'JSON Tab 侧边栏（已收起）' : 'JSON Tab 侧边栏'}

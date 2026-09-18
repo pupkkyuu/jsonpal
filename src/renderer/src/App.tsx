@@ -4,7 +4,7 @@ const IS_SETTINGS_WINDOW = new URLSearchParams(window.location.search).has('sett
 const EditorApp = lazy(() => import('./EditorApp'))
 const SettingsApp = lazy(() => import('./SettingsApp'))
 
-function App(): JSX.Element {
+function App(): React.JSX.Element {
   const Page = IS_SETTINGS_WINDOW ? SettingsApp : EditorApp
 
   return (

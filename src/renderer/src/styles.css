@@ -143,3 +143,22 @@ button {
 .monaco-editor .json-error-line-number {
   border-left: 2px solid var(--vscode-error);
 }
+
+/* Monaco widgets (for example the Ctrl/Cmd+F find box) are overlays. Keep
+ * their layer out of normal flow so opening one never resizes the editor. */
+.monaco-editor .overlayWidgets {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none;
+}
+
+.monaco-editor .overlayWidgets > * {
+  pointer-events: auto;
+}
+
+.monaco-editor .find-widget {
+  position: absolute !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+}

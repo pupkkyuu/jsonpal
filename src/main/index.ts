@@ -43,6 +43,14 @@ function attachWindowOpenGuard(window: BrowserWindow): void {
   })
 }
 
+function attachReloadShortcutGuard(window: BrowserWindow): void {
+  window.webContents.on('before-input-event', (event, input) => {
+    if ((input.meta || input.control) && !input.alt && !input.shift && input.key.toLowerCase() === 'r') {
+      event.preventDefault()
+    }
+  })
+}
+
 function loadRendererWindow(window: BrowserWindow, isSettingsWindow = false): void {
   if (process.env['ELECTRON_RENDERER_URL']) {
     const suffix = isSettingsWindow ? '?settings=1' : ''
@@ -67,6 +75,7 @@ function createWindow(): void {
   })
 
   attachWindowOpenGuard(mainWindow)
+  attachReloadShortcutGuard(mainWindow)
   loadRendererWindow(mainWindow)
 }
 
@@ -90,6 +99,7 @@ function createSettingsWindow(): void {
   })
 
   attachWindowOpenGuard(settingsWindow)
+  attachReloadShortcutGuard(settingsWindow)
   settingsWindow.once('ready-to-show', () => settingsWindow?.show())
   settingsWindow.on('closed', () => {
     settingsWindow = null
