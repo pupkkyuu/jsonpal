@@ -1,0 +1,58 @@
+src/renderer/src/components/ui/button.tsx
+  s_0820689d95092f::t_df932ca983824d 7,11,17
+src/renderer/src/components/EditorToolbar.tsx
+  s_0820689d95092f::t_df932ca983824d 81,85,101
+  s_0820689d95092f::t_0b5b1179845ca1 43-44,49,80,133
+  s_3362de22b1d045::t_8debcc8734e156 98
+  s_0820689d95092f::t_8eb16b3750fd75 108,146
+  s_0820689d95092f::t_b53912bf923694 89
+  s_0820689d95092f::t_70f381144ed3f3 9,20-21,27,37-39,42,47,50-52,55-58,66,73-77,82-84,86-88,90-93,95,100,102-103
+  s_3362de22b1d045::t_e6c96056c37fc3 1,11,29,96-97,99,142
+src/renderer/src/jsonTransform.worker.ts
+  s_3362de22b1d045::t_e6c96056c37fc3 33-44,52-53
+  s_3362de22b1d045::t_cd05c1a1043b93 54
+src/renderer/src/jsonTransformTypes.ts
+  s_3362de22b1d045::t_e6c96056c37fc3 1
+src/renderer/src/EditorApp.tsx
+  s_0820689d95092f::t_eb776dca1600bb 557,702,713-714,719-722,727-731,733-747
+  s_3362de22b1d045::t_0ea4bccd45bcc8 389-391,393,405-438
+  s_0820689d95092f::t_6b6d6f87f5ab35 1,11,19,185,209,225-229,327-331,333-334,336-345,347-349,351,353,554-556,568
+  s_0820689d95092f::t_29a5355558e767 332,335,346,350,352
+  s_3362de22b1d045::t_dcfeb23f57b27e 704
+  s_0820689d95092f::t_f1ff3259dd60f0 659-662,723-726
+  s_0820689d95092f::t_1077bdc35c1f6e 732
+  s_0820689d95092f::t_5b6242a141b1b8 712
+  s_0820689d95092f::t_b1bfcdb9a3e7b2 558-560
+src/renderer/src/jsonUtils.ts
+  s_0820689d95092f::t_70f381144ed3f3 4,21-25
+  s_3362de22b1d045::t_77927e35584b06 13
+  s_0820689d95092f::t_9e9dc7d8cc1f39 26-27
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_3362de22b1d045::t_77927e35584b06 49
+  s_0820689d95092f::t_70f381144ed3f3 28,52-53,99-100
+  s_0820689d95092f::t_ca404da067cb4f 101-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "db31ad970fb7cf8db7be28b827de10bea787a940",
+  "prompts": {},
+  "sessions": {
+    "s_0820689d95092f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0be21-0c40-7e73-9aea-ec98d1b66b2c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_3362de22b1d045": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c20c-008a-7f62-be1d-7fbaef115c7a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
