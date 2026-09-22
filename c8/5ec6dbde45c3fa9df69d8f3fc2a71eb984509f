@@ -1,0 +1,30 @@
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_03d21a36821934::t_375689407c7858 74-79,84-87
+src/renderer/src/EditorApp.tsx
+  s_03d21a36821934::t_375689407c7858 221-223
+  s_3362de22b1d045::t_5c5ad38b6cffe8 122-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c85ec6dbde45c3fa9df69d8f3fc2a71eb984509f",
+  "prompts": {},
+  "sessions": {
+    "s_03d21a36821934": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c7a0-787b-7742-b1fb-10a8095c9950",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_3362de22b1d045": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c20c-008a-7f62-be1d-7fbaef115c7a",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
