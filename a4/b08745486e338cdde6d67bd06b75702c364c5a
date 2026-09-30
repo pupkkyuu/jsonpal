@@ -1,0 +1,42 @@
+README.md
+  h_73bfcc563f4feb 10,68-73
+package.json
+  h_73bfcc563f4feb 14-15
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 1,5,14-15,188-190,227,232,309-310,337-345,359-360,363-364,389,394,407-408,506,593,596,599,622,625-627,681-682,688-698,707
+src/renderer/src/components/ComparisonEditor.tsx
+  h_73bfcc563f4feb 1-366
+src/renderer/src/components/EditorToolbar.tsx
+  h_73bfcc563f4feb 1,21-22,41-43,101-102
+src/renderer/src/hooks/useJsonTransformWorker.ts
+  h_73bfcc563f4feb 20-21,44-49
+src/renderer/src/jsonTransform.worker.ts
+  h_73bfcc563f4feb 22-41,43,46-49,56-59,61,64,67,70-79,82,86
+src/renderer/src/jsonTransformTypes.ts
+  h_73bfcc563f4feb 1,17-18
+src/renderer/src/jsonUtils.ts
+  h_73bfcc563f4feb 1-2
+src/renderer/src/modelTransforms.ts
+  h_73bfcc563f4feb 1-44
+src/renderer/src/stores/useWorkspaceStore.ts
+  h_73bfcc563f4feb 3,8,28,79,87-95
+tests/comparison-cancellation.browser.js
+  h_73bfcc563f4feb 1-51
+tests/comparison-editor.browser.js
+  h_73bfcc563f4feb 1-57
+tests/performance-regressions.test.cjs
+  h_73bfcc563f4feb 1-174
+tests/renderer-server.mjs
+  h_73bfcc563f4feb 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a4b08745486e338cdde6d67bd06b75702c364c5a",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
