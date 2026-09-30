@@ -1,0 +1,22 @@
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 4,11,192-194,235-262,568-582,747-777,779-782
+src/renderer/src/components/ComparisonEditor.tsx
+  h_73bfcc563f4feb 7,38,44-48,52,54,209,327,430,433
+src/renderer/src/hooks/useEditorTransition.ts
+  h_73bfcc563f4feb 1-55
+tests/comparison-transition.browser.js
+  h_73bfcc563f4feb 13,33-34,41,61
+tests/tab-transition.browser.js
+  h_73bfcc563f4feb 1-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b263ff54685676f7f1a17328a6f3cd2c5f6bd663",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
