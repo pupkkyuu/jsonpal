@@ -1,0 +1,16 @@
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 456,480-482,485,489,493,507,515-520,613-616,636
+tests/editor-remount.browser.js
+  h_73bfcc563f4feb 1-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "06b416d6176b818cfe40d49ef70429dc2a19179e",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
