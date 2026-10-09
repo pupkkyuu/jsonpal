@@ -1,0 +1,113 @@
+src/renderer/src/components/ComparisonEditor.tsx
+  h_73bfcc563f4feb 1-461
+package-lock.json
+  h_73bfcc563f4feb 3,9
+src/renderer/src/jsonUtils.ts
+  s_3362de22b1d045::t_77927e35584b06 15
+  s_0820689d95092f::t_70f381144ed3f3 6,23-27
+  s_0820689d95092f::t_9e9dc7d8cc1f39 28-29
+  h_73bfcc563f4feb 1-2
+README.md
+  h_73bfcc563f4feb 1-2,5,8,10,12,14,16,18,20,22,24,26-30,32,34,37,40,43,46,53-56
+package.json
+  h_73bfcc563f4feb 4,14-15
+electron-builder.yml
+  s_2a8e7e220d4f4c::t_c241f7744cdde3 1-13,17-21,23-24,27,29-31,37-42
+  h_73bfcc563f4feb 14-16,22,25-26,28,32-36
+src/renderer/src/components/EditorToolbar.tsx
+  s_0820689d95092f::t_70f381144ed3f3 9,20,23,29,39-40,46,51,54-56,59-62,70,77-81,86-88,90-92,94-97,99,104,106-107
+  s_3362de22b1d045::t_e6c96056c37fc3 11,31,100,103,146
+  h_73bfcc563f4feb 1,21-22,41-43,101-102
+  s_0820689d95092f::t_df932ca983824d 85,89,105
+  s_0820689d95092f::t_0b5b1179845ca1 47-48,53,84,137
+  s_0820689d95092f::t_b53912bf923694 93
+  s_0820689d95092f::t_8eb16b3750fd75 112,150
+src/renderer/src/hooks/useJsonTransformWorker.ts
+  h_73bfcc563f4feb 20-21,44-49
+src/main/index.ts
+  s_2a8e7e220d4f4c::t_c241f7744cdde3 12-15,74,98
+src/renderer/src/hooks/useEditorTransition.ts
+  h_73bfcc563f4feb 1-55
+src/renderer/src/EditorApp.tsx
+  h_73bfcc563f4feb 4-5,11,15,189-194,231,235-262,264,341-342,369-377,391-392,395-396,421,426,439-440,488,512-514,517,521,525,539,543,547-552,568-582,651,654,657,660-663,683,686-688,742-743,747-777,779-782
+  s_0820689d95092f::t_6b6d6f87f5ab35 13,218,266-270,378
+  s_0820689d95092f::t_5b6242a141b1b8 739
+  s_3362de22b1d045::t_b519c46ce07a44 203,380,393,425
+  s_3362de22b1d045::t_dcfeb23f57b27e 731
+  s_3362de22b1d045::t_0ea4bccd45bcc8 415-417,419,433-438
+  s_03d21a36821934::t_375689407c7858 228-230
+  s_3362de22b1d045::t_5c5ad38b6cffe8 124-126
+  s_3362de22b1d045::t_715e70318b4db1 685
+  s_0820689d95092f::t_eb776dca1600bb 729,740-741,778
+  s_ffb97c635e406f::t_f303caca3cb81a 684
+src/renderer/src/jsonTransform.worker.ts
+  s_3362de22b1d045::t_e6c96056c37fc3 63
+  h_73bfcc563f4feb 22-41,43,46-49,56-59,61,64,67,70-79,82,86
+  s_ffb97c635e406f::t_46e9e3f77492b3 44-45,62
+src/renderer/src/stores/useWorkspaceStore.ts
+  h_73bfcc563f4feb 3,8,28,79,87-95
+  s_0820689d95092f::t_ca404da067cb4f 109-111
+  s_03d21a36821934::t_375689407c7858 76-78,80-81,86,96-97
+  s_3362de22b1d045::t_77927e35584b06 51
+  s_0820689d95092f::t_70f381144ed3f3 30,54-55,107-108
+  s_ffb97c635e406f::t_bf8a42b6a6c7a2 52-53,112-114
+src/renderer/src/modelTransforms.ts
+  h_73bfcc563f4feb 1-44
+src/renderer/src/jsonTransformTypes.ts
+  h_73bfcc563f4feb 1,17-18
+src/renderer/src/components/ui/button.tsx
+  s_0820689d95092f::t_df932ca983824d 7,11,17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "78987d1cce9bc28cc8b5fbb9456fc3ddf7e7178a",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  },
+  "sessions": {
+    "s_03d21a36821934": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c7a0-787b-7742-b1fb-10a8095c9950",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_0820689d95092f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0be21-0c40-7e73-9aea-ec98d1b66b2c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_2a8e7e220d4f4c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a11ad9-2da2-7511-90fb-f0186d35a676",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_3362de22b1d045": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c20c-008a-7f62-be1d-7fbaef115c7a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_ffb97c635e406f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ee18797f5ffevVElkzeAnU2D6f",
+        "model": "glm-5.3"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
