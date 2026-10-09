@@ -1,0 +1,21 @@
+src/renderer/src/EditorApp.tsx
+  s_3362de22b1d045::t_9ea41678c3e68f 13,427
+  s_3362de22b1d045::t_715e70318b4db1 548,568,588-596,682-691,753-754
+  s_3362de22b1d045::t_b519c46ce07a44 194,356,369,401,422-424,428-430,437,447
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "43aaeffdb0a8f26379d014e7d44a9189b1317a4d",
+  "prompts": {},
+  "sessions": {
+    "s_3362de22b1d045": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c20c-008a-7f62-be1d-7fbaef115c7a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}

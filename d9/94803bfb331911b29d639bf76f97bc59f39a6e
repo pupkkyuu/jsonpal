@@ -1,0 +1,33 @@
+README.md
+  h_73bfcc563f4feb 1-2,5,8,10,12,14,16,18,20,22,24,26-30,32,34,37,40,43,46,53-56
+electron-builder.yml
+  s_2a8e7e220d4f4c::t_c241f7744cdde3 1-13,17-21,23-24,27,29-31,37-42
+  h_73bfcc563f4feb 14-16,22,25-26,28,32-36
+src/main/index.ts
+  s_2a8e7e220d4f4c::t_c241f7744cdde3 12-15,74,98
+package-lock.json
+  h_73bfcc563f4feb 3,9
+package.json
+  h_73bfcc563f4feb 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d994803bfb331911b29d639bf76f97bc59f39a6e",
+  "prompts": {},
+  "humans": {
+    "h_73bfcc563f4feb": {
+      "author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  },
+  "sessions": {
+    "s_2a8e7e220d4f4c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a11ad9-2da2-7511-90fb-f0186d35a676",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
