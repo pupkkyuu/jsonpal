@@ -1,4 +1,4 @@
-export type JsonTransformAction = 'compress' | 'escape' | 'unescape'
+export type JsonTransformAction = 'compress' | 'escape' | 'unescape' | 'sort' | 'validate'
 
 export interface JsonTransformRequest {
   id: number
@@ -14,5 +14,6 @@ export interface JsonTransformError {
 }
 
 export type JsonTransformResponse =
-  | { id: number; ok: true; text: string; isValidJson?: boolean; changed?: boolean }
+  | { id: number; ok: true; changed: true; text: string; isValidJson?: boolean }
+  | { id: number; ok: true; changed: false; isValidJson?: boolean }
   | { id: number; ok: false; error: JsonTransformError }

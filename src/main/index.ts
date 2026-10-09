@@ -9,6 +9,10 @@ app.setName('JSONPal')
 let mainWindow: BrowserWindow | null = null
 let settingsWindow: BrowserWindow | null = null
 
+const APP_ICON = app.isPackaged
+  ? join(process.resourcesPath, 'icon.png')
+  : join(__dirname, '../../build/icon.png')
+
 const WEB_PREFERENCES = {
   preload: join(__dirname, '../preload/index.js'),
   contextIsolation: true,
@@ -67,6 +71,7 @@ function createWindow(): void {
     minWidth: 760,
     minHeight: 520,
     title: 'JSONPal',
+    icon: APP_ICON,
     show: true,
     autoHideMenuBar: false,
     titleBarStyle: 'hiddenInset',
@@ -90,6 +95,7 @@ function createSettingsWindow(): void {
     height: 720,
     minWidth: 680,
     minHeight: 560,
+    icon: APP_ICON,
     
     show: false,
     autoHideMenuBar: false,

@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { DEFAULT_EDITOR_SETTINGS, type EditorSettings } from '@/editorSettings'
-import { createTabId, INITIAL_TAB, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
+import { createTabId, INITIAL_TAB, WAITING_FEEDBACK, type CompareViewMode, type JsonTab, type TabFeedback } from '@/jsonUtils'
 
 interface TabState {
   feedback: TabFeedback
   errorLines: number[]
+  compareMode?: CompareViewMode
 }
 
 export interface ToastNotice {
@@ -24,7 +25,9 @@ interface WorkspaceState {
   setActiveTabId: (id: string) => void
   setTabFeedback: (tabId: string, feedback: TabFeedback) => void
   setTabValidation: (tabId: string, feedback: TabFeedback, errorLines: number[]) => void
+  setCompareMode: (tabId: string, mode: CompareViewMode) => void
   addTab: () => void
+  addDiffTab: () => void
   renameTab: (tabId: string, title: string) => void
   closeTab: (tabId: string) => void
   closeOtherTabs: (tabId: string) => void
@@ -45,7 +48,11 @@ function areErrorLinesEqual(a: number[], b: number[]): boolean {
 }
 
 function createUntitledTab(number: number): JsonTab {
-  return { id: createTabId(), title: `未命名 ${number}` }
+  return { id: createTabId(), title: `格式化 ${number}`, kind: 'json' }
+}
+
+function createDiffTab(number: number): JsonTab {
+  return { id: createTabId(), title: `对比 ${number}`, kind: 'diff' }
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
@@ -66,25 +73,39 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
     setTabFeedback: (tabId, feedback) => {
       const previous = get().statesByTab[tabId]
       if (previous && areFeedbacksEqual(previous.feedback, feedback)) return
-      set((state) => ({
-        statesByTab: {
-          ...state.statesByTab,
-          [tabId]: { feedback, errorLines: previous?.errorLines ?? [] }
-        }
-      }))
+      // Keep the record identity stable so an update is O(1). Consumers should
+      // select an individual tab state rather than the complete record.
+      set((state) => {
+        state.statesByTab[tabId] = { ...previous, feedback, errorLines: previous?.errorLines ?? [] }
+        return { statesByTab: state.statesByTab }
+      })
     },
     setTabValidation: (tabId, feedback, errorLines) => {
       const previous = get().statesByTab[tabId]
       if (previous && areFeedbacksEqual(previous.feedback, feedback) && areErrorLinesEqual(previous.errorLines, errorLines)) return
-      set((state) => ({
-        statesByTab: {
-          ...state.statesByTab,
-          [tabId]: { feedback, errorLines }
-        }
-      }))
+      set((state) => {
+        state.statesByTab[tabId] = { ...previous, feedback, errorLines }
+        return { statesByTab: state.statesByTab }
+      })
+    },
+    setCompareMode: (tabId, compareMode) => {
+      const previous = get().statesByTab[tabId]
+      if (!previous || previous.compareMode === compareMode) return
+      set((state) => {
+        state.statesByTab[tabId] = { ...previous, compareMode }
+        return { statesByTab: state.statesByTab }
+      })
     },
     addTab: () => {
       const tab = createUntitledTab(untitledCounter++)
+      set((state) => ({
+        tabs: [...state.tabs, tab],
+        activeTabId: tab.id,
+        statesByTab: { ...state.statesByTab, [tab.id]: { feedback: WAITING_FEEDBACK, errorLines: [] } }
+      }))
+    },
+    addDiffTab: () => {
+      const tab = createDiffTab(untitledCounter++)
       set((state) => ({
         tabs: [...state.tabs, tab],
         activeTabId: tab.id,

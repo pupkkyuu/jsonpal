@@ -1,7 +1,7 @@
 {
   "name": "jsonpal",
   "productName": "JSONPal",
-  "version": "2026.9.16",
+  "version": "0.1.0-beta.1",
   "description": "A focused JSON formatting desktop tool.",
   "main": "./out/main/index.js",
   "author": "scum",
@@ -11,6 +11,8 @@
   },
   "scripts": {
     "dev": "electron-vite dev",
+    "test": "node --test tests/*.test.cjs",
+    "test:renderer": "node tests/renderer-server.mjs",
     "start": "electron-vite preview",
     "build": "electron-vite build",
     "build:unpack": "electron-vite build && electron-builder --dir",

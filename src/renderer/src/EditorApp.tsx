@@ -1,15 +1,18 @@
 import Editor, { loader, type OnMount, type OnValidate } from '@monaco-editor/react'
 import { Check, LoaderCircle, PanelLeftClose, PanelLeftOpen, RefreshCw, WifiOff } from 'lucide-react'
 import type { editor } from 'monaco-editor'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { ComparisonEditor, type ComparisonEditorHandle, type ComparisonViewState } from '@/components/ComparisonEditor'
 import { EditorToolbar } from '@/components/EditorToolbar'
 import { TabSidebar } from '@/components/TabSidebar'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { mergeEditorSettings } from '@/editorSettings'
+import { useEditorTransition } from '@/hooks/useEditorTransition'
 import { useJsonTransformWorker } from '@/hooks/useJsonTransformWorker'
-import { getTabModelPath, INITIAL_TAB, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
+import { getDiffModelPaths, getTabModelPath, INITIAL_TAB, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
 import { getMonacoOptions } from '@/monacoOptions'
+import { replaceModelText, transformModels } from '@/modelTransforms'
 import type { JsonTransformAction, JsonTransformError } from '@/jsonTransformTypes'
 import { IS_MACOS } from '@/lib/utils'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
@@ -118,7 +121,9 @@ function EditorStatusBar({ editor, feedback }: EditorStatusBarProps): React.JSX.
     const sync = (): void => {
       const model = editor.getModel()
       if (!model) return
-      setStats({ lines: model.getLineCount(), chars: model.getValueLength() })
+      const lines = model.getLineCount()
+      const chars = model.getValueLength()
+      setStats((prev) => (prev.lines === lines && prev.chars === chars ? prev : { lines, chars }))
       const { insertSpaces, tabSize } = model.getOptions()
       setIndent((prev) => (prev.insertSpaces === insertSpaces && prev.tabSize === tabSize ? prev : { insertSpaces, tabSize }))
       setLanguageId((prev) => {
@@ -181,6 +186,12 @@ function EditorStatusBar({ editor, feedback }: EditorStatusBarProps): React.JSX.
 function EditorApp(): React.JSX.Element {
   const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
   const editorRef = useRef<EditorInstance | null>(null)
+  const comparisonRef = useRef<ComparisonEditorHandle | null>(null)
+  const comparisonViewsRef = useRef(new Map<string, ComparisonViewState>())
+  const [comparisonBusy, setComparisonBusy] = useState(false)
+  const tabTransition = useEditorTransition()
+  const readyTabRef = useRef<string | null>(null)
+  const tabTransitionFrameRef = useRef(0)
   const editorContainerRef = useRef<HTMLDivElement | null>(null)
   const monacoRef = useRef<MonacoInstance | null>(null)
   const [editorInstance, setEditorInstance] = useState<EditorInstance | null>(null)
@@ -189,12 +200,12 @@ function EditorApp(): React.JSX.Element {
   const compressJsonRef = useRef<() => Promise<void>>(async () => undefined)
   const toggleSequenceRef = useRef(0)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const transformBusyRef = useRef(false)
   const navigationRef = useRef({ tabs: [] as JsonTab[], activeTabId: '' })
   const previousTabIdsRef = useRef(new Set<string>())
 
   const tabs = useWorkspaceStore((state) => state.tabs)
   const activeTabId = useWorkspaceStore((state) => state.activeTabId)
-  const statesByTab = useWorkspaceStore((state) => state.statesByTab)
   const settings = useWorkspaceStore((state) => state.settings)
   const isSidebarCollapsed = useWorkspaceStore((state) => state.isSidebarCollapsed)
   const sidebarWidth = useWorkspaceStore((state) => state.sidebarWidth)
@@ -204,6 +215,7 @@ function EditorApp(): React.JSX.Element {
   const setTabFeedback = useWorkspaceStore((state) => state.setTabFeedback)
   const setTabValidation = useWorkspaceStore((state) => state.setTabValidation)
   const addTab = useWorkspaceStore((state) => state.addTab)
+  const addDiffTab = useWorkspaceStore((state) => state.addDiffTab)
   const renameTab = useWorkspaceStore((state) => state.renameTab)
   const closeTab = useWorkspaceStore((state) => state.closeTab)
   const closeOtherTabs = useWorkspaceStore((state) => state.closeOtherTabs)
@@ -213,14 +225,49 @@ function EditorApp(): React.JSX.Element {
   const setSidebarWidth = useWorkspaceStore((state) => state.setSidebarWidth)
   const setToast = useWorkspaceStore((state) => state.setToast)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]!
-  const activeState = statesByTab[activeTab.id]
+  // Subscribe to only the active tab's validation state. Validation for another
+  // tab must not rerender the whole editor workspace.
+  const activeState = useWorkspaceStore((state) => state.statesByTab[activeTab.id])
+  const compareMode = activeState?.compareMode ?? 'edit'
   const activeFeedback = activeState?.feedback ?? WAITING_FEEDBACK
   const markerErrorLines = activeState?.errorLines ?? []
 
+  useLayoutEffect(() => { readyTabRef.current = null }, [activeTab.id])
+
+  // Observe the store before React replaces the outgoing editor. This covers
+  // sidebar, keyboard, add/close actions, and programmatic tab navigation.
+  useLayoutEffect(() => {
+    const unsubscribe = useWorkspaceStore.subscribe((state, previous) => {
+      if (state.activeTabId === previous.activeTabId) return
+      tabTransition.prepare()
+      cancelAnimationFrame(tabTransitionFrameRef.current)
+      tabTransitionFrameRef.current = requestAnimationFrame(() => {
+        // React can batch A -> B -> A without remounting A. Its last completed
+        // frame is still ready, so no new mount callback will arrive.
+        if (readyTabRef.current === state.activeTabId &&
+          useWorkspaceStore.getState().activeTabId === state.activeTabId) tabTransition.reveal()
+      })
+    })
+    return () => {
+      unsubscribe()
+      cancelAnimationFrame(tabTransitionFrameRef.current)
+    }
+  }, [tabTransition.prepare, tabTransition.reveal])
+
+  const handleTabEditorReady = useCallback((tabId: string): void => {
+    if (useWorkspaceStore.getState().activeTabId !== tabId) return
+    readyTabRef.current = tabId
+    tabTransition.reveal()
+  }, [tabTransition.reveal])
+
   const handleTabClosed = useCallback((tabId: string) => {
+    comparisonViewsRef.current.delete(tabId)
     const monaco = monacoRef.current
-    const model = monaco ? monaco.editor.getModel(monaco.Uri.parse(getTabModelPath(tabId))) : null
-    model?.dispose()
+    if (!monaco) return
+    monaco.editor.getModel(monaco.Uri.parse(getTabModelPath(tabId)))?.dispose()
+    const diffPaths = getDiffModelPaths(tabId)
+    monaco.editor.getModel(monaco.Uri.parse(diffPaths.original))?.dispose()
+    monaco.editor.getModel(monaco.Uri.parse(diffPaths.modified))?.dispose()
   }, [])
   const runJsonWorker = useJsonTransformWorker()
 
@@ -291,7 +338,8 @@ function EditorApp(): React.JSX.Element {
   const applyModelValue = useCallback((text: string) => {
     const model = editorRef.current?.getModel()
     if (!model) return
-    model.pushEditOperations([], [{ range: model.getFullModelRange(), text }], () => null)
+    if (model.getValueLength() === 0 && text.length === 0) return
+    replaceModelText(model, text)
   }, [])
 
   const activeFeedbackRef = useRef(activeFeedback)
@@ -318,7 +366,18 @@ function EditorApp(): React.JSX.Element {
     showToast('编辑器已清空')
   }, [applyModelValue, showToast])
 
+  const clearDiffEditor = useCallback(() => comparisonRef.current?.clear(), [])
+  const compareJson = useCallback(() => { void comparisonRef.current?.toggle() }, [])
+  const handleComparisonActiveEditor = useCallback((instance: EditorInstance | null, monaco?: MonacoInstance) => {
+    editorRef.current = null
+    errorDecorationsRef.current?.clear()
+    errorDecorationsRef.current = null
+    if (monaco) monacoRef.current = monaco
+    setEditorInstance(instance)
+  }, [])
+
   const runJsonTransform = useCallback(async (action: JsonTransformAction): Promise<void> => {
+    if (transformBusyRef.current) return
     const currentEditor = editorRef.current
     const model = currentEditor?.getModel()
     if (!currentEditor || !model) return
@@ -329,11 +388,12 @@ function EditorApp(): React.JSX.Element {
       return
     }
 
-    const versionId = model.getAlternativeVersionId()
-    const value = model.getValue()
+    const isCurrent = (): boolean => editorRef.current === currentEditor &&
+      useWorkspaceStore.getState().activeTabId === activeTab.id && currentEditor.getModel() === model
+    transformBusyRef.current = true
     try {
-      const response = await runJsonWorker(action, value)
-      if (currentEditor.getModel() !== model || model.getAlternativeVersionId() !== versionId) return
+      const response = await transformModels([model], action, runJsonWorker, isCurrent)
+      if (!response) return
 
       if (!response.ok) {
         setTabFeedback(activeTab.id, getTransformErrorFeedback(response.error))
@@ -347,26 +407,37 @@ function EditorApp(): React.JSX.Element {
         return
       }
 
-      model.pushEditOperations([], [{ range: model.getFullModelRange(), text: response.text }], () => null)
       const isValid = response.isValidJson ?? true
       const message = action === 'compress'
         ? '已压缩 JSON'
         : action === 'escape'
           ? '已转义 JSON 文本'
-          : isValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON'
+          : action === 'sort'
+            ? '已按字段排序 JSON'
+            : isValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON'
       setTabFeedback(activeTab.id, { message, isValid, parseErrorLine: null })
-      showToast(action === 'compress' ? 'JSON 已压缩' : action === 'escape' ? 'JSON 文本已转义' : '已去除 JSON 转义')
+      showToast(action === 'compress' ? 'JSON 已压缩' : action === 'escape' ? 'JSON 文本已转义' : action === 'sort' ? 'JSON 已按字段排序' : '已去除 JSON 转义')
     } catch {
+      if (!isCurrent()) return
       setTabFeedback(activeTab.id, { message: 'JSON 处理器不可用', isValid: false, parseErrorLine: null })
       showToast('JSON 处理器不可用', 'error')
     } finally {
-      currentEditor.focus()
+      transformBusyRef.current = false
+      if (isCurrent()) currentEditor.focus()
     }
   }, [activeTab.id, runJsonWorker, setTabFeedback, showToast])
 
   const compressJson = useCallback(() => runJsonTransform('compress'), [runJsonTransform])
   const escapeJson = useCallback(() => runJsonTransform('escape'), [runJsonTransform])
   const unescapeJson = useCallback(() => runJsonTransform('unescape'), [runJsonTransform])
+  const sortJson = useCallback(async (): Promise<void> => {
+    if (activeTab.kind !== 'diff') {
+      await runJsonTransform('sort')
+      return
+    }
+
+    if (compareMode === 'edit') await comparisonRef.current?.sort()
+  }, [activeTab.kind, compareMode, runJsonTransform])
 
   const foldAll = useCallback(() => {
     void editorInstance?.getAction('editor.foldAll')?.run()
@@ -414,7 +485,7 @@ function EditorApp(): React.JSX.Element {
     (tabId: string) => {
       const model = editorRef.current?.getModel()
       const monaco = monacoRef.current
-      if (!model || !monaco) return
+      if (!model || !monaco || model.uri.toString() !== getTabModelPath(tabId)) return
       applyMarkerState(tabId, model, monaco.editor.getModelMarkers({ resource: model.uri }))
     },
     [applyMarkerState]
@@ -438,15 +509,20 @@ function EditorApp(): React.JSX.Element {
       return
     }
 
+    const isCurrent = (): boolean => editorRef.current === currentEditor &&
+      useWorkspaceStore.getState().activeTabId === activeTab.id &&
+      !model.isDisposed() && currentEditor.getModel() === model
     try {
       await formatAction.run()
+      if (!isCurrent()) return
       readMarkerState(activeTab.id)
       showToast('JSON 已格式化')
     } catch {
+      if (!isCurrent()) return
       readMarkerState(activeTab.id)
       showToast('JSON 格式化失败', 'error')
     } finally {
-      currentEditor.focus()
+      if (isCurrent()) currentEditor.focus()
     }
   }, [activeTab.id, readMarkerState, setTabFeedback, showToast])
 
@@ -460,13 +536,20 @@ function EditorApp(): React.JSX.Element {
 
   const handleValidate: OnValidate = useCallback((markers) => {
     const model = editorRef.current?.getModel()
-    if (model) applyMarkerState(activeTab.id, model, markers)
+    if (model?.uri.toString() === getTabModelPath(activeTab.id)) applyMarkerState(activeTab.id, model, markers)
   }, [activeTab.id, applyMarkerState])
 
   const handleEditorMount: OnMount = (editor, monaco) => {
+    errorDecorationsRef.current = null
     editorRef.current = editor
     monacoRef.current = monaco
     setEditorInstance(editor)
+    editor.onDidDispose(() => {
+      if (editorRef.current !== editor) return
+      editorRef.current = null
+      errorDecorationsRef.current = null
+      setEditorInstance(current => current === editor ? null : current)
+    })
     editor.addAction({
       id: 'jsonpal-format',
       label: '格式化 JSON',
@@ -481,6 +564,21 @@ function EditorApp(): React.JSX.Element {
     })
     requestAnimationFrame(() => editor.layout())
   }
+
+  useLayoutEffect(() => {
+    if (monacoLoadState === 'error') {
+      tabTransition.reveal()
+      return
+    }
+    if (activeTab.kind !== 'json' || monacoLoadState !== 'ready') return
+    const frame = requestAnimationFrame(() => {
+      const instance = editorRef.current
+      if (instance?.getModel()?.uri.toString() !== getTabModelPath(activeTab.id)) return
+      instance.layout()
+      handleTabEditorReady(activeTab.id)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [activeTab.id, activeTab.kind, editorInstance, monacoLoadState, handleTabEditorReady, tabTransition.reveal])
 
   useEffect(() => {
     const container = editorContainerRef.current
@@ -550,14 +648,19 @@ function EditorApp(): React.JSX.Element {
   }, [activeTab.id, applyBracketColorization, editorInstance, settings.bracketPairColorization])
 
   useEffect(() => {
+    if (activeTab.kind !== 'json') return
     const frame = requestAnimationFrame(() => readMarkerState(activeTab.id))
     return () => cancelAnimationFrame(frame)
-  }, [activeTab.id, editorInstance, readMarkerState])
+  }, [activeTab.id, activeTab.kind, editorInstance, readMarkerState])
 
   useEffect(() => {
+    if (activeTab.kind !== 'json') return
     const currentEditor = editorRef.current
     const monaco = monacoRef.current
-    if (!currentEditor || !monaco) return
+    // Tab changes can render before Monaco has mounted the replacement editor
+    // or switched its model. Apply decorations only to the ready JSON editor.
+    if (!currentEditor || currentEditor !== editorInstance || !monaco ||
+      currentEditor.getModel()?.uri.toString() !== getTabModelPath(activeTab.id)) return
 
     const errorLines = [
       ...new Set([
@@ -577,7 +680,12 @@ function EditorApp(): React.JSX.Element {
         }
       }))
     )
-  }, [activeFeedback.parseErrorLine, activeTab.id, markerErrorLines])
+  }, [activeFeedback.parseErrorLine, activeTab.id, activeTab.kind, editorInstance, markerErrorLines])
+
+
+  if (activeTab.kind === 'diff' && !comparisonViewsRef.current.has(activeTab.id)) {
+    comparisonViewsRef.current.set(activeTab.id, {})
+  }
 
   return (
     <TooltipProvider delayDuration={250}>
@@ -618,7 +726,9 @@ function EditorApp(): React.JSX.Element {
             <EditorToolbar
               wordWrap={settings.wordWrap}
               onAdd={addTab}
+              onAddDiff={addDiffTab}
               onFormat={formatJson}
+              onSort={sortJson}
               onCompress={compressJson}
               onEscape={escapeJson}
               onUnescape={unescapeJson}
@@ -626,26 +736,50 @@ function EditorApp(): React.JSX.Element {
               onFoldAll={foldAll}
               onUnfoldAll={unfoldAll}
               onToggleWordWrap={toggleWordWrap}
-              onClear={clearEditor}
+              onClear={activeTab.kind === 'diff' ? clearDiffEditor : clearEditor}
+              mode={activeTab.kind}
+              onCompare={compareJson}
+              compareMode={compareMode}
+              comparisonBusy={comparisonBusy}
             />
 
             <div ref={editorContainerRef} className="relative min-h-0 flex-1" aria-label="JSON editor">
-              {monacoLoadState === 'ready' ? (
-                <Editor
-                  height="100%"
-                  language="json"
-                  path={getTabModelPath(activeTab.id)}
-                  defaultValue={activeTab.id === INITIAL_TAB.id ? JSON_STARTER : ''}
-                  saveViewState
-                  theme="vs"
-                  onMount={handleEditorMount}
-                  onValidate={handleValidate}
-                  loading={<MonacoLoadingState state="loading" onRetry={() => window.location.reload()} />}
-                  options={editorOptions}
-                />
-              ) : (
-                <MonacoLoadingState state={monacoLoadState} onRetry={() => window.location.reload()} />
-              )}
+              <div ref={tabTransition.content} className="h-full">
+                {monacoLoadState === 'ready' ? (
+                  activeTab.kind === 'diff' ? (
+                    <ComparisonEditor
+                      key={activeTab.id}
+                      ref={comparisonRef}
+                      tabId={activeTab.id}
+                      mode={compareMode}
+                      options={editorOptions}
+                      viewState={comparisonViewsRef.current.get(activeTab.id)!}
+                      runWorker={runJsonWorker}
+                      onActiveEditor={handleComparisonActiveEditor}
+                      onReady={() => handleTabEditorReady(activeTab.id)}
+                      onBusy={setComparisonBusy}
+                      onToast={showToast}
+                    />
+                  ) : (
+                    <Editor
+                      height="100%"
+                      language="json"
+                      path={getTabModelPath(activeTab.id)}
+                      defaultValue={activeTab.id === INITIAL_TAB.id ? JSON_STARTER : ''}
+                      saveViewState
+                      keepCurrentModel
+                      theme="vs"
+                      onMount={handleEditorMount}
+                      onValidate={handleValidate}
+                      loading={<MonacoLoadingState state="loading" onRetry={() => window.location.reload()} />}
+                      options={editorOptions}
+                    />
+                  )
+                ) : (
+                  <MonacoLoadingState state={monacoLoadState} onRetry={() => window.location.reload()} />
+                )}
+              </div>
+              <div ref={tabTransition.overlay} data-editor-transition="tab" className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true" inert />
             </div>
 
             <EditorStatusBar editor={editorInstance} feedback={activeFeedback} />

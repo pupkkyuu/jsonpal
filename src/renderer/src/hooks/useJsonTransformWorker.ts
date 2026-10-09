@@ -17,6 +17,8 @@ export function useJsonTransformWorker(): (action: JsonTransformAction, text: st
       pending.resolve(data)
     }
     worker.onerror = (): void => {
+      worker.terminate()
+      workerRef.current = null
       const error = new Error('JSON 处理器不可用')
       pendingRef.current.forEach(({ reject }) => reject(error))
       pendingRef.current.clear()
@@ -39,7 +41,12 @@ export function useJsonTransformWorker(): (action: JsonTransformAction, text: st
     const request: JsonTransformRequest = { id, action, text }
     return new Promise<JsonTransformResponse>((resolve, reject) => {
       pendingRef.current.set(id, { resolve, reject })
-      worker.postMessage(request)
+      try {
+        worker.postMessage(request)
+      } catch (error) {
+        pendingRef.current.delete(id)
+        reject(error instanceof Error ? error : new Error('JSON 处理器不可用'))
+      }
     })
   }, [])
 }
