@@ -1,0 +1,34 @@
+src/renderer/src/styles.css
+  s_ea292bacf8aba6::t_7ab940b49f0140 77-82,84-85,87-88,90
+  s_ea292bacf8aba6::t_344dada1317c26 83,86,89
+  s_ea292bacf8aba6::t_47a4956b0afdbd 76,91-95,104
+src/renderer/src/App.tsx
+  s_ea292bacf8aba6::t_6507f0bf705534 1
+  s_ea292bacf8aba6::t_47a4956b0afdbd 2-3,13-18,20-21,23-47
+  s_ea292bacf8aba6::t_7ab940b49f0140 19,22
+src/renderer/src/EditorApp.tsx
+  s_ea292bacf8aba6::t_47a4956b0afdbd 4,319-320
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_ea292bacf8aba6::t_7ab940b49f0140 62
+  s_ea292bacf8aba6::t_47a4956b0afdbd 147
+package.json
+  s_ea292bacf8aba6::t_d875bb72c05a7a 33
+package-lock.json
+  s_ea292bacf8aba6::t_8320f012ca381d 21,6231-6246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cea618e86f3864d93283937ff02d3771db75247c",
+  "prompts": {},
+  "sessions": {
+    "s_ea292bacf8aba6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a124bf-cfb6-7b13-9b04-e261a6b52800",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
