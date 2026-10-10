@@ -1,0 +1,53 @@
+electron-builder.yml
+  s_1aaa9a6e21a592::t_f6e3e98c109f20 9-11
+src/main/index.ts
+  s_1aaa9a6e21a592::t_4f86618dd04b78 23-25
+  s_1aaa9a6e21a592::t_3dc4e17db3ed88 104-105
+  s_1aaa9a6e21a592::t_99e0c04e599f12 79-80
+TODO.md
+  s_1aaa9a6e21a592::t_9a1d5e64adf704 1-15
+src/renderer/src/hooks/useEditorTransition.ts
+  s_d6ea2d9c0b7da8::t_ef63ed4b3a3c81 44
+src/renderer/src/components/ComparisonEditor.tsx
+  s_d6ea2d9c0b7da8::t_721cde75dcbd8b 14-16,498
+  s_d6ea2d9c0b7da8::t_67ff3d9f091abe 25,91,93-99,102-117,119-120,130-132,134-135
+  s_d6ea2d9c0b7da8::t_5478ec44d15a9d 461-470,475
+  s_d6ea2d9c0b7da8::t_41eff431c42fe6 31,368-378
+  s_d6ea2d9c0b7da8::t_729f3d9834a0cc 92,118
+  s_d6ea2d9c0b7da8::t_cfffd7e169c22e 230,357,484,490
+  s_d6ea2d9c0b7da8::t_a8fc2b80874716 256-262,281,286
+src/renderer/src/EditorApp.tsx
+  s_d6ea2d9c0b7da8::t_fdc95023512670 689
+  s_d6ea2d9c0b7da8::t_41eff431c42fe6 371-372,744-745
+README.md
+  s_1aaa9a6e21a592::t_29438294eb6a9f 56
+src/renderer/src/components/EditorToolbar.tsx
+  s_d6ea2d9c0b7da8::t_41eff431c42fe6 1,24-25,44-45,105,112
+  s_d6ea2d9c0b7da8::t_427180a529d375 106-111
+LICENSE
+  s_1aaa9a6e21a592::t_780e76c0a27834 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "891e01ae1a63cb772b703182fa926a54ba7d1390",
+  "prompts": {},
+  "sessions": {
+    "s_1aaa9a6e21a592": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ee1559db6ffeT2Zrr0yEw0fhjM",
+        "model": "glm-5.3"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_d6ea2d9c0b7da8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1247e-2405-74b0-a0cc-cc1f212f6dca",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
