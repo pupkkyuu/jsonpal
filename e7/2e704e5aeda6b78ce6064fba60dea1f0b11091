@@ -1,0 +1,48 @@
+src/renderer/src/EditorApp.tsx
+  s_ea292bacf8aba6::t_28369485f0d9cc 714
+  s_ea292bacf8aba6::t_40db09d937ff0f 164-165,177
+  s_ea292bacf8aba6::t_9b05c5de30de02 694-713,715-732,734-751,753-769,771-772,774-778,780-782
+  s_ea292bacf8aba6::t_8a01411f830487 2,93,168,693
+src/renderer/src/components/TabSidebar.tsx
+  s_ea292bacf8aba6::t_48b52491e0c602 20-21,89-90,121,138,142-143,147-148,150-151,155-156,175-177,192-195,338-342,347,354,358-361,370,391,397,405,413,424-425
+  s_ea292bacf8aba6::t_d8ece53ccae710 18,365
+  s_ea292bacf8aba6::t_b5db26d28a9b7b 19,325,329-330,332,362-364,369,371
+  s_ea292bacf8aba6::t_9b05c5de30de02 91,94-96,101-102
+src/renderer/src/components/ui/icon-button.tsx
+  s_ea292bacf8aba6::t_75109c67c26704 1-22
+src/renderer/src/components/ui/button.tsx
+  s_ea292bacf8aba6::t_48b52491e0c602 16-19
+src/renderer/src/components/ui/switch.tsx
+  s_ea292bacf8aba6::t_48b52491e0c602 17-18
+src/main/index.ts
+  s_ea292bacf8aba6::t_8a01411f830487 80-82
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_ea292bacf8aba6::t_8a01411f830487 69
+src/renderer/src/SettingsApp.tsx
+  s_ea292bacf8aba6::t_48b52491e0c602 47-49,59,61-62,99,123,147,150,162,165,186-187,226-227,229,231,235-236,240,251,361,381-382
+src/renderer/src/styles.css
+  s_ea292bacf8aba6::t_1f64426a271d42 61,79
+  s_ea292bacf8aba6::t_a79b78f8b35ba6 56
+  s_ea292bacf8aba6::t_b5db26d28a9b7b 67
+  s_ea292bacf8aba6::t_28369485f0d9cc 58-60
+  s_ea292bacf8aba6::t_c69cee9fc557fd 7-22,24-28,33-38,40-42,46-55,57,62-66,68-78,80-85,96,111,115
+src/renderer/src/components/EditorToolbar.tsx
+  s_ea292bacf8aba6::t_75109c67c26704 1,3-4,9-10,31-34,38-39,42-49,54,63,67,72-73,75-106,108-109
+  s_ea292bacf8aba6::t_28369485f0d9cc 8,30,74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e72e704e5aeda6b78ce6064fba60dea1f0b11091",
+  "prompts": {},
+  "sessions": {
+    "s_ea292bacf8aba6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a124bf-cfb6-7b13-9b04-e261a6b52800",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
