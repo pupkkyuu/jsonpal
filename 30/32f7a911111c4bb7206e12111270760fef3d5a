@@ -1,0 +1,19 @@
+src/renderer/src/components/EditorSearch.tsx
+  s_326e2322516e91::t_e1653e098c3d59 6-8,53-56,78-82,85-86,89,91,105,112,205,207-208,218-220,222-223,230-238,261-285,287-288,291,294,296-301,326
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3032f7a911111c4bb7206e12111270760fef3d5a",
+  "prompts": {},
+  "sessions": {
+    "s_326e2322516e91": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12a28-8720-7a41-9483-495f853a8d6b",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
