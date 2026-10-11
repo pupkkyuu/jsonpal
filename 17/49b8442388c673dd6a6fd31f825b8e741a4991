@@ -1,0 +1,50 @@
+src/renderer/src/components/EditorSearch.tsx
+  s_326e2322516e91::t_a10bce29a561a5 41,139-140,142,152-160,250-251
+  s_326e2322516e91::t_1365026e000ed8 187
+  s_8c17c8eddef647::t_84adcdef81a489 266-268
+  s_8c17c8eddef647::t_3ca33438bab34e 20-21,47,49,57-59,68,71-80,84-85,89-91,104,194-195,198,200,203-209,217-222,231,234,237-241,243-245,247
+  s_326e2322516e91::t_cfbd2008f31c52 27,31,44-45,143,145,149,161-170,172-173,180-182
+  s_8c17c8eddef647::t_5c3e0d546fac9b 28,61-63,66,101,261
+  s_8c17c8eddef647::t_8b48c07354f290 102-103
+src/renderer/src/components/EditorToolbar.tsx
+  s_8c17c8eddef647::t_15d58be7ecfa31 38-39,54-66
+src/renderer/src/EditorApp.tsx
+  s_8c17c8eddef647::t_15d58be7ecfa31 266-269,277,297-300,346,351,354-356,359-361
+src/renderer/src/components/ComparisonEditor.tsx
+  s_326e2322516e91::t_8eb7e6819633ff 584
+  s_8c17c8eddef647::t_84adcdef81a489 95,242-243,411-414,416-466,469-470,472-474,476-498,501-504,506-547,550-552
+  s_326e2322516e91::t_cfbd2008f31c52 53-59,62-67,75,78-83,91-92,117,119-122,415,589
+  s_8c17c8eddef647::t_15d58be7ecfa31 35-37,241,244-246,499-500,505
+  s_326e2322516e91::t_1365026e000ed8 118,156
+src/renderer/src/components/TabSidebar.tsx
+  s_326e2322516e91::t_128b8cab016218 363,365
+  s_326e2322516e91::t_a4266bcc4a4148 364
+src/renderer/src/styles.css
+  s_326e2322516e91::t_8eb7e6819633ff 90-93
+  s_8c17c8eddef647::t_e2983ab9f2f675 196-200
+  s_326e2322516e91::t_128b8cab016218 135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1749b8442388c673dd6a6fd31f825b8e741a4991",
+  "prompts": {},
+  "sessions": {
+    "s_326e2322516e91": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12a28-8720-7a41-9483-495f853a8d6b",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_8c17c8eddef647": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12a63-594b-7960-8a70-7423f25ddc90",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
