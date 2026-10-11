@@ -1,0 +1,23 @@
+LICENSE
+  s_a58e16c6dbeae1::t_34ffa0c8713404 3
+package.json
+  s_a58e16c6dbeae1::t_34ffa0c8713404 7
+src/main/index.ts
+  s_a58e16c6dbeae1::t_34ffa0c8713404 93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f0e85fc6f76d50d97706a83f142c30d5f6e5eecf",
+  "prompts": {},
+  "sessions": {
+    "s_a58e16c6dbeae1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b3a-8398-7813-89b3-61544d75c21f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
