@@ -346,6 +346,7 @@ export const TabSidebar = memo(function TabSidebar({
           aria-label="JSON Tab 侧边栏"
         >
           <div className="sidebar-titlebar app-drag-region">
+            {!IS_MACOS && <span className="sidebar-app-title">JSONPal</span>}
             <IconButton className="sidebar-toggle" label="隐藏侧边栏" shortcut={IS_MACOS ? '⌘+B' : 'Ctrl+B'} onClick={onToggle} aria-expanded={true} aria-controls="tab-sidebar"><PanelLeft size={18} /></IconButton>
           </div>
           <nav className="sidebar-functions app-no-drag" aria-label="新建功能">

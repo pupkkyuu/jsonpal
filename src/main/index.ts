@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, shell, type MenuItemConstructorOptions } from 'electron'
 import { readFile, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
 
@@ -19,7 +19,69 @@ const WEB_PREFERENCES = {
   sandbox: true
 } as const
 
-const HIDE_MENU_BAR = process.platform !== 'darwin'
+function configureApplicationMenu(): void {
+  const isMacOS = process.platform === 'darwin'
+
+  const template: MenuItemConstructorOptions[] = []
+  if (isMacOS) {
+    template.push({
+      label: app.getName(),
+      submenu: [
+        { label: '关于 JSONPal', role: 'about' },
+        { type: 'separator' },
+        { label: '服务', role: 'services' },
+        { type: 'separator' },
+        { label: '隐藏 JSONPal', role: 'hide' },
+        { label: '隐藏其他应用', role: 'hideOthers' },
+        { label: '显示全部', role: 'unhide' },
+        { type: 'separator' },
+        { label: '退出 JSONPal', role: 'quit' }
+      ]
+    })
+  }
+  template.push(
+    {
+      label: isMacOS ? '文件' : '文件(&F)',
+      submenu: [
+        { label: '关闭窗口', role: 'close' },
+        ...(!isMacOS ? [
+          { type: 'separator' as const },
+          { label: '退出', role: 'quit' as const }
+        ] : [])
+      ]
+    },
+    {
+      label: isMacOS ? '编辑' : '编辑(&E)',
+      submenu: [
+        { label: '撤销', role: 'undo' },
+        { label: '重做', role: 'redo' },
+        { type: 'separator' },
+        { label: '剪切', role: 'cut' },
+        { label: '复制', role: 'copy' },
+        { label: '粘贴', role: 'paste' },
+        { label: '全选', role: 'selectAll' }
+      ]
+    }
+  )
+  if (isMacOS) {
+    template.push({
+      label: '窗口',
+      role: 'windowMenu',
+      submenu: [
+        { label: '最小化', role: 'minimize' },
+        { label: '缩放', role: 'zoom' },
+        { type: 'separator' },
+        { label: '全部置于前台', role: 'front' }
+      ]
+    })
+  }
+  template.push({
+    label: isMacOS ? '帮助' : '帮助(&H)',
+    role: 'help',
+    submenu: [{ label: '关于 JSONPal', click: () => app.showAboutPanel() }]
+  })
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+}
 
 function getSettingsPath(): string {
   return join(app.getPath('userData'), 'editor-settings.json')
@@ -73,7 +135,7 @@ function createWindow(): void {
     title: 'JSONPal',
     icon: APP_ICON,
     show: true,
-    autoHideMenuBar: HIDE_MENU_BAR,
+    autoHideMenuBar: false,
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default',
     ...(process.platform === 'darwin' ? { trafficLightPosition: { x: 16, y: 20 } } : {}),
     backgroundColor: '#FFFFFF',
@@ -90,8 +152,11 @@ app.whenReady().then(() => {
     applicationName: 'JSONPal',
     applicationVersion: app.getVersion(),
     version: app.getVersion(),
-    copyright: 'Copyright © 2026 pupkkyuu'
+    copyright: 'Copyright © 2026 pupkkyuu',
+    iconPath: APP_ICON,
+    ...(process.platform === 'linux' ? { authors: ['pupkkyuu'] } : {})
   })
+  configureApplicationMenu()
 
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())

@@ -331,7 +331,9 @@ const ComparisonEditorPane = forwardRef<ComparisonEditorHandle, Props & {
 
   useLayoutEffect(() => {
     alive.current = true
-    onBusy(true)
+    // Mount readiness is guarded by ready.current in the action handlers.
+    // Only JSON processing should dim the toolbar; reporting mounts as busy
+    // makes its buttons flash disabled on every tab or mode switch.
     document.addEventListener('focusin', reportDOMFocus, true)
     const observer = new ResizeObserver(entries => {
       // Each pane owns its dimensions, including throughout sidebar slides.
