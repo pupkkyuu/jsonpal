@@ -87,6 +87,7 @@ input, select, button { color: var(--text-primary); }
 .tab-sidebar-shell[data-resizing="true"], .tab-sidebar-shell[data-resizing="true"] .tab-sidebar { transition: none; }
 .sidebar-titlebar, .workspace-toolbar { height: 56px; flex-shrink: 0; display: flex; align-items: center; }
 .sidebar-titlebar { justify-content: flex-end; padding: 0 12px; }
+.sidebar-app-title { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 600; }
 .workspace-toolbar { --toolbar-gap: 8px; height: 52px; gap: var(--toolbar-gap); transition: padding-left 200ms cubic-bezier(0.2, 0, 0, 1); padding: 0 20px 0 12px; border-bottom: 1px solid var(--border-divider); background: var(--toolbar-bg); }
 .workspace-toolbar.traffic-light-inset { padding-left: 88px; }
 /* Keep the toggle mounted: its occupied space and macOS inset move with the
