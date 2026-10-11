@@ -1,0 +1,42 @@
+package.json
+  s_511740ceff0e46::t_deedeb5832c360 4
+src/renderer/src/components/TabSidebar.tsx
+  s_511740ceff0e46::t_893f8ab57f32ac 349
+src/main/index.ts
+  s_511740ceff0e46::t_0cdb26d01c401a 1,23,25-42,44,47-50,54,65-83
+  s_511740ceff0e46::t_d34dc315c29ced 138,155-157
+  s_511740ceff0e46::t_ee47ae1ab0fb77 22,24,43,45-46,51-53,55-64,84,159
+docs/releases/0.1.0.md
+  h_4b4f40f597f742 15
+package-lock.json
+  s_511740ceff0e46::t_053e7a08385dd4 3,9
+docs/releases/0.1.1.md
+  s_511740ceff0e46::t_deedeb5832c360 1-13
+src/renderer/src/components/ComparisonEditor.tsx
+  s_511740ceff0e46::t_abfe075ae58b7f 334-336
+src/renderer/src/styles.css
+  s_511740ceff0e46::t_893f8ab57f32ac 90
+README.md
+  h_4b4f40f597f742 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "722b4c98a9d68ff3a6b205fdb79e1dd098af89a2",
+  "prompts": {},
+  "humans": {
+    "h_4b4f40f597f742": {
+      "author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_511740ceff0e46": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b6f-dfb6-7322-b8cf-a07c4719ee58",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
