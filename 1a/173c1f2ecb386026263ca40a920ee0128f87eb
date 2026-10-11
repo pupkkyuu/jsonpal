@@ -1,0 +1,16 @@
+README.md
+  h_4b4f40f597f742 52
+docs/releases/0.1.0.md
+  h_4b4f40f597f742 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1a173c1f2ecb386026263ca40a920ee0128f87eb",
+  "prompts": {},
+  "humans": {
+    "h_4b4f40f597f742": {
+      "author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
