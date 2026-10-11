@@ -1,0 +1,19 @@
+README.md
+  s_69100d6dfe04f7::t_865ea2f608ffd9 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4cbc9029866344194600695ec562b0dd56879932",
+  "prompts": {},
+  "sessions": {
+    "s_69100d6dfe04f7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b54-c67c-7a21-95c6-024aad1ebf49",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
