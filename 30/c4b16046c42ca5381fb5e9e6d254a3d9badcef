@@ -1,0 +1,37 @@
+src/renderer/src/components/EditorToolbar.tsx
+  s_326e2322516e91::t_efc44db475e345 40-43
+  s_326e2322516e91::t_ac86a515499e04 1,53-54
+  s_326e2322516e91::t_a121e1483a6a47 56
+src/renderer/src/styles.css
+  s_326e2322516e91::t_efc44db475e345 98,100-105,157,161-162
+  s_326e2322516e91::t_3db54e7db21436 90-95
+  s_326e2322516e91::t_2da73540731c06 140-141,163
+src/renderer/src/components/TabSidebar.tsx
+  s_326e2322516e91::t_3db54e7db21436 20,183,266,279,321,323-324,326,340-347,426,428
+  s_326e2322516e91::t_5c83665541150c 348-363,365-382,384-421,423-425
+src/renderer/src/EditorApp.tsx
+  s_326e2322516e91::t_ac86a515499e04 405-408,438
+  s_326e2322516e91::t_5c83665541150c 233-234,236-240,501-505
+src/renderer/src/components/ComparisonEditor.tsx
+  s_326e2322516e91::t_ac86a515499e04 32-33,387-392,431,434
+  s_326e2322516e91::t_5c83665541150c 301-302,304
+  s_326e2322516e91::t_a121e1483a6a47 490
+src/renderer/src/components/EditorSearch.tsx
+  s_326e2322516e91::t_2da73540731c06 127,150-152,210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "30c4b16046c42ca5381fb5e9e6d254a3d9badcef",
+  "prompts": {},
+  "sessions": {
+    "s_326e2322516e91": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12a28-8720-7a41-9483-495f853a8d6b",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
