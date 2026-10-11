@@ -1,0 +1,128 @@
+src/renderer/src/components/TabSidebar.tsx
+  s_60446a69ac5c05::t_b1e33366713068 61
+  s_60446a69ac5c05::t_ef3426085e0cac 18,38,64,66,78-79,89,91
+  s_60446a69ac5c05::t_322ebcede82d05 112
+  s_60446a69ac5c05::t_a80123c74660e4 343-355,357-374
+  s_60446a69ac5c05::t_a75185652f97a7 415
+  s_60446a69ac5c05::t_3be53b4a7b6910 189
+  s_60446a69ac5c05::t_ad1db76f773073 128
+  s_60446a69ac5c05::t_c8a0d39940fe93 341
+  s_60446a69ac5c05::t_66220f9bdbc026 84
+  s_60446a69ac5c05::t_a0be3d5387ba94 387,395,403
+  s_60446a69ac5c05::t_123a1da7827663 381
+src/renderer/src/SettingsApp.tsx
+  s_60446a69ac5c05::t_322ebcede82d05 47-49,59,61-62,99,123,147,150,162,165,186-187,226-227,229,231,235-236,240,251,278-279,283-284,301-302,305,315,361,381-382
+src/main/index.ts
+  s_60446a69ac5c05::t_c30a38f8dc152a 72-73
+src/renderer/src/components/EditorToolbar.tsx
+  s_60446a69ac5c05::t_c8a0d39940fe93 41
+  s_ff9cfafb741454::t_924d6f1dfd8675 33,69
+  s_ff9cfafb741454::t_ec45189bd4cdf8 1-2,70
+  s_ff9cfafb741454::t_a0067769f0bad7 21,68
+  s_ff9cfafb741454::t_1674d2d1295eee 43-48
+  s_60446a69ac5c05::t_b282a4af85f938 56,60-65
+  s_ff9cfafb741454::t_a5c3aee1d88ff2 67
+src/renderer/src/App.tsx
+  s_ff9cfafb741454::t_1c9e1b0ff90a51 1,11-13
+src/renderer/src/monacoOptions.ts
+  s_60446a69ac5c05::t_42759753554e5a 7
+src/renderer/src/styles.css
+  s_60446a69ac5c05::t_85fa382afe42e5 54
+  s_60446a69ac5c05::t_70b06d0f59dd83 55
+  s_60446a69ac5c05::t_f50f9551df5e67 112
+  s_ff9cfafb741454::t_6bc205508da3b8 133
+  s_60446a69ac5c05::t_322ebcede82d05 25-26,32,40-41,63,95,99,105,127,130,156,171,175,179
+  s_60446a69ac5c05::t_69387e16de3a9a 136,143-144
+  s_60446a69ac5c05::t_f5ede23e7b8600 14
+  s_60446a69ac5c05::t_d8714bb65d274d 110
+  s_60446a69ac5c05::t_1e4d04bea050de 7-8,11-13,15-24,27-31,33-39,42-53,56-59,89-90,101,103,106
+  s_60446a69ac5c05::t_2866049127f843 98,107
+  s_60446a69ac5c05::t_d3b390d8c5dc70 120
+  s_60446a69ac5c05::t_9436b1be97e18b 10
+  s_60446a69ac5c05::t_a80123c74660e4 115,118-119
+  s_60446a69ac5c05::t_490c9bfda3112a 124
+  s_60446a69ac5c05::t_ad1db76f773073 125-126
+  s_60446a69ac5c05::t_da4ce6b7b41075 141
+  s_ff9cfafb741454::t_c056564e6925c1 111
+  s_60446a69ac5c05::t_021f4be67d5467 142
+  s_ff9cfafb741454::t_1c9e1b0ff90a51 150
+  s_60446a69ac5c05::t_b282a4af85f938 100
+  s_ff9cfafb741454::t_e8152978393726 132
+  s_60446a69ac5c05::t_ba0d920fb52548 102,108-109,113
+  s_60446a69ac5c05::t_3be53b4a7b6910 116-117
+  s_ff9cfafb741454::t_aab7cdba94b21f 137-138
+  s_60446a69ac5c05::t_a82588d223f032 145
+  s_ff9cfafb741454::t_2d1123c366c243 131,134-135,139-140
+  s_ff9cfafb741454::t_eea28c7e26b6d4 9
+src/renderer/src/components/ui/button.tsx
+  s_60446a69ac5c05::t_322ebcede82d05 16-17
+  s_60446a69ac5c05::t_1e4d04bea050de 19
+src/renderer/src/components/ui/switch.tsx
+  s_60446a69ac5c05::t_322ebcede82d05 17-18
+src/renderer/src/components/EditorSearch.tsx
+  s_ff9cfafb741454::t_a93b4c51e6e1fa 28,233
+  s_60446a69ac5c05::t_242dfc55ce3c24 2,4-5,18-21,25-26,34-36,40-43,59-90,98-100,102-104,108-114,116-117,119-121,123,149-157,159-179,189-194,198-203,205-207,211-214,222,228-232,234-235
+  s_60446a69ac5c05::t_3d8d260d8d6655 106-107
+  s_ff9cfafb741454::t_a0067769f0bad7 3,14,16-17,48-58,105,115,236
+  s_60446a69ac5c05::t_1e1b2f7ed48646 210
+  s_ff9cfafb741454::t_6bc205508da3b8 221
+  s_60446a69ac5c05::t_3b62b06dc99bed 227
+  s_ff9cfafb741454::t_39c8ecb740fa9b 6-13,22-24,29-33,38,44-47,101,118,122,195
+  s_ff9cfafb741454::t_aab7cdba94b21f 1,216
+  s_ff9cfafb741454::t_924d6f1dfd8675 27
+  s_ff9cfafb741454::t_2d1123c366c243 134,208,215,217-220,223-226
+  s_ff9cfafb741454::t_6b29a3a0d44797 15,91-97
+  s_60446a69ac5c05::t_51dca149c9fd88 37,39,124-133,135-148,209
+  s_60446a69ac5c05::t_9796f232c6778f 158,180-188,196-197,204
+src/renderer/src/stores/useWorkspaceStore.ts
+  s_60446a69ac5c05::t_3be53b4a7b6910 62
+src/renderer/src/components/ui/tooltip.tsx
+  s_60446a69ac5c05::t_7a90e96ddea956 17
+src/renderer/src/hooks/useEditorContextMenu.tsx
+  s_60446a69ac5c05::t_863deb0b671380 58,116,128,130
+  s_ff9cfafb741454::t_1c9e1b0ff90a51 101
+  s_60446a69ac5c05::t_e4b12f72e5edb8 1-57,59-97,99-100,102-115,117-127,129,131-140
+  s_60446a69ac5c05::t_e4955260731ee0 98
+src/renderer/src/EditorApp.tsx
+  s_ff9cfafb741454::t_924d6f1dfd8675 676
+  s_60446a69ac5c05::t_42759753554e5a 14,230,443,653,683
+  s_ff9cfafb741454::t_a0067769f0bad7 7,104
+  s_60446a69ac5c05::t_322ebcede82d05 81-83,94-95,580
+  s_ff9cfafb741454::t_39c8ecb740fa9b 105,177,587-588,675,677-678
+  s_ff9cfafb741454::t_1c9e1b0ff90a51 266,271,331,427
+  s_ff9cfafb741454::t_6b29a3a0d44797 629
+  s_ff9cfafb741454::t_c4b6c598cb87e7 2
+src/renderer/src/components/ComparisonEditor.tsx
+  s_ff9cfafb741454::t_6b29a3a0d44797 36,372-373
+  s_ff9cfafb741454::t_39c8ecb740fa9b 20,73-76,202,212,222,233,496-497
+  s_ff9cfafb741454::t_1c9e1b0ff90a51 70,380,444,447
+  s_ff9cfafb741454::t_a0067769f0bad7 7,72,374
+  s_60446a69ac5c05::t_42759753554e5a 45,209
+  s_ff9cfafb741454::t_a93b4c51e6e1fa 498,505,513
+  s_ff9cfafb741454::t_924d6f1dfd8675 515
+  s_ff9cfafb741454::t_36e5ec698620b1 499-504,506-511,514,516-522
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6ae6c8bd80d00da8ec0d76899a92bb80acef8cf3",
+  "prompts": {},
+  "sessions": {
+    "s_60446a69ac5c05": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12528-1b41-7812-bcdc-4a0b1cf72a44",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    },
+    "s_ff9cfafb741454": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12652-c385-7c70-ace6-7d3279a8d85d",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "宋萌淼 <songmengmiao@tongbaninfo.com>"
+    }
+  }
+}
