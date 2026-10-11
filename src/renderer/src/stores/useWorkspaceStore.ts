@@ -8,11 +8,6 @@ interface TabState {
   compareMode?: CompareViewMode
 }
 
-export interface ToastNotice {
-  message: string
-  tone: 'success' | 'error'
-}
-
 interface WorkspaceState {
   tabs: JsonTab[]
   activeTabId: string
@@ -20,7 +15,6 @@ interface WorkspaceState {
   settings: EditorSettings
   isSidebarCollapsed: boolean
   sidebarWidth: number
-  toast: ToastNotice | null
   setTabs: (tabs: JsonTab[]) => void
   setActiveTabId: (id: string) => void
   setTabFeedback: (tabId: string, feedback: TabFeedback) => void
@@ -36,7 +30,6 @@ interface WorkspaceState {
   updateSettings: (patch: Partial<EditorSettings>) => void
   setSidebarCollapsed: (isCollapsed: boolean) => void
   setSidebarWidth: (width: number) => void
-  setToast: (toast: ToastNotice | null) => void
 }
 
 function areFeedbacksEqual(a: TabFeedback, b: TabFeedback): boolean {
@@ -66,8 +59,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
     },
     settings: DEFAULT_EDITOR_SETTINGS,
     isSidebarCollapsed: false,
-    sidebarWidth: 200,
-    toast: null,
+    sidebarWidth: 180,
     setTabs: (tabs) => set({ tabs }),
     setActiveTabId: (activeTabId) => set({ activeTabId }),
     setTabFeedback: (tabId, feedback) => {
@@ -152,7 +144,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
     setSettings: (settings) => set({ settings }),
     updateSettings: (patch) => set((state) => ({ settings: { ...state.settings, ...patch } })),
     setSidebarCollapsed: (isSidebarCollapsed) => set({ isSidebarCollapsed }),
-    setSidebarWidth: (sidebarWidth) => set({ sidebarWidth }),
-    setToast: (toast) => set({ toast })
+    setSidebarWidth: (sidebarWidth) => set({ sidebarWidth })
   }
 })

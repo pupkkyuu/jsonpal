@@ -4,6 +4,7 @@ import type { EditorSettings } from '@/editorSettings'
 export function getMonacoOptions(settings: EditorSettings): editor.IStandaloneEditorConstructionOptions {
   return {
     automaticLayout: false,
+    contextmenu: false,
     minimap: { enabled: settings.minimap, side: 'right', renderCharacters: settings.minimapCharacters },
     fontSize: settings.fontSize,
     fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', monospace",

@@ -1,30 +1,30 @@
 import Editor, { loader, type OnMount, type OnValidate } from '@monaco-editor/react'
-import { Check, LoaderCircle, PanelLeftClose, PanelLeftOpen, RefreshCw, WifiOff } from 'lucide-react'
+import { LoaderCircle, RefreshCw, WifiOff } from 'lucide-react'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ComparisonEditor, type ComparisonEditorHandle, type ComparisonViewState } from '@/components/ComparisonEditor'
 import { EditorToolbar } from '@/components/EditorToolbar'
+import { EditorSearch, type EditorSearchHandle, type EditorSearchState } from '@/components/EditorSearch'
 import { TabSidebar } from '@/components/TabSidebar'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import SettingsApp from '@/SettingsApp'
 import { mergeEditorSettings } from '@/editorSettings'
+import { useAutoSaveSettings } from '@/hooks/useAutoSaveSettings'
 import { useEditorTransition } from '@/hooks/useEditorTransition'
 import { useJsonTransformWorker } from '@/hooks/useJsonTransformWorker'
+import { useEditorContextMenu } from '@/hooks/useEditorContextMenu'
 import { getDiffModelPaths, getTabModelPath, INITIAL_TAB, WAITING_FEEDBACK, type JsonTab, type TabFeedback } from '@/jsonUtils'
 import { getMonacoOptions } from '@/monacoOptions'
 import { replaceModelText, transformModels } from '@/modelTransforms'
 import type { JsonTransformAction, JsonTransformError } from '@/jsonTransformTypes'
-import { IS_MACOS } from '@/lib/utils'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 
 type EditorInstance = Parameters<OnMount>[0]
 type MonacoInstance = Parameters<OnMount>[1]
 
-const CONTENT_DEBOUNCE_MS = 200
 const JSON_STARTER = `{
-  "message": "在这里粘贴或输入 JSON",
-  "example": true,
-  "items": []
+  "Box": "It's bigger on the inside."
 }`
 
 function hasContent(model: editor.ITextModel): boolean {
@@ -78,9 +78,9 @@ function MonacoLoadingState({ state, onRetry }: MonacoLoadingStateProps): React.
         role="alert"
         aria-live="assertive"
       >
-        <WifiOff size={24} className="text-[#c72e0f]" aria-hidden="true" />
-        <p className="text-sm font-medium text-[#333333]">编辑器加载失败</p>
-        <p className="max-w-sm text-xs text-[#616161]">无法加载 Monaco 编辑器资源，请重试或检查应用资源是否完整。</p>
+        <WifiOff size={24} className="text-[var(--danger)]" aria-hidden="true" />
+        <p className="text-sm font-medium text-[var(--text-primary)]">编辑器加载失败</p>
+        <p className="max-w-sm text-xs text-[var(--text-secondary)]">无法加载 Monaco 编辑器资源，请重试或检查应用资源是否完整。</p>
         <Button variant="outline" onClick={onRetry}>
           <RefreshCw size={15} />
           重试
@@ -91,102 +91,20 @@ function MonacoLoadingState({ state, onRetry }: MonacoLoadingStateProps): React.
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 bg-white text-center" role="status" aria-live="polite">
-      <LoaderCircle size={24} className="animate-spin text-[#0078d4]" aria-hidden="true" />
-      <p className="text-sm text-[#616161]">正在加载编辑器...</p>
+      <LoaderCircle size={24} className="animate-spin text-[var(--text-secondary)]" aria-hidden="true" />
+      <p className="text-sm text-[var(--text-secondary)]">正在加载编辑器...</p>
     </div>
   )
 }
 
-interface EditorStatusBarProps {
-  editor: EditorInstance | null
-  feedback: TabFeedback
-}
-
-interface ModelStats {
-  lines: number
-  chars: number
-}
-
-function EditorStatusBar({ editor, feedback }: EditorStatusBarProps): React.JSX.Element {
-  const [stats, setStats] = useState<ModelStats>({ lines: 1, chars: 0 })
-  const [indent, setIndent] = useState<{ insertSpaces: boolean; tabSize: number }>({ insertSpaces: true, tabSize: 2 })
-  const [languageId, setLanguageId] = useState('json')
-
-  useEffect(() => {
-    if (!editor) return
-
-    let timer: ReturnType<typeof setTimeout> | undefined
-    let modelDisposables: { dispose(): void }[] = []
-
-    const sync = (): void => {
-      const model = editor.getModel()
-      if (!model) return
-      const lines = model.getLineCount()
-      const chars = model.getValueLength()
-      setStats((prev) => (prev.lines === lines && prev.chars === chars ? prev : { lines, chars }))
-      const { insertSpaces, tabSize } = model.getOptions()
-      setIndent((prev) => (prev.insertSpaces === insertSpaces && prev.tabSize === tabSize ? prev : { insertSpaces, tabSize }))
-      setLanguageId((prev) => {
-        const current = model.getLanguageId()
-        return prev === current ? prev : current
-      })
-    }
-
-    const attachModel = (model: editor.ITextModel | null): void => {
-      modelDisposables.forEach((disposable) => disposable.dispose())
-      modelDisposables = []
-      if (!model) return
-      modelDisposables.push(
-        model.onDidChangeContent(() => {
-          clearTimeout(timer)
-          timer = setTimeout(sync, CONTENT_DEBOUNCE_MS)
-        }),
-        model.onDidChangeOptions(sync),
-        model.onDidChangeLanguage(sync)
-      )
-    }
-
-    sync()
-    attachModel(editor.getModel())
-    const onDidChangeModelDisposable = editor.onDidChangeModel(() => {
-      clearTimeout(timer)
-      sync()
-      attachModel(editor.getModel())
-    })
-
-    return () => {
-      onDidChangeModelDisposable.dispose()
-      modelDisposables.forEach((disposable) => disposable.dispose())
-      clearTimeout(timer)
-    }
-  }, [editor])
-
-  const isWaiting = feedback.message === WAITING_FEEDBACK.message
-  const statusColor = isWaiting ? 'bg-[#98a2b3]' : feedback.isValid ? 'bg-[#138a62]' : 'bg-[#d44857]'
-  const statusText = isWaiting ? 'text-[#667085]' : feedback.isValid ? 'text-[#426a5b]' : 'text-[#b42318]'
-
-  return (
-    <footer className="flex h-9 shrink-0 items-center justify-between border-t border-[#e4e7ef] px-4 text-xs text-[#667085]">
-      <div className="flex min-w-0 items-center gap-2">
-        <span className={`flex h-1.5 w-1.5 shrink-0 rounded-full ${statusColor}`} />
-        <span className={`truncate ${statusText}`}>{feedback.message}</span>
-      </div>
-      <div className="ml-4 flex shrink-0 items-center gap-4">
-        <span>{indent.insertSpaces ? `空格: ${indent.tabSize}` : `Tab 大小: ${indent.tabSize}`}</span>
-        <span>{stats.lines} 行</span>
-        <span>{stats.chars} 字符</span>
-        <span className="flex items-center gap-1 text-[#667085]">
-          <Check size={13} /> {languageId.toUpperCase()}
-        </span>
-      </div>
-    </footer>
-  )
-}
-
 function EditorApp(): React.JSX.Element {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const { updateSettings, saveError } = useAutoSaveSettings()
   const [monacoLoadState, setMonacoLoadState] = useState<MonacoLoadState>('loading')
   const editorRef = useRef<EditorInstance | null>(null)
   const comparisonRef = useRef<ComparisonEditorHandle | null>(null)
+  const searchRef = useRef<EditorSearchHandle | null>(null)
+  const searchStatesRef = useRef(new Map<string, EditorSearchState>())
   const comparisonViewsRef = useRef(new Map<string, ComparisonViewState>())
   const [comparisonBusy, setComparisonBusy] = useState(false)
   const tabTransition = useEditorTransition()
@@ -198,8 +116,6 @@ function EditorApp(): React.JSX.Element {
   const errorDecorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null)
   const formatJsonRef = useRef<() => Promise<void>>(async () => undefined)
   const compressJsonRef = useRef<() => Promise<void>>(async () => undefined)
-  const toggleSequenceRef = useRef(0)
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const transformBusyRef = useRef(false)
   const navigationRef = useRef({ tabs: [] as JsonTab[], activeTabId: '' })
   const previousTabIdsRef = useRef(new Set<string>())
@@ -209,7 +125,6 @@ function EditorApp(): React.JSX.Element {
   const settings = useWorkspaceStore((state) => state.settings)
   const isSidebarCollapsed = useWorkspaceStore((state) => state.isSidebarCollapsed)
   const sidebarWidth = useWorkspaceStore((state) => state.sidebarWidth)
-  const toast = useWorkspaceStore((state) => state.toast)
   const setTabs = useWorkspaceStore((state) => state.setTabs)
   const setActiveTabId = useWorkspaceStore((state) => state.setActiveTabId)
   const setTabFeedback = useWorkspaceStore((state) => state.setTabFeedback)
@@ -223,7 +138,6 @@ function EditorApp(): React.JSX.Element {
   const setSettings = useWorkspaceStore((state) => state.setSettings)
   const setSidebarCollapsed = useWorkspaceStore((state) => state.setSidebarCollapsed)
   const setSidebarWidth = useWorkspaceStore((state) => state.setSidebarWidth)
-  const setToast = useWorkspaceStore((state) => state.setToast)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0]!
   // Subscribe to only the active tab's validation state. Validation for another
   // tab must not rerender the whole editor workspace.
@@ -261,6 +175,7 @@ function EditorApp(): React.JSX.Element {
   }, [tabTransition.reveal])
 
   const handleTabClosed = useCallback((tabId: string) => {
+    searchStatesRef.current.delete(tabId)
     comparisonViewsRef.current.delete(tabId)
     const monaco = monacoRef.current
     if (!monaco) return
@@ -300,31 +215,26 @@ function EditorApp(): React.JSX.Element {
   }, [tabs, activeTab.id])
 
   const toggleWordWrap = useCallback(() => {
-    const nextSettings = { ...settings, wordWrap: !settings.wordWrap }
-    const sequence = ++toggleSequenceRef.current
-    void window.api.settings.apply(nextSettings).then((savedSettings) => {
-      if (toggleSequenceRef.current !== sequence) return
-      setSettings(mergeEditorSettings(savedSettings))
-    })
-  }, [settings])
+    updateSettings({ wordWrap: !settings.wordWrap })
+  }, [settings.wordWrap, updateSettings])
 
   const openSettings = useCallback(() => {
-    void window.api.settings.open()
+    setIsSettingsOpen(true)
   }, [])
 
   const editorOptions = useMemo(() => getMonacoOptions(settings), [settings])
+  const { registerEditor, contextMenu: editorContextMenu } = useEditorContextMenu(activeTab.id)
 
   const toggleSidebar = useCallback((): void => {
+    const focusWasInSidebar = !isSidebarCollapsed &&
+      document.getElementById('tab-sidebar')?.contains(document.activeElement)
     setSidebarCollapsed(!isSidebarCollapsed)
+    if (focusWasInSidebar) {
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLButtonElement>('.workspace .sidebar-toggle')?.focus()
+      })
+    }
   }, [isSidebarCollapsed, setSidebarCollapsed])
-
-  const showToast = useCallback((message: string, tone: 'success' | 'error' = 'success'): void => {
-    clearTimeout(toastTimerRef.current)
-    setToast({ message, tone })
-    toastTimerRef.current = setTimeout(() => setToast(null), 1800)
-  }, [])
-
-  useEffect(() => () => clearTimeout(toastTimerRef.current), [])
 
   const applyBracketColorization = useCallback((enabled: boolean): void => {
     editorRef.current?.getModel()?.updateOptions({
@@ -349,25 +259,28 @@ function EditorApp(): React.JSX.Element {
   }, [activeFeedback])
 
   const copyJson = useCallback(async () => {
+    if (activeTab.kind === 'diff') {
+      await comparisonRef.current?.copy()
+      return
+    }
     const value = editorRef.current?.getModel()?.getValue() ?? ''
     try {
       await navigator.clipboard.writeText(value)
       setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '已复制到剪贴板', isValid: true })
-      showToast('JSON 已复制到剪贴板')
     } catch {
       setTabFeedback(activeTab.id, { ...activeFeedbackRef.current, message: '无法访问剪贴板', isValid: false })
-      showToast('无法访问剪贴板', 'error')
     }
-  }, [activeTab.id, setTabFeedback, showToast])
+  }, [activeTab.id, activeTab.kind, setTabFeedback])
 
   const clearEditor = useCallback(() => {
     applyModelValue('')
     editorRef.current?.focus()
-    showToast('编辑器已清空')
-  }, [applyModelValue, showToast])
+  }, [applyModelValue])
 
   const clearDiffEditor = useCallback(() => comparisonRef.current?.clear(), [])
   const compareJson = useCallback(() => { void comparisonRef.current?.toggle() }, [])
+  const previousDiff = useCallback(() => comparisonRef.current?.goToDiff('previous'), [])
+  const nextDiff = useCallback(() => comparisonRef.current?.goToDiff('next'), [])
   const handleComparisonActiveEditor = useCallback((instance: EditorInstance | null, monaco?: MonacoInstance) => {
     editorRef.current = null
     errorDecorationsRef.current?.clear()
@@ -377,6 +290,10 @@ function EditorApp(): React.JSX.Element {
   }, [])
 
   const runJsonTransform = useCallback(async (action: JsonTransformAction): Promise<void> => {
+    if (activeTab.kind === 'diff') {
+      await comparisonRef.current?.transform(action)
+      return
+    }
     if (transformBusyRef.current) return
     const currentEditor = editorRef.current
     const model = currentEditor?.getModel()
@@ -403,7 +320,6 @@ function EditorApp(): React.JSX.Element {
       if (action === 'unescape' && response.changed === false) {
         const message = '当前内容无需去除 JSON 转义'
         setTabFeedback(activeTab.id, { message, isValid: true, parseErrorLine: null })
-        showToast(message)
         return
       }
 
@@ -416,36 +332,29 @@ function EditorApp(): React.JSX.Element {
             ? '已按字段排序 JSON'
             : isValid ? '已去除 JSON 转义' : '已去除 JSON 转义，结果不是有效 JSON'
       setTabFeedback(activeTab.id, { message, isValid, parseErrorLine: null })
-      showToast(action === 'compress' ? 'JSON 已压缩' : action === 'escape' ? 'JSON 文本已转义' : action === 'sort' ? 'JSON 已按字段排序' : '已去除 JSON 转义')
     } catch {
       if (!isCurrent()) return
       setTabFeedback(activeTab.id, { message: 'JSON 处理器不可用', isValid: false, parseErrorLine: null })
-      showToast('JSON 处理器不可用', 'error')
     } finally {
       transformBusyRef.current = false
       if (isCurrent()) currentEditor.focus()
     }
-  }, [activeTab.id, runJsonWorker, setTabFeedback, showToast])
+  }, [activeTab.id, activeTab.kind, runJsonWorker, setTabFeedback])
 
   const compressJson = useCallback(() => runJsonTransform('compress'), [runJsonTransform])
   const escapeJson = useCallback(() => runJsonTransform('escape'), [runJsonTransform])
   const unescapeJson = useCallback(() => runJsonTransform('unescape'), [runJsonTransform])
-  const sortJson = useCallback(async (): Promise<void> => {
-    if (activeTab.kind !== 'diff') {
-      await runJsonTransform('sort')
-      return
-    }
-
-    if (compareMode === 'edit') await comparisonRef.current?.sort()
-  }, [activeTab.kind, compareMode, runJsonTransform])
+  const sortJson = useCallback(() => runJsonTransform('sort'), [runJsonTransform])
 
   const foldAll = useCallback(() => {
-    void editorInstance?.getAction('editor.foldAll')?.run()
-  }, [editorInstance])
+    if (activeTab.kind === 'diff') void comparisonRef.current?.fold('editor.foldAll')
+    else void editorInstance?.getAction('editor.foldAll')?.run()
+  }, [activeTab.kind, editorInstance])
 
   const unfoldAll = useCallback(() => {
-    void editorInstance?.getAction('editor.unfoldAll')?.run()
-  }, [editorInstance])
+    if (activeTab.kind === 'diff') void comparisonRef.current?.fold('editor.unfoldAll')
+    else void editorInstance?.getAction('editor.unfoldAll')?.run()
+  }, [activeTab.kind, editorInstance])
 
   const applyMarkerState = useCallback(
     (tabId: string, model: editor.ITextModel, markers: Parameters<OnValidate>[0]) => {
@@ -492,6 +401,10 @@ function EditorApp(): React.JSX.Element {
   )
 
   const formatJson = useCallback(async (): Promise<void> => {
+    if (activeTab.kind === 'diff') {
+      await comparisonRef.current?.format()
+      return
+    }
     const currentEditor = editorRef.current
     const model = currentEditor?.getModel()
     if (!currentEditor || !model) return
@@ -505,7 +418,6 @@ function EditorApp(): React.JSX.Element {
     const formatAction = currentEditor.getAction('editor.action.formatDocument')
     if (!formatAction) {
       setTabFeedback(activeTab.id, { message: 'JSON 格式化器不可用', isValid: false, parseErrorLine: null })
-      showToast('JSON 格式化器不可用', 'error')
       return
     }
 
@@ -516,15 +428,13 @@ function EditorApp(): React.JSX.Element {
       await formatAction.run()
       if (!isCurrent()) return
       readMarkerState(activeTab.id)
-      showToast('JSON 已格式化')
     } catch {
       if (!isCurrent()) return
       readMarkerState(activeTab.id)
-      showToast('JSON 格式化失败', 'error')
     } finally {
       if (isCurrent()) currentEditor.focus()
     }
-  }, [activeTab.id, readMarkerState, setTabFeedback, showToast])
+  }, [activeTab.id, activeTab.kind, readMarkerState, setTabFeedback])
 
   useEffect(() => {
     formatJsonRef.current = formatJson
@@ -540,6 +450,7 @@ function EditorApp(): React.JSX.Element {
   }, [activeTab.id, applyMarkerState])
 
   const handleEditorMount: OnMount = (editor, monaco) => {
+    registerEditor(editor)
     errorDecorationsRef.current = null
     editorRef.current = editor
     monacoRef.current = monaco
@@ -586,7 +497,11 @@ function EditorApp(): React.JSX.Element {
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return
       const { width, height } = entry.contentRect
-      editorRef.current?.layout({ width: Math.round(width), height: Math.round(height) })
+      // CSS sidebar transitions resize the container on every frame. Lay out
+      // Monaco in this observer before paint, without remounting the editor.
+      if (width > 0 && height > 0) {
+        editorRef.current?.layout({ width: Math.round(width), height: Math.round(height) })
+      }
     })
     observer.observe(container)
     return () => observer.disconnect()
@@ -600,6 +515,7 @@ function EditorApp(): React.JSX.Element {
 
       if (!event.shiftKey && event.key.toLowerCase() === 't') {
         event.preventDefault()
+        setIsSettingsOpen(false)
         addTab()
         return
       }
@@ -614,6 +530,7 @@ function EditorApp(): React.JSX.Element {
         event.preventDefault()
         const currentIndex = currentTabs.findIndex((tab) => tab.id === currentActiveId)
         const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % currentTabs.length
+        setIsSettingsOpen(false)
         setActiveTabId(currentTabs[nextIndex]!.id)
         return
       }
@@ -623,6 +540,7 @@ function EditorApp(): React.JSX.Element {
         const target = currentTabs[Number(digitMatch[1]) - 1]
         if (target) {
           event.preventDefault()
+          setIsSettingsOpen(false)
           setActiveTabId(target.id)
         }
       }
@@ -636,10 +554,8 @@ function EditorApp(): React.JSX.Element {
     void window.api.settings.load().then((savedSettings) => {
       if (isMounted) setSettings(mergeEditorSettings(savedSettings))
     })
-    const unsubscribe = window.api.settings.onUpdated((savedSettings) => setSettings(mergeEditorSettings(savedSettings)))
     return () => {
       isMounted = false
-      unsubscribe()
     }
   }, [])
 
@@ -676,57 +592,65 @@ function EditorApp(): React.JSX.Element {
           isWholeLine: true,
           className: 'json-error-line',
           linesDecorationsClassName: 'json-error-line-number',
-          overviewRuler: { color: '#f14c4c', position: monaco.editor.OverviewRulerLane.Full }
+          overviewRuler: { color: getComputedStyle(document.documentElement).getPropertyValue('--danger').trim(), position: monaco.editor.OverviewRulerLane.Full }
         }
       }))
     )
   }, [activeFeedback.parseErrorLine, activeTab.id, activeTab.kind, editorInstance, markerErrorLines])
 
 
+  if (!searchStatesRef.current.has(activeTab.id)) searchStatesRef.current.set(activeTab.id, {})
+
   if (activeTab.kind === 'diff' && !comparisonViewsRef.current.has(activeTab.id)) {
-    comparisonViewsRef.current.set(activeTab.id, {})
+    comparisonViewsRef.current.set(activeTab.id, { focus: { edit: 'original' } })
   }
 
   return (
     <TooltipProvider delayDuration={250}>
-      <main className="app-shell flex h-screen min-h-[520px] min-w-[760px] flex-col overflow-hidden">
-        <header className={`app-panel relative flex h-9 shrink-0 items-center border-b app-drag-region ${IS_MACOS ? 'pl-20' : 'pl-3'}`}>
-          <div className="app-no-drag relative z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-[#667085]"
-              onClick={toggleSidebar}
-              aria-label={isSidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
-            >
-              {isSidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-            </Button>
-          </div>
-          <span className="pointer-events-none absolute inset-x-20 truncate px-3 text-center text-xs font-medium text-[#475467]" title={activeTab.title}>
-            {activeTab.title}
-          </span>
-        </header>
-
-        <section className="flex min-h-0 flex-1" aria-label="JSON workspace">
-          <TabSidebar
-            tabs={tabs}
-            activeTabId={activeTab.id}
-            isCollapsed={isSidebarCollapsed}
-            width={sidebarWidth}
-            onWidthChange={setSidebarWidth}
-            onActivate={setActiveTabId}
-            onRename={renameTab}
-            onClose={closeTab}
-            onCloseOthers={closeOtherTabs}
-            onCloseAll={closeAllTabs}
-            onReorder={setTabs}
-            onOpenSettings={openSettings}
-          />
-          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-white">
+      <main className="app-shell flex h-screen min-h-0 min-w-0 overflow-hidden">
+        <TabSidebar
+          tabs={tabs}
+          activeTabId={activeTab.id}
+          isCollapsed={isSidebarCollapsed}
+          width={sidebarWidth}
+          onWidthChange={setSidebarWidth}
+          onActivate={(tabId) => {
+            setIsSettingsOpen(false)
+            setActiveTabId(tabId)
+          }}
+          onRename={renameTab}
+          onClose={closeTab}
+          onCloseOthers={closeOtherTabs}
+          onCloseAll={closeAllTabs}
+          onReorder={setTabs}
+          onOpenSettings={openSettings}
+          onToggle={toggleSidebar}
+          onAdd={() => {
+            setIsSettingsOpen(false)
+            addTab()
+          }}
+          onAddDiff={() => {
+            setIsSettingsOpen(false)
+            addDiffTab()
+          }}
+        />
+        <div className="workspace relative flex min-h-0 min-w-0 flex-1 flex-col">
+          {isSettingsOpen && <SettingsApp
+            updateSettings={updateSettings}
+            saveError={saveError}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={toggleSidebar}
+            onBack={() => {
+              setIsSettingsOpen(false)
+              requestAnimationFrame(() => editorRef.current?.focus())
+            }}
+          />}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col" style={isSettingsOpen ? { display: 'none' } : undefined} inert={isSettingsOpen} aria-hidden={isSettingsOpen}>
             <EditorToolbar
               wordWrap={settings.wordWrap}
-              onAdd={addTab}
-              onAddDiff={addDiffTab}
+              title={activeTab.title}
+              isSidebarCollapsed={isSidebarCollapsed}
+              onToggleSidebar={toggleSidebar}
               onFormat={formatJson}
               onSort={sortJson}
               onCompress={compressJson}
@@ -737,13 +661,16 @@ function EditorApp(): React.JSX.Element {
               onUnfoldAll={unfoldAll}
               onToggleWordWrap={toggleWordWrap}
               onClear={activeTab.kind === 'diff' ? clearDiffEditor : clearEditor}
+              onSearch={() => activeTab.kind === 'diff' ? comparisonRef.current?.toggleSearch() : searchRef.current?.toggle()}
               mode={activeTab.kind}
               onCompare={compareJson}
+              onPreviousDiff={previousDiff}
+              onNextDiff={nextDiff}
               compareMode={compareMode}
               comparisonBusy={comparisonBusy}
             />
 
-            <div ref={editorContainerRef} className="relative min-h-0 flex-1" aria-label="JSON editor">
+            <div ref={editorContainerRef} className="relative min-h-0 min-w-0 flex-1 overflow-hidden" aria-label="JSON editor">
               <div ref={tabTransition.content} className="h-full">
                 {monacoLoadState === 'ready' ? (
                   activeTab.kind === 'diff' ? (
@@ -758,7 +685,7 @@ function EditorApp(): React.JSX.Element {
                       onActiveEditor={handleComparisonActiveEditor}
                       onReady={() => handleTabEditorReady(activeTab.id)}
                       onBusy={setComparisonBusy}
-                      onToast={showToast}
+                      onRegisterEditor={registerEditor}
                     />
                   ) : (
                     <Editor
@@ -780,19 +707,15 @@ function EditorApp(): React.JSX.Element {
                 )}
               </div>
               <div ref={tabTransition.overlay} data-editor-transition="tab" className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true" inert />
+              {activeTab.kind === 'json' && (
+                <EditorSearch key={activeTab.id} ref={searchRef} instance={editorInstance} monaco={monacoRef.current}
+                  tabId={activeTab.id} state={searchStatesRef.current.get(activeTab.id)!} />
+              )}
             </div>
-
-            <EditorStatusBar editor={editorInstance} feedback={activeFeedback} />
-            {toast && (
-              <div className="pointer-events-none absolute bottom-14 left-1/2 z-50 -translate-x-1/2">
-                <div className={`toast-notice flex items-center gap-2 whitespace-nowrap rounded-xl border px-3 py-2 text-sm ${toast.tone === 'success' ? 'border-[#b7ead7] bg-white text-[#176b4e]' : 'border-[#f5c8cf] bg-white text-[#b42318]'}`} role="status" aria-live="polite">
-                  <Check size={16} className={toast.tone === 'success' ? 'text-[#138a62]' : 'text-[#d44857]'} />{toast.message}
-                </div>
-              </div>
-            )}
           </div>
-        </section>
+        </div>
       </main>
+      {!isSettingsOpen && editorContextMenu}
     </TooltipProvider>
   )
 }

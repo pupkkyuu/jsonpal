@@ -2,26 +2,22 @@
 
 # JSONPal
 
-JSONPal是一款基于Electron的JSON工具，支持编辑、格式化和差异对比。
+这是一款基于Electron的JSON工具，支持编辑、格式化和差异对比。
 
 
 ## 功能预览
 
-### JSON 编辑器
-
-支持 JSON 编辑与格式化。
+JSON 编辑与格式化
 
 ![JSON 编辑器](docs/images/screenshot-editor.png)
 
-### JSON 差异对比
-
-对比两份 JSON 内容，直观查看差异。
+JSON 差异对比
 
 ![JSON 差异对比](docs/images/screenshot-diff.png)
 
 ## 下载安装
 
-前往 [Releases](../../releases) 下载对应平台的版本。
+前往**Releases**页面下载对应平台的版本。
 
 | 平台 | 安装包 |
 |---|---|
@@ -53,4 +49,4 @@ npm run build:linux
 
 ## 致谢
 
-项目的功能与交互设计均源自于 [zjson]((https://github.com/CN-Tower/zjson))，感谢作者的开源。
+项目的功能与交互设计均源自于 [zjson](https://github.com/CN-Tower/zjson)，感谢作者的开源。

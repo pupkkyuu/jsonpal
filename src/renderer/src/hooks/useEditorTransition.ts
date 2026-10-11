@@ -41,7 +41,7 @@ export function useEditorTransition() {
       animation.current = null
       return
     }
-    const fade = node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 75, fill: 'forwards' })
+    const fade = node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' })
     animation.current = fade
     fade.onfinish = () => {
       node.replaceChildren()

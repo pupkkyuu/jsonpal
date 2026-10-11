@@ -7,7 +7,6 @@ import { dirname, join } from 'path'
 app.setName('JSONPal')
 
 let mainWindow: BrowserWindow | null = null
-let settingsWindow: BrowserWindow | null = null
 
 const APP_ICON = app.isPackaged
   ? join(process.resourcesPath, 'icon.png')
@@ -19,6 +18,8 @@ const WEB_PREFERENCES = {
   nodeIntegration: false,
   sandbox: true
 } as const
+
+const HIDE_MENU_BAR = process.platform !== 'darwin'
 
 function getSettingsPath(): string {
   return join(app.getPath('userData'), 'editor-settings.json')
@@ -55,27 +56,27 @@ function attachReloadShortcutGuard(window: BrowserWindow): void {
   })
 }
 
-function loadRendererWindow(window: BrowserWindow, isSettingsWindow = false): void {
+function loadRendererWindow(window: BrowserWindow): void {
   if (process.env['ELECTRON_RENDERER_URL']) {
-    const suffix = isSettingsWindow ? '?settings=1' : ''
-    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${suffix}`)
+    window.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    window.loadFile(join(__dirname, '../renderer/index.html'), isSettingsWindow ? { query: { settings: '1' } } : undefined)
+    window.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 1180,
-    height: 760,
+    width: 1000,
+    height: 650,
     minWidth: 760,
     minHeight: 520,
     title: 'JSONPal',
     icon: APP_ICON,
     show: true,
-    autoHideMenuBar: false,
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: '#fafafa',
+    autoHideMenuBar: HIDE_MENU_BAR,
+    titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default',
+    ...(process.platform === 'darwin' ? { trafficLightPosition: { x: 16, y: 20 } } : {}),
+    backgroundColor: '#FFFFFF',
     webPreferences: WEB_PREFERENCES
   })
 
@@ -84,55 +85,18 @@ function createWindow(): void {
   loadRendererWindow(mainWindow)
 }
 
-function createSettingsWindow(): void {
-  if (settingsWindow) {
-    settingsWindow.focus()
-    return
-  }
-
-  settingsWindow = new BrowserWindow({
-    width: 760,
-    height: 720,
-    minWidth: 680,
-    minHeight: 560,
-    icon: APP_ICON,
-    
-    show: false,
-    autoHideMenuBar: false,
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: '#fafafa',
-    webPreferences: { ...WEB_PREFERENCES }
-  })
-
-  attachWindowOpenGuard(settingsWindow)
-  attachReloadShortcutGuard(settingsWindow)
-  settingsWindow.once('ready-to-show', () => settingsWindow?.show())
-  settingsWindow.on('closed', () => {
-    settingsWindow = null
-  })
-  loadRendererWindow(settingsWindow, true)
-}
-
 app.whenReady().then(() => {
   app.setAboutPanelOptions({
     applicationName: 'JSONPal',
     applicationVersion: app.getVersion(),
     version: app.getVersion(),
-    copyright: 'Copyright © 2026 kkyuu'
+    copyright: 'Copyright © 2026 pupkkyuu'
   })
 
-  ipcMain.handle('settings:open', () => createSettingsWindow())
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))
-  ipcMain.handle('settings:apply', (event, settings: unknown) => saveSettings(settings).then((savedSettings) => {
-    for (const window of BrowserWindow.getAllWindows()) {
-      if (!window.isDestroyed() && window.webContents !== event.sender) {
-        window.webContents.send('settings:updated', savedSettings)
-      }
-    }
-    return savedSettings
-  }))
+  ipcMain.handle('settings:apply', (_event, settings: unknown) => saveSettings(settings))
   createWindow()
 
   app.on('activate', () => {

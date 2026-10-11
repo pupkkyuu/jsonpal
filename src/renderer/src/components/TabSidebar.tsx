@@ -15,9 +15,11 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Pencil, Search, Settings, X } from 'lucide-react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
-import { Button } from '@/components/ui/button'
+import { FileDiff, PanelLeft, Plus, Settings, X } from 'lucide-react'
+import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { IconButton } from '@/components/ui/icon-button'
+import { IS_MACOS } from '@/lib/utils'
 import type { JsonTab } from '@/jsonUtils'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +36,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
   const [isEditing, setIsEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState(tab.title)
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tab.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tab.id, disabled: isEditing })
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition
@@ -57,10 +59,12 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
 
   const handleItemKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     if (isEditing || event.target !== event.currentTarget) return
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === 'Enter' && !isDragging) {
       event.preventDefault()
       onActivate(tab.id)
+      return
     }
+    listeners?.onKeyDown?.(event)
   }
 
   const handleClose = (event: MouseEvent<HTMLButtonElement>): void => {
@@ -68,39 +72,27 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
     onClose(tab.id)
   }
 
-  const handleEdit = (event: MouseEvent<HTMLButtonElement>): void => {
-    event.stopPropagation()
-    setIsEditing(true)
-  }
-
   return (
     <div
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
       role="tab"
       data-tab-id={tab.id}
       tabIndex={isActive ? 0 : -1}
       aria-selected={isActive}
+      aria-disabled={undefined}
       onClick={() => onActivate(tab.id)}
       onKeyDown={handleItemKeyDown}
       onContextMenu={(event) => onContextMenu(event, tab.id)}
       className={cn(
-        'group relative flex h-10 w-full items-center gap-1 rounded-lg border border-transparent px-1.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#5b5bd6]',
-        isActive ? 'border-[#d9dcfa] bg-[#eeefff] text-[#34349b] shadow-sm shadow-[#5b5bd6]/5' : 'text-[#667085] hover:bg-[#f0f1f6] hover:text-[#344054] focus-within:bg-[#f0f1f6]',
-        isDragging && 'z-10 opacity-60 shadow-md'
+        'group relative flex h-10 w-full touch-none select-none items-center gap-1 rounded-lg border border-transparent px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
+        isActive ? 'tab-selected' : 'tab-unselected',
+        !isEditing && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'z-10 opacity-60'
       )}
     >
-      <button
-        type="button"
-        className="flex h-7 w-6 shrink-0 cursor-grab items-center justify-center rounded-md text-[#98a2b3] outline-none hover:text-[#475467] focus-visible:ring-2 focus-visible:ring-[#5b5bd6] active:cursor-grabbing"
-        aria-label={`拖动 ${tab.title}`}
-        onClick={(event) => event.stopPropagation()}
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical size={14} />
-      </button>
-
       {isEditing ? (
         <input
           ref={inputRef}
@@ -118,7 +110,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
               setIsEditing(false)
             }
           }}
-          className="h-7 min-w-0 flex-1 rounded-md border border-[#5b5bd6] bg-white px-1.5 text-sm text-[#172033] outline-none ring-2 ring-[#5b5bd6]/15"
+          className="h-7 min-w-0 flex-1 rounded-md border border-[var(--accent)] bg-white px-1.5 text-sm text-[var(--text-primary)] outline-none ring-2 ring-[var(--accent)]/15"
         />
       ) : (
         <span
@@ -134,30 +126,17 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
 
       <div
         className={cn(
-          'absolute right-1 flex items-center gap-1 rounded-md pl-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100',
-          isActive ? 'bg-[#eeefff]' : 'bg-[#f0f1f6]',
+          'tab-actions absolute right-1 flex items-center gap-1 rounded-md pl-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100',
           isEditing && 'hidden'
         )}
       >
-        <button
-          type="button"
-          aria-label={`重命名 ${tab.title}`}
-          onClick={handleEdit}
-          onPointerDown={(event) => event.stopPropagation()}
-          className="flex h-7 w-6 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#e1e3ec] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]"
-        >
-          <Pencil size={13} />
-        </button>
-
-        <button
-          type="button"
-          aria-label={`关闭 ${tab.title}`}
+        <IconButton
+          label={`关闭 ${tab.title}`}
           onClick={handleClose}
           onPointerDown={(event) => event.stopPropagation()}
-          className="flex h-7 w-6 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#e1e3ec] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]"
         >
-          <X size={14} />
-        </button>
+          <X size={15} />
+        </IconButton>
       </div>
     </div>
   )
@@ -176,6 +155,9 @@ interface TabSidebarProps {
   onCloseAll: () => void
   onReorder: (tabs: JsonTab[]) => void
   onOpenSettings: () => void
+  onToggle: () => void
+  onAdd: () => void
+  onAddDiff: () => void
 }
 
 export const TabSidebar = memo(function TabSidebar({
@@ -190,29 +172,26 @@ export const TabSidebar = memo(function TabSidebar({
   onCloseOthers,
   onCloseAll,
   onReorder,
-  onOpenSettings
+  onOpenSettings,
+  onToggle,
+  onAdd,
+  onAddDiff
 }: TabSidebarProps): React.JSX.Element {
-  const [searchQuery, setSearchQuery] = useState('')
   const [contextMenu, setContextMenu] = useState<{ tabId: string; x: number; y: number } | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const sidebarRef = useRef<HTMLElement | null>(null)
+  const sidebarRef = useRef<HTMLDivElement | null>(null)
   const isResizingRef = useRef(false)
   const [isResizing, setIsResizing] = useState(false)
   const resizeStartRef = useRef({ x: 0, width })
   const previewWidthRef = useRef(width)
   const pendingWidthRef = useRef<number | null>(null)
   const resizeFrameRef = useRef<number | undefined>(undefined)
-  const MIN_WIDTH = 180
+  const MIN_WIDTH = 160
   const MAX_WIDTH = 420
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  )
-  const normalizedQuery = searchQuery.trim().toLocaleLowerCase()
-  const visibleTabs = useMemo(
-    () => (normalizedQuery ? tabs.filter((tab) => tab.title.toLocaleLowerCase().includes(normalizedQuery)) : tabs),
-    [normalizedQuery, tabs]
   )
   useEffect(() => {
     if (!contextMenu) return
@@ -284,6 +263,7 @@ export const TabSidebar = memo(function TabSidebar({
         if (nextWidth === null) return
         previewWidthRef.current = nextWidth
         sidebarRef.current?.style.setProperty('width', `${nextWidth}px`)
+        sidebarRef.current?.style.setProperty('--sidebar-width', `${nextWidth}px`)
       })
     }
     const handlePointerUp = (): void => {
@@ -296,6 +276,7 @@ export const TabSidebar = memo(function TabSidebar({
       pendingWidthRef.current = null
       previewWidthRef.current = nextWidth
       sidebarRef.current?.style.setProperty('width', `${nextWidth}px`)
+      sidebarRef.current?.style.setProperty('--sidebar-width', `${nextWidth}px`)
       onWidthChange(nextWidth)
     }
     window.addEventListener('pointermove', handlePointerMove)
@@ -326,126 +307,126 @@ export const TabSidebar = memo(function TabSidebar({
     if (elementRect.top < listRect.top || elementRect.bottom > listRect.bottom) {
       activeElement.scrollIntoView({ block: 'nearest' })
     }
-  }, [activeTabId, isCollapsed, visibleTabs])
+  }, [activeTabId, isCollapsed, tabs])
 
   const handleDragEnd = ({ active, over }: DragEndEvent): void => {
     if (!over || active.id === over.id) return
-    const oldIndex = visibleTabs.findIndex((tab) => tab.id === active.id)
-    const newIndex = visibleTabs.findIndex((tab) => tab.id === over.id)
+    const oldIndex = tabs.findIndex((tab) => tab.id === active.id)
+    const newIndex = tabs.findIndex((tab) => tab.id === over.id)
     if (oldIndex === -1 || newIndex === -1) return
-    const reorderedVisibleTabs = arrayMove(visibleTabs, oldIndex, newIndex)
-    const visibleTabIds = new Set(visibleTabs.map((tab) => tab.id))
-    let visibleIndex = 0
-    onReorder(tabs.map((tab) => (visibleTabIds.has(tab.id) ? reorderedVisibleTabs[visibleIndex++] : tab)))
+    onReorder(arrayMove(tabs, oldIndex, newIndex))
   }
 
   return (
-    <aside
+    <div
       ref={sidebarRef}
-      className={`app-panel tab-sidebar relative flex shrink-0 flex-col overflow-hidden ${isResizing ? 'transition-none' : 'transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none'} ${isCollapsed ? 'border-r-0' : 'border-r'}`}
-      style={{ width: isCollapsed ? 0 : width }}
-      aria-label={isCollapsed ? 'JSON Tab 侧边栏（已收起）' : 'JSON Tab 侧边栏'}
+      className="tab-sidebar-shell relative shrink-0"
+      data-collapsed={isCollapsed}
+      data-resizing={isResizing}
+      style={{ width: isCollapsed ? 0 : width, '--sidebar-width': `${width}px` } as CSSProperties}
     >
       <div
-        className={`absolute inset-y-0 -right-1 z-20 w-2 cursor-col-resize touch-none outline-none transition-opacity hover:bg-[#5b5bd6]/30 focus-visible:bg-[#5b5bd6]/40 ${isCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
+        className={`absolute inset-y-0 -right-1 z-20 w-2 cursor-col-resize touch-none outline-none transition-opacity hover:bg-black/10 focus-visible:bg-black/20 ${isCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
         role="separator"
         aria-label="调整侧边栏宽度"
         aria-orientation="vertical"
         aria-valuemin={MIN_WIDTH}
         aria-valuemax={MAX_WIDTH}
         aria-valuenow={Math.round(width)}
-        tabIndex={0}
+        tabIndex={isCollapsed ? -1 : 0}
         onPointerDown={handleResizeStart}
         onKeyDown={handleResizeKeyDown}
       />
-      <div className={`flex h-10 shrink-0 items-center border-b border-[#e4e7ef] px-3 transition-all duration-200 ${isCollapsed ? 'pointer-events-none -translate-x-2 opacity-0' : 'translate-x-0 opacity-100'}`} aria-hidden={isCollapsed}>
-        <div className="flex h-7 min-w-0 flex-1 items-center gap-2 rounded-lg border border-[#dfe3ee] bg-white px-2.5 shadow-sm focus-within:border-[#8b8ce9] focus-within:ring-2 focus-within:ring-[#5b5bd6]/15">
-          <Search size={14} className="shrink-0 text-[#98a2b3]" aria-hidden="true" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="搜索 Tab"
-            aria-label="搜索 Tab"
-            className="min-w-0 flex-1 bg-transparent text-xs text-[#344054] outline-none placeholder:text-[#98a2b3] [&::-webkit-search-cancel-button]:hidden"
-          />
-          {searchQuery && (
-            <button type="button" onClick={() => setSearchQuery('')} aria-label="清空搜索" className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[#98a2b3] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus-visible:ring-2 focus-visible:ring-[#5b5bd6]">
-              <X size={12} />
-            </button>
-          )}
-        </div>
-      </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={visibleTabs.map((tab) => tab.id)} strategy={verticalListSortingStrategy}>
-          <div ref={listRef} className={`sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-3 transition-all duration-200 ${isCollapsed ? 'pointer-events-none -translate-x-2 opacity-0' : 'translate-x-0 opacity-100'}`} role="tablist" aria-orientation="vertical" aria-hidden={isCollapsed}>
-            {visibleTabs.map((tab) => (
-              <SortableTab
-                key={tab.id}
-                tab={tab}
-                isActive={tab.id === activeTabId}
-                onActivate={onActivate}
-                onRename={onRename}
-                onClose={onClose}
-                onContextMenu={handleContextMenu}
-              />
-            ))}
-            {visibleTabs.length === 0 && (
-              <p className="px-2 py-6 text-center text-xs text-[#98a2b3]">没有匹配的 Tab</p>
-            )}
+      <div className="tab-sidebar-clip">
+        <aside
+          id="tab-sidebar"
+          className="tab-sidebar"
+          inert={isCollapsed}
+          aria-hidden={isCollapsed}
+          aria-label="JSON Tab 侧边栏"
+        >
+          <div className="sidebar-titlebar app-drag-region">
+            <IconButton className="sidebar-toggle" label="隐藏侧边栏" shortcut={IS_MACOS ? '⌘+B' : 'Ctrl+B'} onClick={onToggle} aria-expanded={true} aria-controls="tab-sidebar"><PanelLeft size={18} /></IconButton>
           </div>
-        </SortableContext>
-      </DndContext>
+          <nav className="sidebar-functions app-no-drag" aria-label="新建功能">
+            <button type="button" className="sidebar-function tab-unselected" title={`新建格式化（${IS_MACOS ? '⌘+T' : 'Ctrl+T'}）`} onClick={onAdd}>
+              <span className="sidebar-function-icon"><Plus size={18} /></span>
+              <span className="min-w-0 truncate">新建格式化</span>
+            </button>
+            <button type="button" className="sidebar-function tab-unselected" onClick={onAddDiff}>
+              <span className="sidebar-function-icon"><FileDiff size={18} /></span>
+              <span className="min-w-0 truncate">新建对比</span>
+            </button>
+          </nav>
+          <section className="sidebar-tabs-region app-no-drag" aria-labelledby="sidebar-tabs-heading">
+            <div className="sidebar-toolbar">
+              <h2 id="sidebar-tabs-heading" className="sidebar-section-title">
+                标签页 <span className="sidebar-tab-count" aria-label={`共 ${tabs.length} 个标签页`}>({tabs.length})</span>
+              </h2>
+            </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={tabs.map((tab) => tab.id)} strategy={verticalListSortingStrategy}>
+                <div ref={listRef} className="sidebar-tab-list min-h-0 flex-1 space-y-1 overflow-y-auto p-2" role="tablist" aria-orientation="vertical" aria-hidden={isCollapsed}>
+                  {tabs.map((tab) => (
+                    <SortableTab
+                      key={tab.id}
+                      tab={tab}
+                      isActive={tab.id === activeTabId}
+                      onActivate={onActivate}
+                      onRename={onRename}
+                      onClose={onClose}
+                      onContextMenu={handleContextMenu}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </section>
 
-      {contextMenu && (
-        <div
-          role="menu"
-          aria-label="标签操作"
-          ref={menuRef}
-          className="fixed z-50 w-44 rounded-xl border border-[#e1e4f0] bg-white py-1.5 shadow-xl shadow-[#28304d]/15"
-          style={{ left: contextMenu.x, top: contextMenu.y }}
-        >
-          <button
-            type="button"
-            role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
-            onClick={() => runContextAction(onClose)}
-          >
-            关闭标签
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
-            onClick={() => runContextAction(onCloseOthers)}
-          >
-            关闭其他标签
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className="flex h-8 w-full items-center px-3 text-left text-sm text-[#344054] outline-none hover:bg-[#eeefff] hover:text-[#4646bc] focus:bg-[#eeefff]"
-            onClick={() => {
-              setContextMenu(null)
-              onCloseAll()
-            }}
-          >
-            关闭所有标签
-          </button>
-        </div>
-      )}
+          {contextMenu && createPortal(
+            <div
+              role="menu"
+              aria-label="标签操作"
+              ref={menuRef}
+              className="toolbar-menu fixed z-50 w-max whitespace-nowrap p-1.5"
+              style={{ left: contextMenu.x, top: contextMenu.y }}
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="flex h-8 w-full items-center rounded-lg px-3 text-left text-sm text-[var(--text-primary)] outline-none hover:bg-[var(--bg-capsule-active)] hover:text-[var(--text-primary)] focus:bg-[var(--bg-capsule-active)]"
+                onClick={() => runContextAction(onClose)}
+              >
+                关闭标签
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex h-8 w-full items-center rounded-lg px-3 text-left text-sm text-[var(--text-primary)] outline-none hover:bg-[var(--bg-capsule-active)] hover:text-[var(--text-primary)] focus:bg-[var(--bg-capsule-active)]"
+                onClick={() => runContextAction(onCloseOthers)}
+              >
+                关闭其他标签
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex h-8 w-full items-center rounded-lg px-3 text-left text-sm text-[var(--text-primary)] outline-none hover:bg-[var(--bg-capsule-active)] hover:text-[var(--text-primary)] focus:bg-[var(--bg-capsule-active)]"
+                onClick={() => {
+                  setContextMenu(null)
+                  onCloseAll()
+                }}
+              >
+                关闭所有标签
+              </button>
+            </div>,
+            document.body
+          )}
 
-      <div className="h-9 shrink-0 border-t border-[#e4e7ef]">
-        <Button
-          variant="ghost"
-          className="h-full w-full justify-start rounded-none px-3 text-[#667085]"
-          onClick={onOpenSettings}
-          aria-label="编辑器设置"
-        >
-          <Settings size={16} />
-          <span>设置</span>
-        </Button>
+          <div className="sidebar-footer app-no-drag">
+            <IconButton className="sidebar-settings" label="编辑器设置" onClick={onOpenSettings}><Settings size={18} /></IconButton>
+          </div>
+        </aside>
       </div>
-    </aside>
+    </div>
   )
 })
