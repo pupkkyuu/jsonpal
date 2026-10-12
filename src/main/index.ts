@@ -167,6 +167,10 @@ app.whenReady().then(() => {
   })
   configureApplicationMenu()
 
+  ipcMain.handle('app:info', () => ({
+    version: app.getVersion(),
+    authorEmail: 'pupkkyuu@gmail.com'
+  }))
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))

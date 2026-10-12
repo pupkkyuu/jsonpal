@@ -1,5 +1,13 @@
+export interface AppInfo {
+  version: string
+  authorEmail: string
+}
+
 export interface ElectronAPI {
   platform: NodeJS.Platform
+  app: {
+    info: () => Promise<AppInfo>
+  }
   settings: {
     load: () => Promise<Record<string, unknown>>
     path: () => Promise<string>

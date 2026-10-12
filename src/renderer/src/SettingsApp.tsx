@@ -25,6 +25,7 @@ import {
 } from '@/editorSettings'
 import { IS_MACOS } from '@/lib/utils'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
+import type { AppInfo } from '../../preload/index.d'
 
 interface SettingRowProps {
   icon: typeof Eye
@@ -263,6 +264,41 @@ function ShortcutsSection(): React.JSX.Element {
   )
 }
 
+function AboutSection(): React.JSX.Element {
+  const [info, setInfo] = useState<AppInfo | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+    void window.api.app.info().then((result) => {
+      if (isMounted) setInfo(result)
+    }).catch(() => {
+      if (isMounted) setLoadFailed(true)
+    })
+    return () => { isMounted = false }
+  }, [])
+
+  return (
+    <SettingsGroup title="关于 JSONPal">
+      {info ? (
+        <dl className="space-y-3 text-sm">
+          {[
+            ['版本', info.version],
+            ['作者邮箱', info.authorEmail]
+          ].map(([label, value]) => (
+            <div key={label} className="flex items-center justify-between gap-6">
+              <dt className="text-[var(--text-secondary)]">{label}</dt>
+              <dd className="min-w-0 break-all text-right text-[var(--text-primary)]">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p role="status" className="text-sm text-[var(--text-secondary)]">{loadFailed ? '无法读取应用信息' : '正在读取应用信息…'}</p>
+      )}
+    </SettingsGroup>
+  )
+}
+
 interface SettingsAppProps {
   onBack: () => void
   isSidebarCollapsed: boolean
@@ -302,6 +338,7 @@ function SettingsApp({ onBack, isSidebarCollapsed, onToggleSidebar, updateSettin
           <GeneralSettings configPath={configPath} onOpenFolder={() => void window.api.settings.openFolder()} />
           <SettingsForm settings={settings} updateSettings={updateSettings} />
           <ShortcutsSection />
+          <AboutSection />
         </div>
       </div>
     </section>

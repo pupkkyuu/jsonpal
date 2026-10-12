@@ -3,9 +3,9 @@ import { memo, type ComponentProps } from 'react'
 import { IconButton } from '@/components/ui/icon-button'
 import { IS_MACOS } from '@/lib/utils'
 
-// Native window controls sit above the toolbar; never flip its tips into that area.
-function ToolbarIconButton(props: ComponentProps<typeof IconButton>): React.JSX.Element {
-  return <IconButton {...props} tooltipSide="bottom" tooltipAlign="end" tooltipAvoidCollisions={false} />
+// Prefer the space below the toolbar; IconButton keeps collision detection inside the app shell.
+function ToolbarIconButton({ tooltipAlign = 'end', ...props }: ComponentProps<typeof IconButton>): React.JSX.Element {
+  return <IconButton {...props} tooltipSide="bottom" tooltipAlign={tooltipAlign} />
 }
 
 interface EditorToolbarProps {
@@ -46,7 +46,7 @@ export const EditorToolbar = memo(function EditorToolbar({
   return (
     <nav className={`workspace-toolbar app-drag-region ${IS_MACOS && isSidebarCollapsed ? 'traffic-light-inset' : ''}`} data-sidebar-collapsed={isSidebarCollapsed} aria-label="JSON 操作">
       <div className="workspace-sidebar-toggle" inert={!isSidebarCollapsed} aria-hidden={!isSidebarCollapsed}>
-        <ToolbarIconButton className="sidebar-toggle" label="显示侧边栏" shortcut={`${modifier}+B`} onClick={onToggleSidebar} aria-expanded={false} aria-controls="tab-sidebar" tabIndex={isSidebarCollapsed ? 0 : -1}><PanelLeft size={18} /></ToolbarIconButton>
+        <ToolbarIconButton tooltipAlign="start" className="sidebar-toggle" label="显示侧边栏" shortcut={`${modifier}+B`} onClick={onToggleSidebar} aria-expanded={false} aria-controls="tab-sidebar" tabIndex={isSidebarCollapsed ? 0 : -1}><PanelLeft size={18} /></ToolbarIconButton>
       </div>
       <span className="workspace-title" title={title}>{title}</span>
       {mode === 'diff' && compareMode === 'compare' && (
