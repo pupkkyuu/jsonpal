@@ -136,11 +136,18 @@ function createWindow(): void {
     icon: APP_ICON,
     show: true,
     autoHideMenuBar: false,
-    titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default',
+    titleBarStyle: process.platform === 'darwin' || process.platform === 'win32' ? 'hidden' : 'default',
+    ...(process.platform === 'win32' ? {
+      // Keep these colors aligned with --sidebar and --text-primary in styles.css.
+      titleBarOverlay: { color: '#E2E2E4', symbolColor: '#1D1D1F', height: 32 }
+    } : {}),
     ...(process.platform === 'darwin' ? { trafficLightPosition: { x: 16, y: 20 } } : {}),
     backgroundColor: '#FFFFFF',
     webPreferences: WEB_PREFERENCES
   })
+
+  // Hide the Windows menu while retaining its native command accelerators.
+  if (process.platform === 'win32') mainWindow.setMenuBarVisibility(false)
 
   attachWindowOpenGuard(mainWindow)
   attachReloadShortcutGuard(mainWindow)

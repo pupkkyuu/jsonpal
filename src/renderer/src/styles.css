@@ -72,6 +72,8 @@ input, select, button { color: var(--text-primary); }
 }
 
 .app-shell { background: var(--app-bg); color: var(--text-primary); }
+.windows-titlebar { height: env(titlebar-area-height, 32px); flex-shrink: 0; background: var(--sidebar); color: var(--text-primary); }
+.windows-titlebar-content { display: flex; align-items: center; height: 100%; margin-left: env(titlebar-area-x, 0px); width: env(titlebar-area-width, calc(100% - 138px)); padding: 0 12px; overflow: hidden; white-space: nowrap; font-size: 12px; user-select: none; }
 .settings-page { background: #FAFAFB; }
 .settings-card { padding: 20px 24px; border: 1px solid var(--border-divider); border-radius: 12px; background: #FFFFFE; }
 .workspace { background: var(--workspace); }
