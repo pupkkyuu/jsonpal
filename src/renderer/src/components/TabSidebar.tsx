@@ -131,11 +131,12 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onRen
         )}
       >
         <IconButton
+          className="sidebar-tab-close"
           label={`关闭 ${tab.title}`}
           onClick={handleClose}
           onPointerDown={(event) => event.stopPropagation()}
         >
-          <X size={15} />
+          <X size={18} />
         </IconButton>
       </div>
     </div>

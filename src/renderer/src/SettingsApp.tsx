@@ -284,7 +284,7 @@ function AboutSection(): React.JSX.Element {
         <dl className="space-y-3 text-sm">
           {[
             ['版本', info.version],
-            ['作者邮箱', info.authorEmail]
+            ['作者', info.authorEmail]
           ].map(([label, value]) => (
             <div key={label} className="flex items-center justify-between gap-6">
               <dt className="text-[var(--text-secondary)]">{label}</dt>
