@@ -607,7 +607,7 @@ function EditorApp(): React.JSX.Element {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <main className="app-shell flex h-screen min-h-0 min-w-0 overflow-hidden">
+      <main className="app-shell flex h-full min-h-0 min-w-0 overflow-hidden">
         <TabSidebar
           tabs={tabs}
           activeTabId={activeTab.id}

@@ -127,6 +127,8 @@ function loadRendererWindow(window: BrowserWindow): void {
 }
 
 function createWindow(): void {
+  const useTitleBarOverlay = process.platform === 'win32' || process.platform === 'linux'
+
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 650,
@@ -136,11 +138,18 @@ function createWindow(): void {
     icon: APP_ICON,
     show: true,
     autoHideMenuBar: false,
-    titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default',
+    titleBarStyle: process.platform === 'darwin' || useTitleBarOverlay ? 'hidden' : 'default',
+    ...(useTitleBarOverlay ? {
+      // Keep these colors aligned with --sidebar and --text-primary in styles.css.
+      titleBarOverlay: { color: '#E2E2E4', symbolColor: '#1D1D1F', height: 32 }
+    } : {}),
     ...(process.platform === 'darwin' ? { trafficLightPosition: { x: 16, y: 20 } } : {}),
     backgroundColor: '#FFFFFF',
     webPreferences: WEB_PREFERENCES
   })
+
+  // Hide the Windows/Linux menu while retaining its native command accelerators.
+  if (useTitleBarOverlay) mainWindow.setMenuBarVisibility(false)
 
   attachWindowOpenGuard(mainWindow)
   attachReloadShortcutGuard(mainWindow)
@@ -158,6 +167,10 @@ app.whenReady().then(() => {
   })
   configureApplicationMenu()
 
+  ipcMain.handle('app:info', () => ({
+    version: app.getVersion(),
+    authorEmail: 'pupkkyuu@gmail.com'
+  }))
   ipcMain.handle('settings:load', () => loadSettings())
   ipcMain.handle('settings:path', () => getSettingsPath())
   ipcMain.handle('settings:open-folder', () => shell.openPath(dirname(getSettingsPath())))

@@ -72,6 +72,9 @@ input, select, button { color: var(--text-primary); }
 }
 
 .app-shell { background: var(--app-bg); color: var(--text-primary); }
+.desktop-titlebar { height: env(titlebar-area-height, 32px); flex-shrink: 0; background: var(--sidebar); color: var(--text-primary); }
+/* The overlay supplies the safe area for either left- or right-side controls. */
+.desktop-titlebar-content { height: 100%; margin-left: env(titlebar-area-x, 0px); width: env(titlebar-area-width, 100%); user-select: none; }
 .settings-page { background: #FAFAFB; }
 .settings-card { padding: 20px 24px; border: 1px solid var(--border-divider); border-radius: 12px; background: #FFFFFE; }
 .workspace { background: var(--workspace); }
@@ -109,7 +112,8 @@ input, select, button { color: var(--text-primary); }
 .ghost-icon:disabled { color: var(--text-disabled); opacity: 1; }
 .workspace-toolbar button { border-radius: 8px; }
 .workspace-toolbar .ghost-icon:hover, .workspace-toolbar .ghost-icon:active, .workspace-toolbar .ghost-icon[aria-pressed="true"], .workspace-toolbar .ghost-icon[aria-expanded="true"][aria-haspopup] { background: var(--sidebar-item-hover); }
-.sidebar-toggle, .sidebar-settings { width: 28px; height: 28px; flex-shrink: 0; border: 0; border-radius: 8px; background: var(--sidebar); }
+.sidebar-toggle, .sidebar-settings, .sidebar-tab-close { width: 28px; height: 28px; flex-shrink: 0; border: 0; border-radius: 8px; background: var(--sidebar); }
+.ghost-icon.sidebar-tab-close, .ghost-icon.sidebar-tab-close:hover, .ghost-icon.sidebar-tab-close:active { background: transparent; }
 .sidebar-toggle[aria-expanded="true"], .ghost-icon.sidebar-settings { background: var(--sidebar); }
 .ghost-icon.sidebar-toggle[aria-expanded="false"] { background: transparent; }
 .ghost-icon.sidebar-toggle:hover, .ghost-icon.sidebar-settings:hover,
