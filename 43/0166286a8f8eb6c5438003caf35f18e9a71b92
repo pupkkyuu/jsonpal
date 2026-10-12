@@ -1,0 +1,23 @@
+src/renderer/src/App.tsx
+  s_7509c46bc19ef6::t_4c1d489df3506e 6-7,10-12
+src/main/index.ts
+  s_7509c46bc19ef6::t_4c1d489df3506e 130-131,141-142,151-152
+src/renderer/src/styles.css
+  s_7509c46bc19ef6::t_4c1d489df3506e 75-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "430166286a8f8eb6c5438003caf35f18e9a71b92",
+  "prompts": {},
+  "sessions": {
+    "s_7509c46bc19ef6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b94-89d3-7b52-a6d7-73dcef006fb6",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
