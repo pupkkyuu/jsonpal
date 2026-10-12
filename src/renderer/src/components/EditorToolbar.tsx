@@ -1,7 +1,12 @@
 import { ArrowDown, ArrowDownAZ, ArrowUp, Braces, ChevronsDownUp, ChevronsUpDown, Code, Copy, FileCode, FileDiff, Minimize2, PanelLeft, Pencil, Search, Trash2, WrapText } from 'lucide-react'
-import { memo } from 'react'
+import { memo, type ComponentProps } from 'react'
 import { IconButton } from '@/components/ui/icon-button'
 import { IS_MACOS } from '@/lib/utils'
+
+// Native window controls sit above the toolbar; never flip its tips into that area.
+function ToolbarIconButton(props: ComponentProps<typeof IconButton>): React.JSX.Element {
+  return <IconButton {...props} tooltipSide="bottom" tooltipAlign="end" tooltipAvoidCollisions={false} />
+}
 
 interface EditorToolbarProps {
   wordWrap: boolean
@@ -41,33 +46,33 @@ export const EditorToolbar = memo(function EditorToolbar({
   return (
     <nav className={`workspace-toolbar app-drag-region ${IS_MACOS && isSidebarCollapsed ? 'traffic-light-inset' : ''}`} data-sidebar-collapsed={isSidebarCollapsed} aria-label="JSON 操作">
       <div className="workspace-sidebar-toggle" inert={!isSidebarCollapsed} aria-hidden={!isSidebarCollapsed}>
-        <IconButton className="sidebar-toggle" label="显示侧边栏" shortcut={`${modifier}+B`} onClick={onToggleSidebar} aria-expanded={false} aria-controls="tab-sidebar" tabIndex={isSidebarCollapsed ? 0 : -1}><PanelLeft size={18} /></IconButton>
+        <ToolbarIconButton className="sidebar-toggle" label="显示侧边栏" shortcut={`${modifier}+B`} onClick={onToggleSidebar} aria-expanded={false} aria-controls="tab-sidebar" tabIndex={isSidebarCollapsed ? 0 : -1}><PanelLeft size={18} /></ToolbarIconButton>
       </div>
       <span className="workspace-title" title={title}>{title}</span>
       {mode === 'diff' && compareMode === 'compare' && (
         <div className="editor-actions app-no-drag" role="group" aria-label="差异跳转">
-          <IconButton label="跳转到上一个差异" onClick={onPreviousDiff} disabled={comparisonBusy}><ArrowUp size={17} /></IconButton>
-          <IconButton label="跳转到下一个差异" onClick={onNextDiff} disabled={comparisonBusy}><ArrowDown size={17} /></IconButton>
+          <ToolbarIconButton label="跳转到上一个差异" onClick={onPreviousDiff} disabled={comparisonBusy}><ArrowUp size={17} /></ToolbarIconButton>
+          <ToolbarIconButton label="跳转到下一个差异" onClick={onNextDiff} disabled={comparisonBusy}><ArrowDown size={17} /></ToolbarIconButton>
         </div>
       )}
       <div className="editor-actions app-no-drag">
-        <IconButton label="格式化 JSON" shortcut={`${modifier}+Shift+F`} onClick={onFormat} disabled={transformDisabled}><Braces size={18} /></IconButton>
-        <IconButton label="压缩 JSON" shortcut={`${modifier}+Shift+M`} onClick={onCompress} disabled={transformDisabled}><Minimize2 size={17} /></IconButton>
-        {mode === 'diff' && <IconButton label={compareMode === 'edit' ? '对比 JSON' : '编辑 JSON'} onClick={onCompare} disabled={busy}>{compareMode === 'edit' ? <FileDiff size={18} /> : <Pencil size={17} />}</IconButton>}
+        <ToolbarIconButton label="格式化 JSON" shortcut={`${modifier}+Shift+F`} onClick={onFormat} disabled={transformDisabled}><Braces size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label="压缩 JSON" shortcut={`${modifier}+Shift+M`} onClick={onCompress} disabled={transformDisabled}><Minimize2 size={17} /></ToolbarIconButton>
+        {mode === 'diff' && <ToolbarIconButton label={compareMode === 'edit' ? '对比 JSON' : '编辑 JSON'} onClick={onCompare} disabled={busy}>{compareMode === 'edit' ? <FileDiff size={18} /> : <Pencil size={17} />}</ToolbarIconButton>}
         <span className="toolbar-separator" aria-hidden="true" />
-        <IconButton label="全部折叠" onClick={onFoldAll} disabled={busy}><ChevronsDownUp size={18} /></IconButton>
-        <IconButton label="全部展开" onClick={onUnfoldAll} disabled={busy}><ChevronsUpDown size={18} /></IconButton>
-        <IconButton label={wordWrap ? '关闭自动换行' : '开启自动换行'} onClick={onToggleWordWrap} aria-pressed={wordWrap} disabled={busy}><WrapText size={18} /></IconButton>
+        <ToolbarIconButton label="全部折叠" onClick={onFoldAll} disabled={busy}><ChevronsDownUp size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label="全部展开" onClick={onUnfoldAll} disabled={busy}><ChevronsUpDown size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label={wordWrap ? '关闭自动换行' : '开启自动换行'} onClick={onToggleWordWrap} aria-pressed={wordWrap} disabled={busy}><WrapText size={18} /></ToolbarIconButton>
         <span className="toolbar-separator" aria-hidden="true" />
-        <IconButton label="转义 JSON" onClick={onEscape} disabled={transformDisabled}><FileCode size={18} /></IconButton>
-        <IconButton label="去除 JSON 转义" onClick={onUnescape} disabled={transformDisabled}><Code size={18} /></IconButton>
+        <ToolbarIconButton label="转义 JSON" onClick={onEscape} disabled={transformDisabled}><FileCode size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label="去除 JSON 转义" onClick={onUnescape} disabled={transformDisabled}><Code size={18} /></ToolbarIconButton>
         <span className="toolbar-separator" aria-hidden="true" />
-        <IconButton label="复制 JSON" onClick={onCopy} disabled={busy}><Copy size={18} /></IconButton>
-        <IconButton label="按字段排序 JSON" onClick={onSort} disabled={transformDisabled}><ArrowDownAZ size={18} /></IconButton>
+        <ToolbarIconButton label="复制 JSON" onClick={onCopy} disabled={busy}><Copy size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label="按字段排序 JSON" onClick={onSort} disabled={transformDisabled}><ArrowDownAZ size={18} /></ToolbarIconButton>
       </div>
       <div className="editor-actions toolbar-clear-action app-no-drag">
-        <IconButton label="搜索" shortcut={`${modifier}+F`} onClick={onSearch} disabled={mode === 'diff' && comparisonBusy}><Search size={18} /></IconButton>
-        <IconButton label="清空内容" onClick={onClear}><Trash2 size={18} /></IconButton>
+        <ToolbarIconButton label="搜索" shortcut={`${modifier}+F`} onClick={onSearch} disabled={mode === 'diff' && comparisonBusy}><Search size={18} /></ToolbarIconButton>
+        <ToolbarIconButton label="清空内容" onClick={onClear}><Trash2 size={18} /></ToolbarIconButton>
       </div>
     </nav>
   )
