@@ -1,0 +1,21 @@
+src/renderer/src/components/EditorToolbar.tsx
+  s_7509c46bc19ef6::t_3cffbf8ad916ab 2,6-10,49,54-55,59-61,63-65,67-68,70-71,74-75
+src/renderer/src/components/ui/icon-button.tsx
+  s_7509c46bc19ef6::t_c078ce01a51aa8 1,8-10,14,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5428810a077daf06ba2257f1f265c886c6549fa6",
+  "prompts": {},
+  "sessions": {
+    "s_7509c46bc19ef6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b94-89d3-7b52-a6d7-73dcef006fb6",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
