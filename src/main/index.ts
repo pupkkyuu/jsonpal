@@ -127,6 +127,8 @@ function loadRendererWindow(window: BrowserWindow): void {
 }
 
 function createWindow(): void {
+  const useTitleBarOverlay = process.platform === 'win32' || process.platform === 'linux'
+
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 650,
@@ -136,8 +138,8 @@ function createWindow(): void {
     icon: APP_ICON,
     show: true,
     autoHideMenuBar: false,
-    titleBarStyle: process.platform === 'darwin' || process.platform === 'win32' ? 'hidden' : 'default',
-    ...(process.platform === 'win32' ? {
+    titleBarStyle: process.platform === 'darwin' || useTitleBarOverlay ? 'hidden' : 'default',
+    ...(useTitleBarOverlay ? {
       // Keep these colors aligned with --sidebar and --text-primary in styles.css.
       titleBarOverlay: { color: '#E2E2E4', symbolColor: '#1D1D1F', height: 32 }
     } : {}),
@@ -146,8 +148,8 @@ function createWindow(): void {
     webPreferences: WEB_PREFERENCES
   })
 
-  // Hide the Windows menu while retaining its native command accelerators.
-  if (process.platform === 'win32') mainWindow.setMenuBarVisibility(false)
+  // Hide the Windows/Linux menu while retaining its native command accelerators.
+  if (useTitleBarOverlay) mainWindow.setMenuBarVisibility(false)
 
   attachWindowOpenGuard(mainWindow)
   attachReloadShortcutGuard(mainWindow)

@@ -3,11 +3,13 @@ import { lazy, Suspense } from 'react'
 const EditorApp = lazy(() => import('./EditorApp'))
 
 function App(): React.JSX.Element {
+  const useTitleBarOverlay = window.api.platform === 'win32' || window.api.platform === 'linux'
+
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {window.api.platform === 'win32' && (
-        <header className="windows-titlebar">
-          <div className="windows-titlebar-content app-drag-region">JSONPal</div>
+      {useTitleBarOverlay && (
+        <header className="desktop-titlebar">
+          <div className="desktop-titlebar-content app-drag-region" />
         </header>
       )}
       <div className="min-h-0 flex-1">
