@@ -1,0 +1,22 @@
+src/renderer/src/styles.css
+  s_7509c46bc19ef6::t_3e6fbf7a30447c 115
+  s_7509c46bc19ef6::t_e8d528374d1e81 116
+src/renderer/src/components/TabSidebar.tsx
+  s_7509c46bc19ef6::t_3e6fbf7a30447c 134,139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b1bfcc4dd55f2d6f110d2dcaf7d06303dc72507c",
+  "prompts": {},
+  "sessions": {
+    "s_7509c46bc19ef6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b94-89d3-7b52-a6d7-73dcef006fb6",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
