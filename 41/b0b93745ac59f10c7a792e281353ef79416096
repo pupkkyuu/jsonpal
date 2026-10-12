@@ -1,0 +1,38 @@
+src/renderer/src/components/ui/icon-button.tsx
+  s_7509c46bc19ef6::t_7ced12d4c0d93a 1,13,15-17,19-22,26,29
+  s_7509c46bc19ef6::t_381cdf2860a201 18
+src/renderer/src/SettingsApp.tsx
+  s_7509c46bc19ef6::t_4d46686c5f6f75 284,287,291,296
+  s_7509c46bc19ef6::t_1f77a801ae36eb 28,267-283,285-286,288-290,292-295,297-301,341
+src/renderer/src/components/ui/tooltip.tsx
+  s_7509c46bc19ef6::t_7ced12d4c0d93a 19
+docs/releases/0.1.2.md
+  s_7509c46bc19ef6::t_18a70dc3a21a4c 1-9
+src/renderer/src/components/EditorToolbar.tsx
+  s_7509c46bc19ef6::t_7ced12d4c0d93a 6,8
+  s_7509c46bc19ef6::t_1f77a801ae36eb 7,49
+src/preload/index.d.ts
+  s_7509c46bc19ef6::t_1f77a801ae36eb 1-2,4-5,8-10
+  s_7509c46bc19ef6::t_4d46686c5f6f75 3
+src/main/index.ts
+  s_7509c46bc19ef6::t_1f77a801ae36eb 170-171,173
+  s_7509c46bc19ef6::t_4d46686c5f6f75 172
+src/preload/index.ts
+  s_7509c46bc19ef6::t_1f77a801ae36eb 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "41b0b93745ac59f10c7a792e281353ef79416096",
+  "prompts": {},
+  "sessions": {
+    "s_7509c46bc19ef6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12b94-89d3-7b52-a6d7-73dcef006fb6",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
