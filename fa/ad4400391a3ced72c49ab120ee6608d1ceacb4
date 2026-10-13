@@ -1,0 +1,46 @@
+tests/webview/editor-smoke.js
+  s_24c010c20baf80::t_99ad47228f14c2 94-101
+  s_24c010c20baf80::t_574693160703cc 82-89,105
+src/lib/components/Workspace.svelte
+  s_24c010c20baf80::t_e0c99b22f0c834 14
+  s_24c010c20baf80::t_10c57cc3f3b4db 56-63
+src/lib/components/SettingsPage.svelte
+  s_24c010c20baf80::t_b5e22bc33005dc 6,22
+package.json
+  s_24c010c20baf80::t_79cace58c9e416 20
+src/lib/components/ui/IconButton.svelte
+  s_24c010c20baf80::t_e0c99b22f0c834 1-9,24-26,55
+  s_24c010c20baf80::t_6d3f8149550cb0 11,16-17,21,27-52,59
+src/lib/desktop.ts
+  s_24c010c20baf80::t_b5e22bc33005dc 10
+src/lib/components/TabSidebar.svelte
+  s_24c010c20baf80::t_e0c99b22f0c834 4,72
+src/lib/components/EditorToolbar.svelte
+  s_24c010c20baf80::t_b5e22bc33005dc 5,9
+src-tauri/tauri.conf.json
+  s_24c010c20baf80::t_a5826a633ebc8b 26
+src/lib/monaco/controller.ts
+  s_24c010c20baf80::t_574693160703cc 24,26,64,82-84
+  s_24c010c20baf80::t_99ad47228f14c2 20-23,62-63,163
+src/lib/styles.css
+  s_24c010c20baf80::t_574693160703cc 75-78
+  s_24c010c20baf80::t_a5826a633ebc8b 85-86,89
+package-lock.json
+  s_24c010c20baf80::t_a0d3e66899566f 12,44-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "faad4400391a3ced72c49ab120ee6608d1ceacb4",
+  "prompts": {},
+  "sessions": {
+    "s_24c010c20baf80": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13436-e751-7fc3-b278-bf52acae7fbe",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
