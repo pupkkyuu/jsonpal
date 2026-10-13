@@ -1,0 +1,57 @@
+README.md
+  s_ea96b9640a9b12::t_6c0907a14a0aff 5,27-35,56,66
+src-tauri/src/settings.rs
+  s_ea96b9640a9b12::t_1005feb2908366 272,285,295
+vite.config.js
+  s_ea96b9640a9b12::t_1005feb2908366 4,8,11,13
+src/lib/monaco/controller.ts
+  s_ea96b9640a9b12::t_1005feb2908366 15,45,48,52,54,56,61,93,107,145,147,153
+tsconfig.json
+  s_ea96b9640a9b12::t_6c0907a14a0aff 12-13
+src/lib/monaco/loader.svelte.ts
+  s_ea96b9640a9b12::t_eccc439fc82add 3-4
+src/lib/jsonUtils.ts
+  s_ea96b9640a9b12::t_1005feb2908366 14
+src/lib/desktop.ts
+  s_ea96b9640a9b12::t_1005feb2908366 6-7
+src/lib/styles.css
+  s_ea96b9640a9b12::t_1005feb2908366 59,67
+src/app.html
+  s_ea96b9640a9b12::t_1005feb2908366 9
+src/lib/workspace.svelte.ts
+  s_ea96b9640a9b12::t_1005feb2908366 1,5,8,19-20,26,47,55
+src/lib/json/jsonTransform.worker.ts
+  s_ea96b9640a9b12::t_1005feb2908366 4,14
+src/lib/components/EditorSurface.svelte
+  s_ea96b9640a9b12::t_1005feb2908366 24,30
+src/lib/editorSettings.ts
+  s_ea96b9640a9b12::t_eccc439fc82add 1-2
+  s_ea96b9640a9b12::t_1005feb2908366 20
+src/routes/+layout.ts
+  s_ea96b9640a9b12::t_1005feb2908366 1,3
+tests/webview/editor-smoke.js
+  s_ea96b9640a9b12::t_ed70a16b36c4b2 6,83,86
+  s_ea96b9640a9b12::t_eccc439fc82add 24,29,34,37,40,42,45,55,63,65,68,79-80,82,84,89,92
+  s_ea96b9640a9b12::t_c54299f93115ac 1-5,7-23,25-28,30-33,35-36,38-39,41,43-44,46-54,56-62,64,66-67,69-78,81,85,87-88,90-91,93-96
+tests/webview/webview-smoke.swift
+  s_ea96b9640a9b12::t_63f57de11b7e56 53,73-76
+  s_ea96b9640a9b12::t_26b1ad48bac314 5-8,11-13,46,49,78
+  s_ea96b9640a9b12::t_1005feb2908366 1-4,9-10,14-45,47-48,50-52,54-56,58-72,77
+  s_ea96b9640a9b12::t_8936de61fbd73f 57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "765d72cdf8212cab3e3f70c5c778729aa19cfa75",
+  "prompts": {},
+  "sessions": {
+    "s_ea96b9640a9b12": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13341-bdac-7562-ac32-7155f7b1d1a2",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
