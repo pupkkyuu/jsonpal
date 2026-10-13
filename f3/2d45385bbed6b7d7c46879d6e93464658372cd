@@ -1,0 +1,19 @@
+.gitignore
+  s_ea96b9640a9b12::t_694ad8dcdf6728 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f32d45385bbed6b7d7c46879d6e93464658372cd",
+  "prompts": {},
+  "sessions": {
+    "s_ea96b9640a9b12": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13341-bdac-7562-ac32-7155f7b1d1a2",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
