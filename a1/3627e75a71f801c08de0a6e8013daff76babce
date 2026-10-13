@@ -1,0 +1,26 @@
+src/lib/monaco/controller.ts
+  s_c0a9d53f84c95e::t_2f39216e0db28a 94-96
+  s_c0a9d53f84c95e::t_e718ff765b9a64 14-16,27-32,36,90,92-93,97-98
+tests/webview/editor-smoke.js
+  s_c0a9d53f84c95e::t_06e0411880a889 90,96
+  s_c0a9d53f84c95e::t_e718ff765b9a64 91-95,97-100,102-105,109-111,116,121-138
+  s_c0a9d53f84c95e::t_2f39216e0db28a 101,106-108
+src/lib/styles.css
+  s_c0a9d53f84c95e::t_e718ff765b9a64 75-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a13627e75a71f801c08de0a6e8013daff76babce",
+  "prompts": {},
+  "sessions": {
+    "s_c0a9d53f84c95e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1353f-57fd-71b3-a616-12e3febe5bfd",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
