@@ -1,0 +1,47 @@
+tests/webview/webview-smoke.swift
+  s_ea96b9640a9b12::t_84a815f987880c 25
+index.html
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 9-10
+.gitignore
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 3
+src/vite-env.d.ts
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 1
+src/lib/styles.css
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 212
+src/main.ts
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 1-8
+tests/webview/editor-smoke.js
+  s_ea96b9640a9b12::t_261cc5dc824e6f 30-31
+svelte.config.js
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 3
+package.json
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 13
+tailwind.config.js
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 1
+src-tauri/tauri.conf.json
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 10
+src/App.svelte
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 4-5
+tsconfig.json
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 3-8,18-21
+vite.config.js
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 2-3,6-10
+README.md
+  s_ea96b9640a9b12::t_e67993dd5e7ef4 3,5,12,31,52,55-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "98ef446b37ce6ca2575d5ade0ed0880d7db4661d",
+  "prompts": {},
+  "sessions": {
+    "s_ea96b9640a9b12": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13341-bdac-7562-ac32-7155f7b1d1a2",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
