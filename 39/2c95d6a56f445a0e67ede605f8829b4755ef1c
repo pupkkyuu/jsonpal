@@ -1,0 +1,84 @@
+app_test.go
+  s_0e6fff178cf50f::t_c72ec61feae154 123-145
+  s_0e6fff178cf50f::t_e84f4627d05203 87,104,106-108,118-119,121-122
+  s_b9e473ae153085::t_ce1bf72c5e79bd 1-7,10-13,17-19,21-26,28-29,31-36,38-52,54-61,63-69,71-73,75-86
+  s_0e6fff178cf50f::t_b371e46a640af7 14-15,20,27,30,62,74
+  s_0e6fff178cf50f::t_0d69888763f3b7 8-9,16,37,53,70,88-103,105,109-117,120
+.gitignore
+  s_b9e473ae153085::t_ce1bf72c5e79bd 1-2
+TODO.md
+  s_0e6fff178cf50f::t_c34c4db504fcbb 13
+  s_0e6fff178cf50f::t_e33c6487f226f3 3,5,14
+  s_0e6fff178cf50f::t_91b78c421ebcf4 15
+  s_b9e473ae153085::t_ce1bf72c5e79bd 1-2,4,7-12,16-65
+  s_b9e473ae153085::t_2d2ec1a4fb309b 6
+sidebar.go
+  s_0e6fff178cf50f::t_7d455171e26b7a 16-17
+  s_0e6fff178cf50f::t_b58e6668f78105 25
+  s_0e6fff178cf50f::t_57b93f3873a963 1-2,9-10,26-27,33
+  s_0e6fff178cf50f::t_085152435823fc 3-8,11-12,14-15,18-24,28-32
+  s_0e6fff178cf50f::t_63c79ae2f95f8d 13
+main.go
+  s_0e6fff178cf50f::t_2dd78fc77dbf68 7,13
+  s_b9e473ae153085::t_3c001b758d6e99 1-6,8-12,14-18
+format.go
+  s_b9e473ae153085::t_3c001b758d6e99 1-30
+go.mod
+  s_0e6fff178cf50f::t_efa28c4051ad53 15
+  s_b9e473ae153085::t_3c001b758d6e99 1-6,8
+  s_0e6fff178cf50f::t_ae6913b1c05f52 7,9-14,16
+app.go
+  s_b9e473ae153085::t_3c001b758d6e99 1-8,10-11,15-16,23-27,29,36-41,43,46-47,60-68,74-93
+  s_b9e473ae153085::t_1da66ada346709 58
+  s_0e6fff178cf50f::t_b58e6668f78105 73
+  s_0e6fff178cf50f::t_57b93f3873a963 30-31,33-35
+  s_0e6fff178cf50f::t_2dd78fc77dbf68 9,48-57,59,70-72
+  s_0e6fff178cf50f::t_b4309ec31b0a09 12-14,32,69
+  s_0e6fff178cf50f::t_085152435823fc 17-22
+  s_0e6fff178cf50f::t_8dc29092e46ca0 28,44-45
+  s_0e6fff178cf50f::t_f42ca6b387428a 42
+format_test.go
+  s_b9e473ae153085::t_ce1bf72c5e79bd 1-52
+README.md
+  s_0e6fff178cf50f::t_7d455171e26b7a 13
+  s_b9e473ae153085::t_8adfec8bd7721a 1,5,17,19,21,25-28,30,32,34-36,38,41,44,47-48,53-55,60-64,67,71
+  s_0e6fff178cf50f::t_e33c6487f226f3 3,7-12,14-16,23,51,56-59,68
+  s_0e6fff178cf50f::t_e795323e4789ea 69
+docs/features-and-ui.zh-CN.md
+  s_b9e473ae153085::t_ce1bf72c5e79bd 3
+  s_b9e473ae153085::t_c33cc3ff11c3f4 1-2,4-223
+mygo.json
+  s_b9e473ae153085::t_3c001b758d6e99 1-5
+titlebar.go
+  s_b9e473ae153085::t_ed8ee75bc92c30 37
+  s_0e6fff178cf50f::t_57b93f3873a963 8,40
+  s_0e6fff178cf50f::t_085152435823fc 3-7,10-16,18-35,41-42
+  s_0e6fff178cf50f::t_63c79ae2f95f8d 17
+  s_b9e473ae153085::t_2d2ec1a4fb309b 1-2,9,36,38-39,43
+go.sum
+  s_0e6fff178cf50f::t_90628e2bb8aec2 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "392c95d6a56f445a0e67ede605f8829b4755ef1c",
+  "prompts": {},
+  "sessions": {
+    "s_0e6fff178cf50f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13971-b5b3-7352-9d70-8acb828e63cb",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    },
+    "s_b9e473ae153085": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13599-caaa-71d3-8754-fef0eeaf2e47",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
