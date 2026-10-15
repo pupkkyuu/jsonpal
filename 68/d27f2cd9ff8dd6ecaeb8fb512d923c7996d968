@@ -1,0 +1,31 @@
+TODO.md
+  s_cb708da850e3ff::t_507ea7e718f8b5 5
+docs/architecture.zh-CN.md
+  s_cb708da850e3ff::t_507ea7e718f8b5 75
+  s_cb708da850e3ff::t_4ecffb96873f98 41
+internal/desktop/app.go
+  s_cb708da850e3ff::t_0efcedc4ba0593 25-26
+README.md
+  s_cb708da850e3ff::t_4ecffb96873f98 115
+  s_cb708da850e3ff::t_507ea7e718f8b5 13,70,79
+go.mod
+  s_cb708da850e3ff::t_49a2c9b5caaf32 9
+go.sum
+  s_cb708da850e3ff::t_7a6bb73ffd3a6b 9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "68d27f2cd9ff8dd6ecaeb8fb512d923c7996d968",
+  "prompts": {},
+  "sessions": {
+    "s_cb708da850e3ff": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13e24-a520-7683-a1ad-e4bcd48fd2d3",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
