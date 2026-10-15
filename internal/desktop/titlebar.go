@@ -1,6 +1,8 @@
 package desktop
 
 import (
+	"math"
+
 	"github.com/egoist/mygo/ui"
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
@@ -17,7 +19,14 @@ func (app *application) titlebar(c *ui.Context) {
 		return
 	}
 	ui.Row(c.Key("document-header")).Fill().AlignItems(ui.Center).Gap(t.Space(2)).Children(func() {
-		components.Text(c, app.activeTab.title).SingleLine().Shrink(0)
+		title := app.activeTab.title
+		// Keep text layout and accessibility while drawing at a stable pixel
+		// phase as the Shell moves the header through fractional coordinates.
+		components.Text(c, title).SingleLine().Shrink(0).TextColor(ui.Transparent).
+			DrawOver(func(p *ui.Painter, r ui.Rect) {
+				x := float32(math.Round(float64(r.X)))
+				p.Text(x, r.Y, title, t.FontSize, t.Text)
+			})
 		ui.Spacer(c)
 		// Horizontal scrolling keeps every action reachable in a narrow header.
 		components.ScrollView(c.Key("editor-tools"), components.ScrollViewOptions{Axes: components.ScrollHorizontal}).
