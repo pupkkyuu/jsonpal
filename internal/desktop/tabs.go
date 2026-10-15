@@ -83,7 +83,8 @@ func (app *application) closeTab(id string) {
 			app.revealTab = ""
 		}
 		if len(app.tabs) == 0 {
-			app.addFormatTab("")
+			app.activeTab = nil
+			app.focusEditor = false
 		} else if active {
 			// Prefer the tab to the right, or the preceding tab at the end.
 			app.selectTab(app.tabs[min(i, len(app.tabs)-1)].id)

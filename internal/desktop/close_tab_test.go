@@ -59,33 +59,54 @@ func TestCloseTabButtonAndActiveNeighbor(t *testing.T) {
 	}
 }
 
-func TestClosingLastTabCreatesFreshEmptyEditor(t *testing.T) {
-	app := newEditingApplication()
-	old := app.activeTab
-	tt := newWorkspaceTester(app, 760, 400)
-	tt.Key(ui.Cmd, ui.KeyA)
-	tt.Type(`{"edited":true}`)
-	hoverTab(t, tt, old.title)
-	if err := tt.Click("关闭 " + old.title); err != nil {
-		t.Fatal(err)
-	}
-	newTab := app.activeTab
-	if len(app.tabs) != 1 || newTab == old || newTab.id == old.id || newTab.title != "格式化 2" || !tt.HasText("标签页（1）") {
-		t.Fatal("closing the last tab did not create a uniquely numbered replacement")
-	}
-	state := editorState(newTab)
-	if state.Buffer.String() != "" || state.Buffer.CanUndo() || len(state.Diagnostics()) != 0 || !tt.Focused("JSON 编辑器") {
-		t.Fatal("replacement editor inherited closed document state")
-	}
-	tt.Key(ui.Cmd, ui.KeyZ)
-	if state.Buffer.String() != "" {
-		t.Fatal("replacement editor's undo restored a closed document")
-	}
-	if err := tt.Click("新建格式化"); err != nil {
-		t.Fatal(err)
-	}
-	if app.activeTab.title != "格式化 3" || len(app.tabs) != 2 {
-		t.Fatal("new tab numbering was reused after closing the last tab")
+func TestClosingLastTabReturnsToWelcome(t *testing.T) {
+	for _, action := range []string{"新建格式化", "新建对比"} {
+		t.Run(action, func(t *testing.T) {
+			app := newApplication()
+			tt := newWorkspaceTester(app, 760, 400)
+			if err := tt.Click(action); err != nil {
+				t.Fatal(err)
+			}
+			old := app.activeTab
+			tt.Type(`{"edited":true}`)
+			hoverTab(t, tt, old.title)
+			if err := tt.Click("关闭 " + old.title); err != nil {
+				t.Fatal(err)
+			}
+			if len(app.tabs) != 0 || app.activeTab != nil || !tt.HasText("标签页（0）") || app.focusEditor || app.revealTab != "" {
+				t.Fatal("closing the last tab did not clear the workspace")
+			}
+			if _, ok := tt.Find("欢迎背景"); !ok {
+				t.Fatal("closing the last tab did not render the welcome background")
+			}
+			for _, label := range []string{"JSON 编辑器", "左侧 JSON 编辑器", "右侧 JSON 编辑器", "编辑工具栏", "关闭 " + old.title} {
+				if _, ok := tt.Find(label); ok {
+					t.Fatalf("closing the last tab left %q mounted", label)
+				}
+			}
+			tt.Key(ui.Cmd, ui.KeyZ)
+			tt.Key(ui.Ctrl, ui.KeyTab)
+			if app.activeTab != nil || len(app.tabs) != 0 {
+				t.Fatal("editor shortcuts created a document on the welcome screen")
+			}
+			if err := tt.Click(action); err != nil {
+				t.Fatal(err)
+			}
+			if len(app.tabs) != 1 || app.activeTab == old || app.activeTab.id == old.id {
+				t.Fatal("new tab numbering was reused after closing the last tab")
+			}
+			if _, ok := tt.Find("欢迎背景"); ok {
+				t.Fatal("welcome background remained mounted after reopening an editor")
+			}
+			if action == "新建格式化" {
+				state := editorState(app.activeTab)
+				if state.Buffer.String() != "" || state.Buffer.CanUndo() || len(state.Diagnostics()) != 0 || !tt.Focused("JSON 编辑器") {
+					t.Fatal("new editor inherited closed document state or did not receive focus")
+				}
+			} else if !tt.Focused("左侧 JSON 编辑器") {
+				t.Fatal("new comparison editor did not receive focus")
+			}
+		})
 	}
 }
 
