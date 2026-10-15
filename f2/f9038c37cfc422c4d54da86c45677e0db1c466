@@ -1,0 +1,19 @@
+internal/desktop/titlebar.go
+  s_cb708da850e3ff::t_246e29df477659 4-5,22-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f2f9038c37cfc422c4d54da86c45677e0db1c466",
+  "prompts": {},
+  "sessions": {
+    "s_cb708da850e3ff": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13e24-a520-7683-a1ad-e4bcd48fd2d3",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
