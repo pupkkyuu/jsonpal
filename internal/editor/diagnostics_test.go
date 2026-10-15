@@ -79,8 +79,9 @@ func TestFormatDiagnosticsAndUndo(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, e)
 	if len(e.code.Diagnostics()) != 1 || e.validation.pending {
-		t.Fatal("explicit format did not diagnose immediately")
+		t.Fatal("completed format did not publish diagnostics")
 	}
 	redPixels := 0
 	img := tt.Image()

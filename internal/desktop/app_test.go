@@ -3,11 +3,30 @@ package desktop
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/editor"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
 )
+
+func awaitTransform(t *testing.T, tt *ui.Tester, app *application) {
+	t.Helper()
+	work, ok := app.activeTab.editor.(interface{ Busy() bool })
+	if !ok {
+		return
+	}
+	deadline := time.Now().Add(3 * time.Second)
+	for work.Busy() {
+		if time.Now().After(deadline) {
+			t.Fatal("background transformation did not finish")
+		}
+		tt.Frame()
+		if work.Busy() {
+			time.Sleep(time.Millisecond)
+		}
+	}
+}
 
 func TestFormatButtonAndUndo(t *testing.T) {
 	app := newEditingApplication()
@@ -17,6 +36,7 @@ func TestFormatButtonAndUndo(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(app.activeTab).Buffer.String() != starterJSON || app.activeTab.editor.Result().Message != "JSON 有效，已格式化（2 空格缩进）" {
 		t.Fatalf("format did not update the editor and status: %q, %q", editorState(app.activeTab).Buffer.String(), tt.Texts())
 	}
@@ -41,6 +61,7 @@ func TestEditAndFormatShortcut(t *testing.T) {
 		t.Fatalf("typing into the native editor = %q", got)
 	}
 	tt.Key(ui.Cmd|ui.Shift, ui.KeyF)
+	awaitTransform(t, tt, app)
 	if got := editorState(app.activeTab).Buffer.String(); got != "{\n  \"answer\": 42\n}" {
 		t.Fatalf("format shortcut = %q", got)
 	}
@@ -54,6 +75,7 @@ func TestInvalidJSONDoesNotChangeContent(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(app.activeTab).Buffer.String() != invalid || !app.activeTab.editor.Result().HasError || !strings.Contains(app.activeTab.editor.Result().Message, "第 2 行，第 8 列") {
 		t.Fatalf("invalid format changed input or lost error: %q, %q", editorState(app.activeTab).Buffer.String(), app.activeTab.editor.Result().Message)
 	}
@@ -71,6 +93,7 @@ func TestEmptyAndUnchangedFormatting(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(app.activeTab).Buffer.String() != " \n " || app.activeTab.editor.Result().HasError || app.activeTab.editor.Result().Message != "等待输入 JSON" {
 		t.Fatal("empty input should stay unchanged and show the waiting message")
 	}
@@ -80,6 +103,7 @@ func TestEmptyAndUnchangedFormatting(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(app.activeTab).Buffer.Version() != version {
 		t.Fatal("formatting unchanged input should not create an undo step")
 	}
@@ -150,6 +174,7 @@ func TestNarrowToolbarKeepsActionsReachable(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(app.activeTab).Buffer.String() != "{\n  \"answer\": 42\n}" {
 		t.Fatal("first toolbar action stopped working after horizontal scroll")
 	}

@@ -54,6 +54,7 @@ func TestDocumentActionsReturnCaretAndViewportToDocumentStart(t *testing.T) {
 			} else if err := tt.Click(label); err != nil {
 				t.Fatal(err)
 			}
+			awaitTransform(t, tt, app)
 			if state.Selection() != (editor.Selection{}) || state.Buffer.String() != transformed || !tt.Focused("JSON 编辑器") {
 				t.Fatalf("%s did not return the caret to the start: %v", label, state.Selection())
 			}
@@ -94,6 +95,7 @@ func TestFormatReturnsToStartOnEmptyOrInvalidInput(t *testing.T) {
 		if err := tt.Click("格式化 JSON"); err != nil {
 			t.Fatal(err)
 		}
+		awaitTransform(t, tt, app)
 		if state.Selection() != (editor.Selection{}) || state.Buffer.String() != source || state.Buffer.CanUndo() {
 			t.Fatal("format should return to the start without editing invalid or empty input")
 		}

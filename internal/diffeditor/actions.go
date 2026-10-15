@@ -1,7 +1,8 @@
 package diffeditor
 
 import (
-	"strings"
+	"github.com/egoist/mygo/ui"
+	mygoeditor "github.com/egoist/mygo/ui/editor"
 
 	"jsonpal/internal/editor"
 	"jsonpal/internal/jsondoc"
@@ -14,21 +15,36 @@ func (d *Diff) Escape()     { d.transform(jsondoc.Escape, locales.DiffEscapeSucc
 func (d *Diff) Unescape()   { d.transform(jsondoc.Unescape, locales.DiffUnescapeSuccess()) }
 func (d *Diff) SortFields() { d.transform(jsondoc.SortFields, locales.DiffSortSuccess()) }
 
-// Calculate both results first so a failure never partially updates a pair.
+// Calculate both results off the UI thread before committing either document.
 func (d *Diff) transform(transform func(string) (string, error), message string) {
-	if d.comparing {
+	if !d.TransformEnabled() {
 		return
 	}
-	var results [2]string
+	var snapshots []mygoeditor.Snapshot
+	for _, pane := range d.panes {
+		snapshots = append(snapshots, pane.State().Buffer.Snapshot())
+	}
+	if d.transformTask.Start(snapshots, transform, true) {
+		d.transformMessage = message
+		d.result = editor.Result{Message: locales.Processing()}
+		d.rememberVersions()
+	}
+}
+
+func (d *Diff) refreshTransform(c *ui.Context) {
+	results, ready := d.transformTask.Update(c)
+	if !ready || len(results) == 0 {
+		return
+	}
+	// Editing either side invalidates the entire pair, even an error result.
 	for i, pane := range d.panes {
-		source := pane.State().Buffer.String()
-		results[i] = source
-		if strings.TrimSpace(source) == "" {
-			continue
+		if pane.State().Buffer.Version() != results[i].Version {
+			return
 		}
-		result, err := transform(source)
-		if err != nil {
-			pane.ReportError(err)
+	}
+	for i, pane := range d.panes {
+		if results[i].HasError {
+			pane.ApplyPreparedTransform(results[i], "")
 			message := locales.DiffLeftError(pane.Result().Message)
 			if i == 1 {
 				message = locales.DiffRightError(pane.Result().Message)
@@ -38,12 +54,11 @@ func (d *Diff) transform(transform func(string) (string, error), message string)
 			d.activeSide, d.requestFocus = i, true
 			return
 		}
-		results[i] = result
 	}
 	for i, pane := range d.panes {
-		pane.ApplyText(results[i], message)
+		pane.ApplyPreparedTransform(results[i], d.transformMessage)
 	}
-	d.result = editor.Result{Message: message}
+	d.result = editor.Result{Message: d.transformMessage}
 	d.rememberVersions()
 	d.requestFocus = true
 }
@@ -96,6 +111,7 @@ func (d *Diff) Search() {
 }
 
 func (d *Diff) Clear() {
+	d.transformTask.Cancel()
 	for _, pane := range d.panes {
 		pane.Clear()
 	}

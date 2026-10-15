@@ -34,7 +34,7 @@ func (app *application) shellOptions() sidebar.ShellOptions {
 	return sidebar.ShellOptions{
 		Title: "JSONPal", Theme: theme.Onevra,
 		Width: 1000, Height: 650, MinWidth: 760, MinHeight: 400,
-		LeftMinWidth: 180, LeftMaxWidth: 320,
+		LeftWidth: 200, LeftMinWidth: 180, LeftMaxWidth: 320,
 		LeftToggleLabel: locales.WithShortcut(locales.SidebarToggle(), "⌘B"),
 		Left:            app.sidebar, LeftToolbar: app.sidebarFooter,
 		ContentTitle: app.titlebar, Content: app.view,

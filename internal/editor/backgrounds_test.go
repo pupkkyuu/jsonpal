@@ -19,6 +19,7 @@ func TestErrorBackgroundTracksDiagnosticsAndAppearance(t *testing.T) {
 			tt := newJSONTester(e, 600, 400)
 			before := cloneImage(tt.Image())
 			e.Format()
+			awaitTransform(t, tt, e)
 			tt.Frame()
 			ds := e.State().Diagnostics()
 			backgrounds := e.State().LineBackgrounds
@@ -80,6 +81,7 @@ func TestStaleValidationCannotRestoreErrorBackground(t *testing.T) {
 	e := NewJSON(`{"a":]}`)
 	tt := newJSONTester(e, 600, 400)
 	e.Format()
+	awaitTransform(t, tt, e)
 	tt.Frame()
 	oldVersion := e.State().Buffer.Version()
 	e.State().Buffer.Set(`{}`)

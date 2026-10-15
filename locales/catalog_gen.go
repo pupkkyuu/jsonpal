@@ -91,6 +91,20 @@ func (msgs Messages) EditorModifiedHint() string {
 	return Catalog.Format(msgs.locale, "editorModifiedHint", nil)
 }
 
+// Processing says "正在处理…"
+// in the language the app shows.
+//
+// A document transformation is running in the background.
+func Processing() string { return In(i18n.Locale()).Processing() }
+
+// Processing says "正在处理…"
+// in the language of msgs.
+//
+// A document transformation is running in the background.
+func (msgs Messages) Processing() string {
+	return Catalog.Format(msgs.locale, "processing", nil)
+}
+
 // FormatSuccess says "JSON 有效，已格式化（2 空格缩进）"
 // in the language the app shows.
 //

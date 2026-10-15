@@ -28,7 +28,12 @@ type Toolbar interface {
 	Toolbar(c *ui.Context)
 }
 
-// TransformAvailability lets an editor disable text transforms in preview mode.
+// BackgroundWork exposes pending operations without exposing document state.
+type BackgroundWork interface {
+	Busy() bool
+}
+
+// TransformAvailability disables transforms during work or in preview mode.
 type TransformAvailability interface {
 	TransformEnabled() bool
 }

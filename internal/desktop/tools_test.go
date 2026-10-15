@@ -31,6 +31,7 @@ func TestTextToolButtonsAndUndo(t *testing.T) {
 			if err := tt.Click(test.button); err != nil {
 				t.Fatal(err)
 			}
+			awaitTransform(t, tt, app)
 			if state.Buffer.String() != test.want || tab.editor.Result().HasError || len(state.Diagnostics()) != test.diagnostics {
 				t.Fatalf("%s = %q, %v; want %q with %d diagnostics", test.button, state.Buffer.String(), tab.editor.Result(), test.want, test.diagnostics)
 			}
@@ -68,6 +69,7 @@ func TestFailedAndUnchangedTextActions(t *testing.T) {
 		if err := tt.Click(test.button); err != nil {
 			t.Fatal(err)
 		}
+		awaitTransform(t, tt, app)
 		if state.Buffer.String() != test.source || state.Buffer.Version() != version || state.Buffer.CanUndo() || tab.editor.Result().HasError != test.error {
 			t.Fatalf("%s failed to protect input %q", test.button, test.source)
 		}

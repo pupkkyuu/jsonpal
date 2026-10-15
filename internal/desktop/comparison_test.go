@@ -28,6 +28,7 @@ func TestNewComparisonButtonAndWorkspaceIntegration(t *testing.T) {
 	}
 	tt.Type(`{"value":2}`)
 	tt.Key(ui.Cmd|ui.Shift, ui.KeyF)
+	awaitTransform(t, tt, app)
 	left, right := d.Left().State().Buffer.String(), d.Right().State().Buffer.String()
 	if left != "{\n  \"value\": 1\n}" || right != "{\n  \"value\": 2\n}" {
 		t.Fatal("workspace format shortcut did not transform both comparison documents")
@@ -46,6 +47,7 @@ func TestNewComparisonButtonAndWorkspaceIntegration(t *testing.T) {
 		t.Fatal("workspace comparison button did not enable the native diff preview")
 	}
 	tt.Key(ui.Cmd|ui.Shift, ui.KeyF)
+	awaitTransform(t, tt, app)
 	if d.Left().State().Buffer.String() != left || d.Right().State().Buffer.String() != right {
 		t.Fatal("format ran in preview mode")
 	}

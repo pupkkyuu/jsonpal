@@ -11,16 +11,18 @@ import (
 )
 
 type Diff struct {
-	panes         [2]*editor.JSON
-	preview       mygoeditor.DiffState
-	comparing     bool
-	activeSide    int
-	requestFocus  bool
-	requestSearch bool
-	previewFocus  ui.Handle
-	currentHunk   int
-	versions      [2]uint64
-	result        editor.Result
+	panes            [2]*editor.JSON
+	preview          mygoeditor.DiffState
+	comparing        bool
+	activeSide       int
+	requestFocus     bool
+	requestSearch    bool
+	previewFocus     ui.Handle
+	currentHunk      int
+	versions         [2]uint64
+	result           editor.Result
+	transformTask    editor.TransformTask
+	transformMessage string
 }
 
 var (
@@ -56,10 +58,16 @@ func New(left, right string) *Diff {
 func (d *Diff) Left() *editor.JSON     { return d.panes[0] }
 func (d *Diff) Right() *editor.JSON    { return d.panes[1] }
 func (d *Diff) Comparing() bool        { return d.comparing }
-func (d *Diff) TransformEnabled() bool { return !d.comparing }
+func (d *Diff) Busy() bool             { return d.transformTask.Busy() }
+func (d *Diff) TransformEnabled() bool { return !d.comparing && !d.Busy() }
 func (d *Diff) CopyEnabled() bool      { return false }
 
 func (d *Diff) ToggleComparison() {
+	if d.Busy() {
+		d.result = editor.Result{Message: locales.ContentModified()}
+		d.rememberVersions()
+	}
+	d.transformTask.Cancel()
 	d.comparing = !d.comparing
 	d.requestFocus = true
 	// Comparing the original buffers does not format, sort or modify them.
@@ -91,6 +99,13 @@ func (d *Diff) Result() editor.Result {
 }
 
 func (d *Diff) View(c *ui.Context, options editor.ViewOptions) {
+	d.refreshTransform(c)
+	if !options.Shortcuts {
+		for _, pane := range d.panes {
+			pane.CancelFocus()
+		}
+		d.requestFocus = false
+	}
 	d.refreshResult()
 	if !d.comparing && options.Shortcuts && c.Shortcut(ui.Cmd|ui.Shift, ui.KeyF) {
 		d.Format()

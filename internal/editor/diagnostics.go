@@ -86,16 +86,6 @@ func editorDiagnostics(diagnostics []jsondoc.Diagnostic) []mygoeditor.Diagnostic
 	return result
 }
 
-// errorMessage formats parser details at the UI boundary, keeping jsondoc free
-// of locale and framework dependencies.
-func errorMessage(source string, err error) string {
-	if ds := jsondoc.DiagnosticsForError(source, err); len(ds) != 0 {
-		d := ds[0]
-		return locales.JsonErrorLocation(d.Line, d.Column, d.Detail)
-	}
-	return ""
-}
-
 func (e *JSON) diagnosticBackgrounds(c *ui.Context) {
 	e.code.LineBackgrounds = e.code.LineBackgrounds[:0]
 	alpha := float32(.10)

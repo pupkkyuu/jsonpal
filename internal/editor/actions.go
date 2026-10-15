@@ -1,7 +1,8 @@
 package editor
 
 import (
-	"strings"
+	"github.com/egoist/mygo/ui"
+	mygoeditor "github.com/egoist/mygo/ui/editor"
 
 	"jsonpal/internal/jsondoc"
 	"jsonpal/locales"
@@ -28,7 +29,10 @@ func (e *JSON) SortFields() {
 }
 
 func (e *JSON) Clear() {
-	e.ApplyText("", locales.WaitingForJSON())
+	e.transform.Cancel()
+	e.ApplyPreparedTransform(PreparedTransform{
+		Version: e.code.Buffer.Version(), Changed: e.code.Buffer.Len() != 0,
+	}, locales.WaitingForJSON())
 }
 
 // CopyAll copies the complete buffer without disturbing selections or scrolling.
@@ -41,41 +45,56 @@ func (e *JSON) CopyAll(writeClipboard func(string)) {
 }
 
 func (e *JSON) transformJSON(transform func(string) (string, error), success string) {
-	if strings.TrimSpace(e.code.Buffer.String()) == "" {
-		e.ApplyText(e.code.Buffer.String(), locales.WaitingForJSON())
-		return
-	}
-	e.transformText(transform, success)
+	e.startTransform(transform, success, true)
 }
 
 func (e *JSON) transformText(transform func(string) (string, error), success string) {
-	source := e.code.Buffer.String()
-	if result, err := transform(source); err != nil {
-		e.ReportError(err)
-	} else {
-		e.ApplyText(result, success)
+	e.startTransform(transform, success, false)
+}
+
+func (e *JSON) startTransform(transform func(string) (string, error), success string, skipEmpty bool) {
+	if e.transform.Start([]mygoeditor.Snapshot{e.code.Buffer.Snapshot()}, transform, skipEmpty) {
+		e.transformMessage = success
+		e.result = Result{Message: locales.Processing()}
+		e.resultVersion = e.code.Buffer.Version()
 	}
 }
 
-// ApplyText commits prepared text as one undoable edit and refreshes diagnostics.
-// Multi-document editors can calculate all results before committing either side.
-func (e *JSON) ApplyText(result, message string) {
-	if result != e.code.Buffer.String() {
+func (e *JSON) refreshTransform(c *ui.Context) {
+	if results, ready := e.transform.Update(c); ready && len(results) != 0 {
+		message := e.transformMessage
+		if results[0].Empty {
+			message = locales.WaitingForJSON()
+		}
+		e.ApplyPreparedTransform(results[0], message)
+	}
+}
+
+func (e *JSON) Busy() bool { return e.transform.Busy() }
+
+func (e *JSON) TransformEnabled() bool { return !e.Busy() }
+
+// ApplyPreparedTransform commits matching worker output as one undoable edit.
+// A multi-document host checks every version before committing either side.
+// Call on the UI thread; stale output changes neither content nor view state.
+func (e *JSON) ApplyPreparedTransform(result PreparedTransform, message string) bool {
+	if result.Version != e.code.Buffer.Version() {
+		return false
+	}
+	if result.HasError {
+		message = ""
+		if len(result.Diagnostics) != 0 {
+			d := result.Diagnostics[0]
+			message = locales.JsonErrorLocation(d.Line, d.Column, d.Detail)
+		}
+	} else if result.Changed {
 		// Set creates one undoable edit, unlike Reset which discards history.
-		e.code.Buffer.Set(result)
+		e.code.Buffer.Set(result.Text)
 	}
-	e.result = Result{Message: message}
-	// Unescaped strings may be ordinary text; diagnose the resulting document
-	// rather than assuming every successful transformation produces valid JSON.
-	e.setJSONDiagnostics(editorDiagnostics(jsondoc.Validate(result)))
+	e.result = Result{Message: message, HasError: result.HasError}
+	e.setJSONDiagnostics(editorDiagnostics(result.Diagnostics))
 	e.resetPosition()
-}
-
-// ReportError diagnoses a failed operation against the unchanged document.
-func (e *JSON) ReportError(err error) {
-	e.result = Result{Message: errorMessage(e.code.Buffer.String(), err), HasError: true}
-	e.setJSONDiagnostics(editorDiagnostics(jsondoc.DiagnosticsForError(e.code.Buffer.String(), err)))
-	e.resetPosition()
+	return true
 }
 
 func (e *JSON) resetPosition() {

@@ -3,6 +3,7 @@ package diffeditor
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
@@ -10,6 +11,20 @@ import (
 
 	"jsonpal/internal/editor"
 )
+
+func awaitTransform(t *testing.T, d *Diff) {
+	t.Helper()
+	deadline := time.Now().Add(3 * time.Second)
+	for d.Busy() {
+		if time.Now().After(deadline) {
+			t.Fatal("background transformation did not finish")
+		}
+		d.refreshTransform(nil)
+		if d.Busy() {
+			time.Sleep(time.Millisecond)
+		}
+	}
+}
 
 func newDiffTester(d *Diff) *ui.Tester {
 	tt := ui.NewTester(func(c *ui.Context) {
@@ -144,6 +159,7 @@ func TestAtomicTwoSidedTransformsAndErrors(t *testing.T) {
 		t.Run(operation.name, func(t *testing.T) {
 			d := New(`{"b":2,"a":1}`, `{"bad":]}`)
 			operation.run(d)
+			awaitTransform(t, d)
 			if !d.Result().HasError || len(d.Right().State().Diagnostics()) != 1 || d.Left().State().Buffer.String() != `{"b":2,"a":1}` {
 				t.Fatal("failure did not diagnose the invalid side or partially changed the valid side")
 			}
@@ -152,12 +168,14 @@ func TestAtomicTwoSidedTransformsAndErrors(t *testing.T) {
 			}
 			d.Right().State().Buffer.Set(`{"b":4,"a":3}`)
 			operation.run(d)
+			awaitTransform(t, d)
 			if d.Result().HasError || len(d.Right().State().Diagnostics()) != 0 {
 				t.Fatal("successful retry left an old error")
 			}
 			d.ToggleComparison()
 			before := d.Left().State().Buffer.String()
 			operation.run(d)
+			awaitTransform(t, d)
 			if d.Left().State().Buffer.String() != before {
 				t.Fatal("text transforms should be ignored in preview")
 			}
@@ -165,12 +183,15 @@ func TestAtomicTwoSidedTransformsAndErrors(t *testing.T) {
 	}
 	d := New(`{"a":1}`, `{"a":2}`)
 	d.Escape()
+	awaitTransform(t, d)
 	d.Unescape()
+	awaitTransform(t, d)
 	if d.Left().State().Buffer.String() != `{"a":1}` || d.Right().State().Buffer.String() != `{"a":2}` {
 		t.Fatal("two-sided escape/unescape round trip failed")
 	}
 	d = New("", `{"a":1}`)
 	d.Format()
+	awaitTransform(t, d)
 	if d.Left().State().Buffer.String() != "" || d.Left().State().Buffer.CanUndo() || d.Right().State().Buffer.String() != "{\n  \"a\": 1\n}" {
 		t.Fatal("empty side did not stay empty during a two-sided transform")
 	}

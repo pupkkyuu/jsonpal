@@ -22,7 +22,9 @@
 
 `editor.JSON` 是单文档实现，`State()` 提供其 MyGo 原生编辑能力。`diffeditor.Diff` 在同一接口下组合两份 JSON 编辑器，并保留一个直接引用原缓冲区的 `mygoeditor.DiffState`；通用 `Editor` 接口不暴露单一 buffer，也不要求具体 JSON 类型。差异预览当前只读，双侧输入模式负责修改。
 
-不同编辑器的附加工具通过可选的 `editor.Toolbar` 接口插入工具栏，文档变换的可用性通过 `TransformAvailability` 接口控制；桌面层不判断具体对比类型。`JSON.ApplyText` 和 `ReportError` 提供准备好的文本提交与诊断入口，使双侧操作能先验证全部结果，再提交两边的可撤销修改。
+不同编辑器的附加工具通过可选的 `editor.Toolbar` 接口插入工具栏，文档变换的可用性通过 `TransformAvailability` 接口控制；桌面层不判断具体对比类型。`editor.TransformTask` 统一调度单份或多份文档快照的后台变换，每个任务最多一个 worker；全文读取、变换、变化判断和结果校验都在 goroutine 中完成，仅通过缓冲通道返回 `PreparedTransform`，并调用线程安全的失效通知。UI 在 `View` 中非阻塞接收结果，`JSON.ApplyPreparedTransform` 检查版本后提交文本和诊断，保留一次撤销；双侧宿主先检查全部版本与错误，再一起提交两边。
+
+可选的 `BackgroundWork` 接口为标题栏提供处理中状态；变换期间禁用重复变换，但编辑、导航和设置仍可使用。内容变化会丢弃过期结果，清空或切入预览会显式取消待提交结果；取消不等待 worker，已开始的纯计算自行结束，结果通道容量为一，因此编辑器卸载或标签关闭不会阻塞 worker。未挂载的编辑器在再次显示时接收结果；工作线程不访问 UI、焦点、操作消息或可变编辑器状态。全文写回与布局仍在 UI 线程完成，结果提交时不再同步调用全文校验。
 
 全文复制按钮通过可选的 `CopyAvailability` 接口控制可用性；默认启用，对比编辑器始终禁用。原生编辑器的选区复制快捷键保持原有行为。
 
@@ -38,10 +40,10 @@
 
 - 应用入口保持简短；窗口初始化和应用生命周期放在 `internal/desktop/window.go`。
 - 窗口级共享状态保留在 `desktop/app.go`；标签只持有导航信息和编辑器引用，不持有文档或校验状态。
-- 标签关闭及邻居选择由 `desktop/tabs.go` 处理。关闭按钮与导航按钮为同级控件，避免关闭非活动标签时先激活；删除在标签列表构建后执行，最后一项关闭时创建新的空白编辑器。
+- 标签关闭及邻居选择由 `desktop/tabs.go` 处理。关闭按钮与导航按钮为同级控件，避免关闭非活动标签时先激活；删除在标签列表构建后执行，最后一项关闭时清空活动标签并返回欢迎画面。
 - 设置面板状态与布局放在 `setting/panel.go`，主题分类与选择交互放在 `setting/appearance.go`。新增设置项放入设置包，通过明确的宿主回调应用需要影响应用的变更。
 - 格式化、排序、转义等不需要界面的 JSON 操作放在 `internal/jsondoc`，由编辑器层调用。
-- 编辑器的文档状态和渲染放在 `editor/json.go`，文档操作放在 `editor/actions.go`，共用文档更新、撤销及即时诊断流程。主题与校验调度分别放在 `theme.go` 和 `diagnostics.go`。
+- 编辑器的文档状态和渲染放在 `editor/json.go`，文档操作放在 `editor/actions.go`，共用后台任务、可撤销提交和诊断更新流程；任务调度放在 `editor/transform.go`。主题与校验调度分别放在 `theme.go` 和 `diagnostics.go`。
 - 折叠操作放在 `editor/folding.go`，使用原生编辑器命令。它们只改变视图，不经过文档变换流程、不新增撤销记录。
 - 换行和查找入口分别放在 `editor/wrapping.go` 与 `editor/search.go`。换行偏好由编辑器管理，保留原生组合快捷键及同前缀的其他命令。纯文本转义与字段排序分别放在 `jsondoc/escape.go` 与 `jsondoc/sort.go`，排序不通过 map/float64 改写数据。
 - 新的编辑器类型在独立功能包中实现 `editor.Editor` 接口，如 `internal/diffeditor`。桌面工具栏和内容宿主依赖接口，避免断言具体类型或访问编辑器内部状态。

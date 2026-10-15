@@ -27,6 +27,9 @@ func (app *application) titlebar(c *ui.Context) {
 				x := float32(math.Round(float64(r.X)))
 				p.Text(x, r.Y, title, t.FontSize, t.Text)
 			})
+		if work, ok := app.activeTab.editor.(editor.BackgroundWork); ok && work.Busy() {
+			components.Text(c, locales.Processing()).SingleLine().Shrink(0).TextColor(t.TextMuted)
+		}
 		ui.Spacer(c)
 		// Horizontal scrolling keeps every action reachable in a narrow header.
 		components.ScrollView(c.Key("editor-tools"), components.ScrollViewOptions{Axes: components.ScrollHorizontal}).

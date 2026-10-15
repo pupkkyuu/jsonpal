@@ -17,6 +17,7 @@ func TestCompactButtonUndoRedoAndTabIsolation(t *testing.T) {
 	if err := tt.Click("压缩"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(tab).Buffer.String() != want || tab.editor.Result().HasError || len(editorState(tab).Diagnostics()) != 0 {
 		t.Fatalf("compact failed: %q, %q", editorState(tab).Buffer.String(), tab.editor.Result().Message)
 	}
@@ -35,6 +36,7 @@ func TestCompactButtonUndoRedoAndTabIsolation(t *testing.T) {
 	if err := tt.Click("压缩"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(tab).Buffer.Version() != version {
 		t.Fatal("already compact input should not create an undo step")
 	}
@@ -52,6 +54,7 @@ func TestCompactProtectsInvalidAndEmptyInput(t *testing.T) {
 		if err := tt.Click("压缩"); err != nil {
 			t.Fatal(err)
 		}
+		awaitTransform(t, tt, app)
 		if editorState(tab).Buffer.String() != source || editorState(tab).Buffer.Version() != version || editorState(tab).Buffer.CanUndo() {
 			t.Fatal("compact changed invalid or empty input or created an undo step")
 		}
@@ -72,6 +75,7 @@ func TestCompactProtectsInvalidAndEmptyInput(t *testing.T) {
 			if err := tt.Click("压缩"); err != nil {
 				t.Fatal(err)
 			}
+			awaitTransform(t, tt, app)
 			if editorState(tab).Buffer.String() != `{"fixed":true}` || tab.editor.Result().HasError || len(editorState(tab).Diagnostics()) != 0 {
 				t.Fatal("successful compact did not clear previous error diagnostics")
 			}

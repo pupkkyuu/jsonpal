@@ -16,6 +16,10 @@
   "@editorModifiedHint": {
     "description": "Editor modified hint."
   },
+  "processing": "正在处理…",
+  "@processing": {
+    "description": "A document transformation is running in the background."
+  },
   "formatSuccess": "JSON 有效，已格式化（2 空格缩进）",
   "@formatSuccess": {
     "description": "Format success."

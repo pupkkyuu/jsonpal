@@ -10,12 +10,14 @@ import (
 // JSON owns one document, including undo, selection, scroll, search, focus,
 // action results and asynchronous validation. It has no tab or window metadata.
 type JSON struct {
-	code          *mygoeditor.State
-	focus         ui.Handle
-	result        Result
-	resultVersion uint64
-	validation    jsonValidation
-	wrapChord     *mygoeditor.Binding
+	code             *mygoeditor.State
+	focus            ui.Handle
+	result           Result
+	resultVersion    uint64
+	validation       jsonValidation
+	transform        TransformTask
+	transformMessage string
+	wrapChord        *mygoeditor.Binding
 }
 
 var _ Editor = (*JSON)(nil)
@@ -62,6 +64,10 @@ func (e *JSON) refreshResult() {
 
 func (e *JSON) View(c *ui.Context, options ViewOptions) {
 	e.code.Theme = jsonEditorTheme(c.Theme().Dark)
+	e.refreshTransform(c)
+	if !options.Shortcuts {
+		e.CancelFocus()
+	}
 	e.refreshResult()
 	if options.Shortcuts && c.Shortcut(ui.Cmd|ui.Shift, ui.KeyF) {
 		e.Format()

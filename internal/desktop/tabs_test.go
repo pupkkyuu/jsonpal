@@ -52,6 +52,7 @@ func TestNewFormatTabsAndIndependentUndo(t *testing.T) {
 	if err := tt.Click("格式化 JSON"); err != nil {
 		t.Fatal(err)
 	}
+	awaitTransform(t, tt, app)
 	if editorState(second).Buffer.String() != "{\n  \"second\": 2\n}" || editorState(first).Buffer.String() != `{"first":1}` {
 		t.Fatal("formatting modified the wrong tab")
 	}
