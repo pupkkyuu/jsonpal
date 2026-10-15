@@ -1,0 +1,282 @@
+internal/jsondoc/escape.go
+  s_0e6fff178cf50f::t_b42a18fffb2370 1-47
+internal/desktop/shortcuts_test.go
+  s_0e6fff178cf50f::t_596eaff6289c71 1-82
+internal/jsondoc/validate_test.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-35
+internal/desktop/document_actions_test.go
+  s_0e6fff178cf50f::t_797c41d1c82a3c 20-21,27,31,34,38,41,51,55,62,66-67,75
+  s_0e6fff178cf50f::t_e7773c9794a953 58-60
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 11,48
+  s_0e6fff178cf50f::t_c204be80594bf6 1-10,12-19,22-26,28-30,32-33,35-37,39-40,42-47,49-50,52-54,56-57,61,63-65,68-74,76-80
+internal/desktop/settings_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 13,79
+  s_0e6fff178cf50f::t_4004e7f4440476 1-8,10-12,14,16-19,21-23,25-41,43-46,48-50,52-53,55-60,62-64,66-68,70-72,74-78,80-89,91-93
+  s_0e6fff178cf50f::t_797c41d1c82a3c 20,51,54,65
+  s_0e6fff178cf50f::t_89eb2e1eee7635 47
+  s_0e6fff178cf50f::t_d894054ddb515d 9,15,24,42,61,69,73,90
+internal/jsondoc/escape_test.go
+  s_0e6fff178cf50f::t_a757a2aa151718 1-42
+internal/jsondoc/format_test.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-52
+internal/desktop/editor_test.go
+  s_0e6fff178cf50f::t_de3fdd3af1bd37 32,50,84,89
+  s_0e6fff178cf50f::t_24338fe2d8eadd 42-43,75-81
+  s_0e6fff178cf50f::t_a757a2aa151718 44,46-49,51,83,85-88,90
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 11-22,55
+  s_0e6fff178cf50f::t_16f8315c8659c0 1-10,23-29,34-41,52-54,56-74,82,91-96
+  s_0e6fff178cf50f::t_02b562c6134ae1 30-31,33
+  s_0e6fff178cf50f::t_1570022d0736ae 45
+internal/desktop/folding_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 25,81
+  s_0e6fff178cf50f::t_24338fe2d8eadd 1-24,26-80,82-95
+internal/desktop/welcome.go
+  s_0e6fff178cf50f::t_4037856e3f670b 1-53,69,72-84
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 54-68,70-71
+internal/editor/theme.go
+  s_0e6fff178cf50f::t_ee8b57be27ba33 30-32
+  s_0e6fff178cf50f::t_3184c3664b2355 1-8,10-13,16-17,20-29,33-42,45-53
+  s_0e6fff178cf50f::t_89eb2e1eee7635 9,14-15,18-19,43-44
+internal/editor/shortcuts.go
+  s_0e6fff178cf50f::t_7372da1dff716b 1-24
+internal/editor/folding.go
+  s_0e6fff178cf50f::t_24338fe2d8eadd 1-16
+internal/editor/isolation_test.go
+  s_0e6fff178cf50f::t_797c41d1c82a3c 1-2,7-23,25-27,29-36
+  s_0e6fff178cf50f::t_d828bd5701f690 24,28
+  s_0e6fff178cf50f::t_14fd781157e4b7 3-6
+internal/setting/panel.go
+  s_0e6fff178cf50f::t_7372da1dff716b 45
+  s_0e6fff178cf50f::t_a381fd46e6cd4e 1-15,19-25,28-44,46-51
+  s_0e6fff178cf50f::t_08810ba621752e 16-18,26-27
+docs/architecture.zh-CN.md
+  s_0e6fff178cf50f::t_ebc055d98bc3f4 11,24,34,43-44
+  s_0e6fff178cf50f::t_ea87fdac486046 31,46
+  s_0e6fff178cf50f::t_e4abff28f45fee 21-22
+  s_0e6fff178cf50f::t_d912fc2180615c 27-28
+  s_0e6fff178cf50f::t_7d10f1064e1e79 1-9,15-16,18,20,37-39,48-69
+  s_0e6fff178cf50f::t_89c8f44871ac71 10,13,33,35-36,40,42
+  s_0e6fff178cf50f::t_9389e792dc93fa 12,17,23,25-26,47
+  s_0e6fff178cf50f::t_64f93ea8c86639 19,45
+  s_0e6fff178cf50f::t_9710bace164231 29-30
+  s_0e6fff178cf50f::t_6728f8eb44c853 41
+  s_0e6fff178cf50f::t_3f406999c6be81 14,32
+internal/desktop/window.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-10,12-13
+  s_0e6fff178cf50f::t_a2d89edd076375 11
+internal/desktop/tabs_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 34,160,218
+  s_0e6fff178cf50f::t_797c41d1c82a3c 39,41,46,53,59,63,70,74,78,171,173-174,176,188,190,197,200
+  s_0e6fff178cf50f::t_b40c598936549b 1-11,13-33,35-38,40,42-45,47-52,54-58,60-62,64-69,71-73,75-77,79-84,156-159,161-170,172,175,177-187,189,191-196,198-199,201-217,219-234
+  s_0e6fff178cf50f::t_d05f1170d71041 12,85-155
+internal/desktop/doc.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1,3-4
+  s_0e6fff178cf50f::t_2b10be8796592c 2
+internal/desktop/sidebar.go
+  s_0e6fff178cf50f::t_d07b4fbd5da0b0 14,35-36,38-45,52-54,59-63
+  s_0e6fff178cf50f::t_fab34fa4938ef2 5,15-17,29-31
+  s_0e6fff178cf50f::t_c9ee5976cf585e 4,22-23,32
+  s_0e6fff178cf50f::t_4004e7f4440476 1,83
+  s_0e6fff178cf50f::t_ee85f191c3e481 24-26
+  s_0e6fff178cf50f::t_d15b578bc921ab 28
+  s_0e6fff178cf50f::t_7372da1dff716b 19-21,37,81
+  s_0e6fff178cf50f::t_96aed34ef3cc8a 64-77
+  s_0e6fff178cf50f::t_4ea64eceaf541f 33-34,46-51
+  s_0e6fff178cf50f::t_d894054ddb515d 82
+internal/setting/panel_test.go
+  s_0e6fff178cf50f::t_89c8f44871ac71 1-53
+internal/desktop/close_tab_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 29,63,93
+  s_0e6fff178cf50f::t_61fc337742331c 1-8,18-28,30-39,41-62,64-67,69-92,94-98,100-110,112-118
+  s_0e6fff178cf50f::t_4cfa403a2a8972 9-17,40,68,99,111
+internal/diffeditor/actions.go
+  s_0e6fff178cf50f::t_6b6ed613c3311b 1-71,76-102
+  s_0e6fff178cf50f::t_4e3b6415e8c5ef 72-75
+internal/setting/appearance.go
+  s_0e6fff178cf50f::t_a381fd46e6cd4e 1-52
+internal/jsondoc/compact_test.go
+  s_0e6fff178cf50f::t_c204be80594bf6 1-43
+README.md
+  s_0e6fff178cf50f::t_9710bace164231 22,109-110
+  s_0e6fff178cf50f::t_247e848bcb982a 11,24
+  s_0e6fff178cf50f::t_60c9ffc1800049 16,116
+  s_0e6fff178cf50f::t_64f93ea8c86639 31,106
+  s_0e6fff178cf50f::t_ea87fdac486046 32,35
+  s_0e6fff178cf50f::t_89c8f44871ac71 119-122
+  s_0e6fff178cf50f::t_b636e4c74b4de1 26
+  s_0e6fff178cf50f::t_e4abff28f45fee 12,14,97
+  s_0e6fff178cf50f::t_d912fc2180615c 17-18,27
+  s_0e6fff178cf50f::t_4ea64eceaf541f 23
+  s_0e6fff178cf50f::t_8a656f77b1f94f 30,37-38,125
+  s_0e6fff178cf50f::t_9389e792dc93fa 15,114-115,117-118,136
+  s_0e6fff178cf50f::t_7d10f1064e1e79 74,82,90-93,95,99-101,123-124,128-133,137-138
+  s_0e6fff178cf50f::t_89eb2e1eee7635 47-48,50-52
+  s_0e6fff178cf50f::t_8f211514c82c67 20
+  s_0e6fff178cf50f::t_ebc055d98bc3f4 19,43,85,94,96,98,102-105,111-113
+  s_0e6fff178cf50f::t_3f406999c6be81 29,33-34,36,107-108,126-127
+  s_0e6fff178cf50f::t_16d560ed061209 21
+  s_0e6fff178cf50f::t_40c87fdab5f792 13,44-46,49
+  s_0e6fff178cf50f::t_0478f553118b2b 53
+  s_0e6fff178cf50f::t_e664776970c74b 139
+internal/diffeditor/diff.go
+  s_0e6fff178cf50f::t_4e3b6415e8c5ef 33
+  s_0e6fff178cf50f::t_6b6ed613c3311b 1-27,30-32,34-39,41,50-53,57,59-100,102,108-132,134-139,145-146
+  s_0e6fff178cf50f::t_290e225705494b 101,133,140-144
+  s_0e6fff178cf50f::t_bc3c780d5a3d21 28,58
+  s_0e6fff178cf50f::t_e8496a4df1f8d7 54-56
+  s_0e6fff178cf50f::t_2c3588f5b35ae4 29,40
+  s_0e6fff178cf50f::t_48cb88eb45420a 42-49
+  s_0e6fff178cf50f::t_44dddf27db9dcd 103-107
+internal/editor/diagnostics.go
+  s_0e6fff178cf50f::t_3184c3664b2355 1-80
+internal/desktop/titlebar.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-7,9-12,17,19-23,42,46,71,85-93
+  s_0e6fff178cf50f::t_d09a2f6b50df07 45
+  s_0e6fff178cf50f::t_24338fe2d8eadd 58-59,61-62
+  s_0e6fff178cf50f::t_3e2e2c8037c4a5 48-49,51-52,54-56
+  s_0e6fff178cf50f::t_a5f78ff118d05d 65-66,83-84
+  s_0e6fff178cf50f::t_4037856e3f670b 13-16
+  s_0e6fff178cf50f::t_ee85f191c3e481 8,33-39
+  s_0e6fff178cf50f::t_bc3c780d5a3d21 75-78
+  s_0e6fff178cf50f::t_c9ee5976cf585e 18
+  s_0e6fff178cf50f::t_1570022d0736ae 64,68-70
+  s_0e6fff178cf50f::t_b636e4c74b4de1 74,80
+  s_0e6fff178cf50f::t_7372da1dff716b 24-32,40,43,47,50,53,57,60,63,72,79,82
+  s_0e6fff178cf50f::t_57a0557f3bb7e6 67
+  s_0e6fff178cf50f::t_de3fdd3af1bd37 73,81
+  s_0e6fff178cf50f::t_2b10be8796592c 41,44
+internal/editor/search.go
+  s_0e6fff178cf50f::t_de3fdd3af1bd37 1-9
+mygo.json
+  s_0e6fff178cf50f::t_4004e7f4440476 4-5
+internal/jsondoc/format.go
+  s_0e6fff178cf50f::t_d09a2f6b50df07 17,20-33
+  s_0e6fff178cf50f::t_4004e7f4440476 1-16,18-19,34
+internal/desktop/comparison_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 11,102
+  s_0e6fff178cf50f::t_d912fc2180615c 35-41,55-56
+  s_0e6fff178cf50f::t_ee6bcc6de1b645 1-10,12-34,42-54,57-101,103-117
+internal/editor/json_test.go
+  s_0e6fff178cf50f::t_d828bd5701f690 16
+  s_0e6fff178cf50f::t_16f8315c8659c0 1-15,17-41
+TODO.md
+  s_0e6fff178cf50f::t_6728f8eb44c853 14-15
+  s_0e6fff178cf50f::t_9389e792dc93fa 5,42,44-47,49,55
+  s_0e6fff178cf50f::t_16d560ed061209 22
+  s_0e6fff178cf50f::t_8a656f77b1f94f 27,38
+  s_0e6fff178cf50f::t_d912fc2180615c 48
+  s_0e6fff178cf50f::t_247e848bcb982a 63-64
+  s_0e6fff178cf50f::t_3f406999c6be81 3,28-29,31,53-54,59
+  s_0e6fff178cf50f::t_8f211514c82c67 12-13,16,18,21
+  s_0e6fff178cf50f::t_e4abff28f45fee 11
+  s_0e6fff178cf50f::t_a6c75e119f99d5 32-33
+  s_0e6fff178cf50f::t_ebc055d98bc3f4 19-20
+  s_0e6fff178cf50f::t_9710bace164231 23
+  s_0e6fff178cf50f::t_64f93ea8c86639 30
+  s_0e6fff178cf50f::t_60c9ffc1800049 43
+internal/editor/diagnostics_test.go
+  s_0e6fff178cf50f::t_797c41d1c82a3c 1-117
+internal/desktop/app_test.go
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 14,37,51,69,108,135
+  s_0e6fff178cf50f::t_89eb2e1eee7635 115,125
+  s_0e6fff178cf50f::t_797c41d1c82a3c 16,21-22,28,31,41,45,53,58-59,63,70,75,78,80,84,112,121,129,147,152
+  s_0e6fff178cf50f::t_4004e7f4440476 1,8,100-102,116-117,126-127
+internal/editor/editor.go
+  s_0e6fff178cf50f::t_de3fdd3af1bd37 21
+  s_0e6fff178cf50f::t_24338fe2d8eadd 13-14
+  s_0e6fff178cf50f::t_ee8b57be27ba33 8,26-35,46-47
+  s_0e6fff178cf50f::t_9cfb6b9d4eb64f 1-7,9-12,23-25,41-45,51-58
+  s_0e6fff178cf50f::t_a5f78ff118d05d 15,17-20,22
+  s_0e6fff178cf50f::t_1570022d0736ae 16
+  s_0e6fff178cf50f::t_bc3c780d5a3d21 36-40
+  s_0e6fff178cf50f::t_4e3b6415e8c5ef 48-50
+internal/diffeditor/comparison.go
+  s_0e6fff178cf50f::t_6b6ed613c3311b 1-11,22-47,57-65
+  s_0e6fff178cf50f::t_7372da1dff716b 12-21
+  s_0e6fff178cf50f::t_bc3c780d5a3d21 48-56
+internal/desktop/document_position_test.go
+  s_0e6fff178cf50f::t_8a17f06eec589d 1-17,19-39,41-62,64-89,91-101
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 18,40,63,90
+internal/editor/json.go
+  s_0e6fff178cf50f::t_1570022d0736ae 16,78
+  s_0e6fff178cf50f::t_44dddf27db9dcd 45-48
+  s_0e6fff178cf50f::t_290e225705494b 42-44
+  s_0e6fff178cf50f::t_ee8b57be27ba33 70-73
+  s_0e6fff178cf50f::t_2c3588f5b35ae4 28
+  s_0e6fff178cf50f::t_9cfb6b9d4eb64f 1-15,17-27,30-41,49-69,74-76,83
+  s_0e6fff178cf50f::t_4e3b6415e8c5ef 77,79-82
+  s_0e6fff178cf50f::t_1a724b83162ee0 29
+internal/desktop/tabs.go
+  s_0e6fff178cf50f::t_c9ee5976cf585e 1-4,6,9-10,17-18,21,23-25,27-31,46-54,56-57,91-92
+  s_0e6fff178cf50f::t_e8496a4df1f8d7 39-40
+  s_0e6fff178cf50f::t_2e574db89f4dd1 61-73
+  s_0e6fff178cf50f::t_7c94357e067bca 32,55
+  s_0e6fff178cf50f::t_ee85f191c3e481 7,33-38,41-45
+  s_0e6fff178cf50f::t_d07b4fbd5da0b0 5,58-60,74-90
+  s_0e6fff178cf50f::t_2b10be8796592c 8,11-16,19-20,22,26
+internal/jsondoc/compact.go
+  s_0e6fff178cf50f::t_d09a2f6b50df07 1-16
+cmd/jsonpal/main.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-12
+internal/editor/wrapping.go
+  s_0e6fff178cf50f::t_a5f78ff118d05d 1-2,7,12,14,64
+  s_0e6fff178cf50f::t_1570022d0736ae 3-6,8-11,13,15-63
+internal/diffeditor/diff_test.go
+  s_0e6fff178cf50f::t_679eec9df25b55 1-40,42-62,64-102,104-120,122-129,131-136,138-213,215-225
+  s_0e6fff178cf50f::t_89eb2e1eee7635 63
+  s_0e6fff178cf50f::t_60c9ffc1800049 41,103
+  s_0e6fff178cf50f::t_290e225705494b 121,130,214
+  s_0e6fff178cf50f::t_e6f6929e17f704 137
+docs/shortcuts.zh-CN.md
+  s_0e6fff178cf50f::t_9710bace164231 23,28,32-33,51-52
+  s_0e6fff178cf50f::t_16d560ed061209 1-22,24-27,29-31,34-50,53-136
+internal/editor/findbar.go
+  s_0e6fff178cf50f::t_2c3588f5b35ae4 1-66
+internal/jsondoc/sort.go
+  s_0e6fff178cf50f::t_b42a18fffb2370 1-123
+internal/jsondoc/validate.go
+  s_0e6fff178cf50f::t_4004e7f4440476 1-69
+internal/desktop/app.go
+  s_0e6fff178cf50f::t_4037856e3f670b 64-65,67-71
+  s_0e6fff178cf50f::t_d894054ddb515d 8,24-25,43,73
+  s_0e6fff178cf50f::t_c9ee5976cf585e 62
+  s_0e6fff178cf50f::t_ee85f191c3e481 16
+  s_0e6fff178cf50f::t_2e574db89f4dd1 45,50-60
+  s_0e6fff178cf50f::t_4004e7f4440476 1,4,42
+  s_0e6fff178cf50f::t_e8496a4df1f8d7 13-15,17-19
+  s_0e6fff178cf50f::t_2b10be8796592c 7
+  s_0e6fff178cf50f::t_7372da1dff716b 12,35,46-49
+internal/editor/actions.go
+  s_0e6fff178cf50f::t_a5f78ff118d05d 18-30,32-42,44,46-51,53,57-59,63-65,67-70,78-81
+  s_0e6fff178cf50f::t_e7773c9794a953 83-86
+  s_0e6fff178cf50f::t_ee8b57be27ba33 45,54,56,60-62,71-77
+  s_0e6fff178cf50f::t_3184c3664b2355 1-17,43,52,55,66,82,87-88
+  s_0e6fff178cf50f::t_e8496a4df1f8d7 31
+internal/jsondoc/sort_test.go
+  s_0e6fff178cf50f::t_a757a2aa151718 1-34
+internal/desktop/tools_test.go
+  s_0e6fff178cf50f::t_c02ecce03264dd 1-25,27-62,64-80,82-84,86-96,104-107,109-156
+  s_0e6fff178cf50f::t_370b7ed585fa43 85,97-103,176-180,182-236
+  s_0e6fff178cf50f::t_de3fdd3af1bd37 157-158,160-175,237-238
+  s_0e6fff178cf50f::t_d1ce1d2d04350a 26,63,81,108,159,181
+internal/desktop/welcome_test.go
+  s_0e6fff178cf50f::t_60f4c41ba97cd4 1-75
+internal/editor/findbar_test.go
+  s_0e6fff178cf50f::t_596eaff6289c71 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2f604732007349f099459193cfdb8045107283f7",
+  "prompts": {},
+  "sessions": {
+    "s_0e6fff178cf50f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13971-b5b3-7352-9d70-8acb828e63cb",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
