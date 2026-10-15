@@ -1,4 +1,4 @@
-package main
+package jsondoc
 
 import (
 	"strings"
@@ -18,11 +18,11 @@ func TestFormatJSON(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := formatJSON(test.source)
+			got, err := Format(test.source)
 			if err != nil || got != test.want {
-				t.Fatalf("formatJSON() = %q, %v; want %q", got, err, test.want)
+				t.Fatalf("Format() = %q, %v; want %q", got, err, test.want)
 			}
-			again, err := formatJSON(got)
+			again, err := Format(got)
 			if err != nil || again != got {
 				t.Fatalf("formatting is not idempotent: %q, %v", again, err)
 			}
@@ -32,8 +32,8 @@ func TestFormatJSON(t *testing.T) {
 
 func TestFormatJSONRejectsInvalidInput(t *testing.T) {
 	for _, source := range []string{"", " ", `{"a":}`, `{"a":1,}`, `{} {}`, `// comment`, `{"x":NaN}`} {
-		if got, err := formatJSON(source); err == nil || got != "" {
-			t.Errorf("formatJSON(%q) = %q, %v; want failure", source, got, err)
+		if got, err := Format(source); err == nil || got != "" {
+			t.Errorf("Format(%q) = %q, %v; want failure", source, got, err)
 		}
 	}
 }
@@ -44,7 +44,7 @@ func TestFormatJSONErrorLocation(t *testing.T) {
 		{`{"中文":]}`, "第 1 行，第 7 列"},
 		{`{"emoji😀":]}`, "第 1 行，第 11 列"},
 	} {
-		_, err := formatJSON(test.source)
+		_, err := Format(test.source)
 		if err == nil || !strings.Contains(err.Error(), test.location) {
 			t.Errorf("error for %q = %v; want %s", test.source, err, test.location)
 		}

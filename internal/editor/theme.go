@@ -1,0 +1,53 @@
+package editor
+
+import (
+	"github.com/egoist/mygo/ui"
+	mygoeditor "github.com/egoist/mygo/ui/editor"
+)
+
+type jsonPalette struct {
+	text, key, stringValue, number, comment string
+}
+
+var (
+	jsonLightTheme = buildJSONEditorTheme(jsonPalette{
+		text: "#000000", key: "#A31515", stringValue: "#0451A5",
+		number: "#098658", comment: "#008000",
+	})
+	jsonDarkTheme = buildJSONEditorTheme(jsonPalette{
+		text: "#DCDCDC", key: "#9CDCFE", stringValue: "#CE9178",
+		number: "#B5CEA8", comment: "#608B4E",
+	})
+)
+
+func jsonEditorTheme(dark bool) *mygoeditor.Theme {
+	if dark {
+		return jsonDarkTheme
+	}
+	return jsonLightTheme
+}
+
+// JSONTheme shares the token palette with alternate JSON editing surfaces.
+func JSONTheme(dark bool) *mygoeditor.Theme { return jsonEditorTheme(dark) }
+
+func buildJSONEditorTheme(palette jsonPalette) *mygoeditor.Theme {
+	// Unspecified colors (background, gutter, selection, etc.) follow Shell.
+	t := &mygoeditor.Theme{Text: ui.Hex(palette.text)}
+	colors := map[mygoeditor.TokenKind]string{
+		mygoeditor.TokenText:     palette.text,
+		mygoeditor.TokenProperty: palette.key,
+		mygoeditor.TokenString:   palette.stringValue,
+		mygoeditor.TokenEscape:   palette.stringValue,
+		mygoeditor.TokenNumber:   palette.number,
+		// MyGo's JSON tokenizer classifies true, false and null as constants.
+		mygoeditor.TokenConstant:    palette.stringValue,
+		mygoeditor.TokenKeyword:     palette.stringValue,
+		mygoeditor.TokenComment:     palette.comment,
+		mygoeditor.TokenOperator:    palette.text,
+		mygoeditor.TokenPunctuation: palette.text,
+	}
+	for kind, hex := range colors {
+		t.Tokens[kind].Color = ui.Hex(hex)
+	}
+	return t
+}
