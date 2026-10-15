@@ -1,0 +1,25 @@
+TODO.md
+  s_122c7ddbdbfa8a::t_f8619e1f68f2b0 14
+internal/desktop/close_tab_test.go
+  s_122c7ddbdbfa8a::t_f8619e1f68f2b0 62-109
+README.md
+  s_122c7ddbdbfa8a::t_f8619e1f68f2b0 23
+internal/desktop/tabs.go
+  s_122c7ddbdbfa8a::t_f8619e1f68f2b0 86-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8bd33738cb7cee79af0ca6f9064255a7c701ad4e",
+  "prompts": {},
+  "sessions": {
+    "s_122c7ddbdbfa8a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13ecd-447d-7413-b621-f20ba84733c7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
