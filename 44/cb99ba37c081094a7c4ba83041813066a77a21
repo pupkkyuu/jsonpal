@@ -1,0 +1,23 @@
+README.md
+  s_cb708da850e3ff::t_06d7a1fdeea87f 149-150,162
+mygo.json
+  s_cb708da850e3ff::t_06d7a1fdeea87f 4,9-10
+TODO.md
+  s_cb708da850e3ff::t_06d7a1fdeea87f 75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "44cb99ba37c081094a7c4ba83041813066a77a21",
+  "prompts": {},
+  "sessions": {
+    "s_cb708da850e3ff": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13e24-a520-7683-a1ad-e4bcd48fd2d3",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
