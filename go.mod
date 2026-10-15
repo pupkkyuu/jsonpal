@@ -6,7 +6,7 @@ tool github.com/egoist/mygo/cmd/mygo
 
 require (
 	github.com/egoist/mygo v0.5.1
-	github.com/oneo-me/onevra/source v0.2026.10-0.20261015042213-315079ee0379
+	github.com/oneo-me/onevra/source v0.2026.10
 )
 
 require (

@@ -22,12 +22,14 @@ type application struct {
 	settings             *setting.Panel
 }
 
-func newApplication() *application {
+// Run initializes the native window and runs the desktop application's event loop.
+func Run() error {
 	app := &application{
 		// The default Shell palette and editor theme follow the native appearance.
 		settings: setting.NewPanel(mygo.Theme.Source(), mygo.Theme.SetSource),
 	}
-	return app
+	mygo.App.WhenReady(func() { app.shell = sidebar.NewShell(app.shellOptions()) })
+	return mygo.App.Run()
 }
 
 func (app *application) shellOptions() sidebar.ShellOptions {

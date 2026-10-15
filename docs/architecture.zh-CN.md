@@ -38,7 +38,7 @@
 
 ## 新代码的放置规则
 
-- 应用入口保持简短；窗口初始化和应用生命周期放在 `internal/desktop/window.go`。
+- 应用入口保持简短；窗口初始化和应用生命周期放在 `internal/desktop/app.go`。
 - 窗口级共享状态保留在 `desktop/app.go`；标签只持有导航信息和编辑器引用，不持有文档或校验状态。
 - 标签关闭及邻居选择由 `desktop/tabs.go` 处理。关闭按钮与导航按钮为同级控件，避免关闭非活动标签时先激活；删除在标签列表构建后执行，最后一项关闭时清空活动标签并返回欢迎画面。
 - 设置面板状态与布局放在 `setting/panel.go`，主题分类与选择交互放在 `setting/appearance.go`。新增设置项放入设置包，通过明确的宿主回调应用需要影响应用的变更。
@@ -72,7 +72,7 @@ go build -o build/jsonpal ./cmd/jsonpal
 
 ## 主题与本地化
 
-MyGo 固定为 v0.5.1，Onevra 固定为 `315079ee0379` 对应的伪版本。Shell 显式传入 `Theme: theme.Onevra`，外观来源由 `mygo.Theme.SetSource` 控制；独立测试宿主调用 `theme.Apply(c)` 或执行 Shell 配置的主题函数。Onevra 调色板保留其配色，并跟随桌面文字缩放和高对比偏好。
+MyGo 固定为 v0.5.1，Onevra 固定为正式版本 v0.2026.10。Shell 显式传入 `Theme: theme.Onevra`，外观来源由 `mygo.Theme.SetSource` 控制；独立测试宿主调用 `theme.Apply(c)` 或执行 Shell 配置的主题函数。Onevra 调色板保留其配色，并跟随桌面文字缩放和高对比偏好。
 
 `mygo.json` 的 `i18n` 指向 `locales`，源语言为 `zh-Hans`。`locales/zh-Hans.json` 是应用文案的唯一来源，生成的 `catalog_gen.go` 与目录一同提交，供桌面、编辑器、对比和设置包调用。MyGo 和 Onevra 通过各自语言目录提供内置文案，仅有产品定制的标签或提示才由应用覆盖。新增英文时添加同名消息与占位参数的 `en.json` 并重新生成，不需要替换界面调用接口；当前没有语言切换入口。
 

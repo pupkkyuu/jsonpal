@@ -2,7 +2,7 @@
 
 当前范围：macOS 开发环境、纯 Go 原生 UI、多标签 JSON 编辑区、格式化/压缩/排序/转义、复制/清空、折叠/换行/原生查找入口、文档变换撤销，以及与设计图对应的侧栏和工具栏布局。
 
-窗口与布局已迁移至 Onevra `315079ee0379`（已适配 MyGo 0.5.1）的 Sidebar Shell；按钮、文本、侧栏项和滚动容器使用 components，图标使用 Lucide。Shell 显式使用 `theme.Onevra` 调色板，外观默认跟随系统浅色/深色，并通过 `mygo.Theme.SetSource` 切换。Shell 已提供侧栏收起/展开、拖动及键盘调宽、双击重置；设置入口已接入主题设置面板，新建格式化、新建对比和标签切换已实现。JSON 编辑器和差异视图保留 MyGo 原生实现并继承主题。
+窗口与布局已迁移至 Onevra v0.2026.10（要求 MyGo 0.5.1）的 Sidebar Shell；按钮、文本、侧栏项和滚动容器使用 components，图标使用 Lucide。Shell 显式使用 `theme.Onevra` 调色板，外观默认跟随系统浅色/深色，并通过 `mygo.Theme.SetSource` 切换。Shell 已提供侧栏收起/展开、拖动及键盘调宽、双击重置；设置入口已接入主题设置面板，新建格式化、新建对比和标签切换已实现。JSON 编辑器和差异视图保留 MyGo 原生实现并继承主题。
 
 下列项目是后续功能候选，不表示第一版需要实现。旧版功能细节以 `docs/features-and-ui.zh-CN.md` 的历史基线为参考。
 

@@ -10,7 +10,7 @@ JSONPal 使用 Go / MyGo 原生编辑器和 Onevra 组件库，仅面向 macOS �
 - 按钮、文本、侧栏项、图标和滚动容器使用 Onevra components；所有图标使用组件库提供的 Lucide 资源，图标按钮使用 Shell 的 `IconButton`。
 - 界面使用 Onevra 默认调色板、字体和字重，主题初始为 `Auto`，跟随系统浅色/深色。设置可选择“明亮 / 夜晚 / 自动”，同时更新原生窗口外观和编辑器高亮。
 - 启动时显示欢迎页，不自动创建或挂载编辑器。背景参考 Onevra Gallery 的 `welcomeIconField`，使用斜向 Lucide 图标、渐变染色与中心淡化，随明亮/夜晚主题切换；新建标签后进入对应编辑器。
-- JSON 编辑器沿用 MyGo 原生编辑能力，语法高亮随 Shell 主题切换：浅色使用指定的 Monaco `vs` 配色，暗色使用 `vs-dark` 配色；背景、行号和选区继承 Shell 主题。Onevra 的 `components/code` 为只读代码展示，不替代可编辑 JSON 文档。
+- JSON 编辑器沿用 MyGo 原生编辑能力，语法高亮随 Shell 主题切换：浅色使用指定的 Monaco `vs` 配色，暗色使用 `vs-dark` 配色；背景、行号和选区继承 Shell 主题。
 - 侧栏使用 `components.SidebarItem` 展示导航和标签，标签页标题使用 `SidebarSection`。点击“新建格式化”或按 `⌘N` 创建空标签，按顺序命名为“格式化 1、格式化 2……”，自动选中并聚焦编辑器；侧栏数量和顶部标题同步更新。
 - “新建对比”创建“对比 1、对比 2……”标签，使用独立 `diffeditor` 包的编辑器实现。左右 JSON 输入区各自保留文档、撤销、选区、滚动、查找和防抖校验状态。
 - 对比编辑器工具栏的“对比 JSON / 编辑 JSON”切换双侧输入和只读差异预览，复用原缓冲区，不自动格式化或排序。MyGo 原生并排差异视图显示红色删除、绿色新增、行内变化、同步滚动和上下差异导航，底部不显示状态栏。它比较原始文本，不进行 JSON 语义比较。
@@ -67,7 +67,7 @@ go tool mygo i18n check
 
 ## macOS 开发启动
 
-需要 Go **1.27.1 或更高版本**。项目固定使用 MyGo **0.5.1** 和 Onevra 提交 **`315079ee0379`**（伪版本 `v0.2026.10-0.20261015042213-315079ee0379`），通过 `go.mod` 的 tool 指令运行 CLI，无需全局安装 MyGo。
+需要 Go **1.27.1 或更高版本**。项目固定使用 MyGo **0.5.1** 和 Onevra **v0.2026.10**，通过 `go.mod` 的 tool 指令运行 CLI，无需全局安装 MyGo。
 
 ```bash
 go mod download
@@ -76,7 +76,7 @@ go tool mygo dev
 
 首次运行会编译开发应用；窗口标题为 `JSONPal`。修改 Go 文件后开发进程重新编译并启动。退出应用或在终端按 `Ctrl+C` 停止。开发应用与缓存写入被 Git 忽略的 `.mygo/`。
 
-Onevra 的该提交已适配 MyGo 0.5.1，版本固定后不会随主分支变化。待包含该提交的正式版本发布，显式升级 `github.com/oneo-me/onevra/source` 到对应版本，运行 `go mod tidy` 并完成回归检查。
+Onevra 已使用适配 MyGo 0.5.1 的正式版本；依赖固定在 `go.mod` 中。后续升级时指定明确版本，运行 `go mod tidy` 并完成回归检查。
 
 环境检查：
 
@@ -112,8 +112,7 @@ cmd/
     main.go                 命令入口，只负责启动和错误退出
 internal/
   desktop/                  原生桌面界面与工作区状态
-    window.go               MyGo 生命周期与 Onevra Shell 创建
-    app.go                  窗口状态、Shell 插槽和编辑器宿主
+    app.go                  应用生命周期、Shell 创建、窗口状态和编辑器宿主
     welcome.go              启动欢迎页与图标背景
     tabs.go                 标签导航信息及编辑器创建/切换
     titlebar.go              文档标题及工具栏
