@@ -146,6 +146,8 @@ internal/
     sort.go                  保留原始数据的递归字段排序
     validate.go              严格 JSON 校验及错误定位
     *_test.go                格式化与校验测试
+resources/
+  icon.png                  从旧版恢复的应用图标，开发及打包共用
 locales/                    中文 ARB 目录、生成的类型化接口及回退测试
 docs/                       项目说明、历史功能和截图
 mygo.json                   应用元信息及 main 入口配置
@@ -157,7 +159,7 @@ TODO.md                     后续功能
 
 `mygo.json` 的 `main` 已设置为 `./cmd/jsonpal`，因此仍可在项目根目录运行 `go tool mygo dev`。
 
-当前没有内容持久化，关闭窗口或开发热重启会丢失编辑内容。未添加发布打包、签名、公证、自动更新或 CI 配置；本轮不验证 Windows/Linux。
+当前没有内容持久化，关闭窗口或开发热重启会丢失编辑内容。应用版本为 `0.2.0`，图标在 `mygo.json` 中指向 `resources/icon.png`。可用 `go tool mygo build -o build` 生成 macOS 应用和 DMG；当前未配置 Developer ID 签名、公证、自动更新或 CI，本轮不验证 Windows/Linux。
 
 Onevra 组件库：[source](https://github.com/oneo-me/onevra)。
 
