@@ -6,6 +6,7 @@ import (
 
 	"jsonpal/internal/diffeditor"
 	"jsonpal/internal/editor"
+	"jsonpal/locales"
 )
 
 // workspaceTab holds navigation metadata and an editing surface. Document state
@@ -18,7 +19,7 @@ type workspaceTab struct {
 
 func newFormatTab(number int, source string) *workspaceTab {
 	return &workspaceTab{
-		id: fmt.Sprintf("format-%d", number), title: fmt.Sprintf("格式化 %d", number),
+		id: fmt.Sprintf("format-%d", number), title: locales.FormatTabTitle(number),
 		editor: editor.NewJSON(source),
 	}
 }
@@ -37,7 +38,7 @@ func (app *application) addComparisonTab(left, right string) *workspaceTab {
 	app.nextComparisonNumber++
 	tab := &workspaceTab{
 		id:     fmt.Sprintf("comparison-%d", app.nextComparisonNumber),
-		title:  fmt.Sprintf("对比 %d", app.nextComparisonNumber),
+		title:  locales.ComparisonTabTitle(app.nextComparisonNumber),
 		editor: diffeditor.New(left, right),
 	}
 	app.tabs = append(app.tabs, tab)

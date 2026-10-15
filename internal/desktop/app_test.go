@@ -7,7 +7,6 @@ import (
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/editor"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
-	"github.com/oneo-me/onevra/source/theme"
 )
 
 func TestFormatButtonAndUndo(t *testing.T) {
@@ -90,8 +89,8 @@ func TestEmptyAndUnchangedFormatting(t *testing.T) {
 // Shell owns its own sidebar lifecycle; the native smoke check covers that host.
 func newApplicationTester(app *application, width, height int) *ui.Tester {
 	options := app.shellOptions()
-	return ui.NewTester(func(c *ui.Context) {
-		theme.Apply(c, options.Appearance)
+	tt := ui.NewTester(func(c *ui.Context) {
+		c.SetTheme(options.Theme(c))
 		ui.Column(c).Fill().Children(func() {
 			options.Content(c)
 			ui.Row(c).Absolute().Top(0).Left(0).Right(0).Height(sidebar.HeaderHeight(c)).Children(func() {
@@ -102,6 +101,8 @@ func newApplicationTester(app *application, width, height int) *ui.Tester {
 			})
 		})
 	}, width, height)
+	tt.SetLocale("zh-Hans")
+	return tt
 }
 
 func TestDefaultThemeChangesPreserveEditing(t *testing.T) {

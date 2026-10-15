@@ -1,0 +1,365 @@
+{
+  "@@locale": "zh-Hans",
+  "editorLabel": "JSON 编辑器",
+  "@editorLabel": {
+    "description": "Editor label."
+  },
+  "editorPlaceholder": "输入或粘贴 JSON",
+  "@editorPlaceholder": {
+    "description": "Editor placeholder."
+  },
+  "editorInitialHint": "输入或粘贴 JSON，点击格式化或按 ⌘⇧F",
+  "@editorInitialHint": {
+    "description": "Editor initial hint."
+  },
+  "editorModifiedHint": "内容已修改，按 ⌘⇧F 格式化",
+  "@editorModifiedHint": {
+    "description": "Editor modified hint."
+  },
+  "formatSuccess": "JSON 有效，已格式化（2 空格缩进）",
+  "@formatSuccess": {
+    "description": "Format success."
+  },
+  "compactSuccess": "JSON 有效，已压缩",
+  "@compactSuccess": {
+    "description": "Compact success."
+  },
+  "escapeSuccess": "已转义",
+  "@escapeSuccess": {
+    "description": "Escape success."
+  },
+  "unescapeSuccess": "已去除一层转义",
+  "@unescapeSuccess": {
+    "description": "Unescape success."
+  },
+  "sortSuccess": "JSON 有效，已按字段排序",
+  "@sortSuccess": {
+    "description": "Sort success."
+  },
+  "waitingForJSON": "等待输入 JSON",
+  "@waitingForJSON": {
+    "description": "Waiting for j s o n."
+  },
+  "copySuccess": "已复制全部内容",
+  "@copySuccess": {
+    "description": "Copy success."
+  },
+  "diffFormatSuccess": "两侧已格式化",
+  "@diffFormatSuccess": {
+    "description": "Diff format success."
+  },
+  "diffCompactSuccess": "两侧已压缩",
+  "@diffCompactSuccess": {
+    "description": "Diff compact success."
+  },
+  "diffEscapeSuccess": "两侧已转义",
+  "@diffEscapeSuccess": {
+    "description": "Diff escape success."
+  },
+  "diffUnescapeSuccess": "两侧已去除一层转义",
+  "@diffUnescapeSuccess": {
+    "description": "Diff unescape success."
+  },
+  "diffSortSuccess": "两侧已按字段排序",
+  "@diffSortSuccess": {
+    "description": "Diff sort success."
+  },
+  "diffCopySuccess": "已复制两侧内容",
+  "@diffCopySuccess": {
+    "description": "Diff copy success."
+  },
+  "diffWaiting": "等待输入两侧 JSON",
+  "@diffWaiting": {
+    "description": "Diff waiting."
+  },
+  "previousDifference": "上一个差异",
+  "@previousDifference": {
+    "description": "Previous difference."
+  },
+  "nextDifference": "下一个差异",
+  "@nextDifference": {
+    "description": "Next difference."
+  },
+  "compareJSON": "对比 JSON",
+  "@compareJSON": {
+    "description": "Compare j s o n."
+  },
+  "editJSON": "编辑 JSON",
+  "@editJSON": {
+    "description": "Edit j s o n."
+  },
+  "leftEditorLabel": "左侧 JSON 编辑器",
+  "@leftEditorLabel": {
+    "description": "Left editor label."
+  },
+  "rightEditorLabel": "右侧 JSON 编辑器",
+  "@rightEditorLabel": {
+    "description": "Right editor label."
+  },
+  "leftEditorPlaceholder": "输入或粘贴左侧 JSON",
+  "@leftEditorPlaceholder": {
+    "description": "Left editor placeholder."
+  },
+  "rightEditorPlaceholder": "输入或粘贴右侧 JSON",
+  "@rightEditorPlaceholder": {
+    "description": "Right editor placeholder."
+  },
+  "contentModified": "内容已修改",
+  "@contentModified": {
+    "description": "Content modified."
+  },
+  "diffPreviewLabel": "JSON 差异预览",
+  "@diffPreviewLabel": {
+    "description": "Diff preview label."
+  },
+  "settings": "设置",
+  "@settings": {
+    "description": "Settings."
+  },
+  "closeSettings": "关闭设置",
+  "@closeSettings": {
+    "description": "Close settings."
+  },
+  "appearance": "外观",
+  "@appearance": {
+    "description": "Appearance."
+  },
+  "theme": "主题",
+  "@theme": {
+    "description": "Theme."
+  },
+  "themeDescription": "切换后立即生效，自动模式跟随系统外观。",
+  "@themeDescription": {
+    "description": "Theme description."
+  },
+  "lightTheme": "明亮",
+  "@lightTheme": {
+    "description": "Light theme."
+  },
+  "darkTheme": "夜晚",
+  "@darkTheme": {
+    "description": "Dark theme."
+  },
+  "systemTheme": "自动",
+  "@systemTheme": {
+    "description": "System theme."
+  },
+  "themeSelector": "主题选择",
+  "@themeSelector": {
+    "description": "Theme selector."
+  },
+  "newFormat": "新建格式化",
+  "@newFormat": {
+    "description": "New format."
+  },
+  "newComparison": "新建对比",
+  "@newComparison": {
+    "description": "New comparison."
+  },
+  "tabList": "标签列表",
+  "@tabList": {
+    "description": "Tab list."
+  },
+  "editorToolbar": "编辑工具栏",
+  "@editorToolbar": {
+    "description": "Editor toolbar."
+  },
+  "formatJSON": "格式化 JSON",
+  "@formatJSON": {
+    "description": "Format j s o n."
+  },
+  "compact": "压缩",
+  "@compact": {
+    "description": "Compact."
+  },
+  "escape": "转义",
+  "@escape": {
+    "description": "Escape."
+  },
+  "unescape": "去转义",
+  "@unescape": {
+    "description": "Unescape."
+  },
+  "sortFields": "字段排序",
+  "@sortFields": {
+    "description": "Sort fields."
+  },
+  "foldAll": "全部折叠",
+  "@foldAll": {
+    "description": "Fold all."
+  },
+  "unfoldAll": "全部展开",
+  "@unfoldAll": {
+    "description": "Unfold all."
+  },
+  "softWrap": "自动换行",
+  "@softWrap": {
+    "description": "Soft wrap."
+  },
+  "search": "搜索",
+  "@search": {
+    "description": "Search."
+  },
+  "copy": "复制",
+  "@copy": {
+    "description": "Copy."
+  },
+  "clear": "清空",
+  "@clear": {
+    "description": "Clear."
+  },
+  "sidebarToggle": "侧边栏",
+  "@sidebarToggle": {
+    "description": "Sidebar toggle."
+  },
+  "welcomeLabel": "欢迎背景",
+  "@welcomeLabel": {
+    "description": "Welcome label."
+  },
+  "welcomeHint": "从侧边栏新建格式化或对比，开始处理 JSON",
+  "@welcomeHint": {
+    "description": "Welcome hint."
+  },
+  "findQuery": "查找",
+  "@findQuery": {
+    "description": "Find query."
+  },
+  "findMatchCase": "区分大小写",
+  "@findMatchCase": {
+    "description": "Find match case."
+  },
+  "findWholeWord": "全字匹配",
+  "@findWholeWord": {
+    "description": "Find whole word."
+  },
+  "findRegexp": "使用正则表达式",
+  "@findRegexp": {
+    "description": "Find regexp."
+  },
+  "findInSelection": "在选区中查找",
+  "@findInSelection": {
+    "description": "Find in selection."
+  },
+  "findPrevious": "上一个匹配",
+  "@findPrevious": {
+    "description": "Find previous."
+  },
+  "findNext": "下一个匹配",
+  "@findNext": {
+    "description": "Find next."
+  },
+  "findReplace": "替换",
+  "@findReplace": {
+    "description": "Find replace."
+  },
+  "findReplaceAll": "全部替换",
+  "@findReplaceAll": {
+    "description": "Find replace all."
+  },
+  "findClose": "关闭",
+  "@findClose": {
+    "description": "Find close."
+  },
+  "withShortcut": "{label}（{shortcut}）",
+  "@withShortcut": {
+    "description": "With shortcut.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "shortcut": {
+        "type": "String"
+      }
+    }
+  },
+  "formatTabTitle": "格式化 {number, number, ::group-off}",
+  "@formatTabTitle": {
+    "description": "Format tab title.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "comparisonTabTitle": "对比 {number, number, ::group-off}",
+  "@comparisonTabTitle": {
+    "description": "Comparison tab title.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "countTabs": "标签页（{count, number, ::group-off}）",
+  "@countTabs": {
+    "description": "Count tabs.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "switchTabHint": "{title}（切换标签：⌃Tab / ⌃⇧Tab）",
+  "@switchTabHint": {
+    "description": "Switch tab hint.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "closeTab": "关闭 {title}",
+  "@closeTab": {
+    "description": "Close tab.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonErrorLocation": "JSON 格式错误：第 {line, number, ::group-off} 行，第 {column, number, ::group-off} 列：{detail}",
+  "@jsonErrorLocation": {
+    "description": "Json error location.",
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "column": {
+        "type": "int"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "diffLeftError": "左侧：{detail}",
+  "@diffLeftError": {
+    "description": "Diff left error.",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "diffRightError": "右侧：{detail}",
+  "@diffRightError": {
+    "description": "Diff right error.",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "findOpenReplaceHint": "替换（打开：⌘⌥F / ⌘⇧H）",
+  "@findOpenReplaceHint": {
+    "description": "Find open replace hint."
+  },
+  "findReplaceHint": "替换（替换框：Enter）",
+  "@findReplaceHint": {
+    "description": "Find replace hint."
+  },
+  "findReplaceAllHint": "全部替换（替换框：⌘Enter）",
+  "@findReplaceAllHint": {
+    "description": "Find replace all hint."
+  }
+}

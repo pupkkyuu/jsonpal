@@ -7,17 +7,20 @@ import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 	"github.com/oneo-me/onevra/source/theme"
+
 	"jsonpal/internal/editor"
 )
 
 func newDiffTester(d *Diff) *ui.Tester {
-	return ui.NewTester(func(c *ui.Context) {
-		theme.Apply(c, theme.Auto)
+	tt := ui.NewTester(func(c *ui.Context) {
+		theme.Apply(c)
 		ui.Column(c).Fill().Children(func() {
 			ui.Row(c).Height(36).Children(func() { d.Toolbar(c) })
 			d.View(c, editor.ViewOptions{Shortcuts: true})
 		})
 	}, 900, 650)
+	tt.SetLocale("zh-Hans")
+	return tt
 }
 
 func TestTwoEditableDocumentsAndPreviewPreserveState(t *testing.T) {
@@ -203,7 +206,7 @@ func TestCopyClearWrapAndSearch(t *testing.T) {
 	if d.Comparing() {
 		t.Fatal("search should return to the editable document")
 	}
-	if _, ok := tt.Find("Find"); !ok {
+	if _, ok := tt.Find("查找"); !ok {
 		t.Fatal("search did not open the active document's find bar")
 	}
 	d.ToggleComparison()

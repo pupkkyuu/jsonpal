@@ -5,7 +5,9 @@ package diffeditor
 import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
+
 	"jsonpal/internal/editor"
+	"jsonpal/locales"
 )
 
 type Diff struct {
@@ -31,8 +33,8 @@ var (
 
 func New(left, right string) *Diff {
 	d := &Diff{panes: [2]*editor.JSON{editor.NewJSON(left), editor.NewJSON(right)}, currentHunk: -1, requestFocus: true}
-	d.Left().State().Label, d.Right().State().Label = "左侧 JSON 编辑器", "右侧 JSON 编辑器"
-	d.Left().State().Placeholder, d.Right().State().Placeholder = "输入或粘贴左侧 JSON", "输入或粘贴右侧 JSON"
+	d.Left().State().Label, d.Right().State().Label = locales.LeftEditorLabel(), locales.RightEditorLabel()
+	d.Left().State().Placeholder, d.Right().State().Placeholder = locales.LeftEditorPlaceholder(), locales.RightEditorPlaceholder()
 	d.preview = mygoeditor.DiffState{
 		Old: d.Left().State().Buffer, New: d.Right().State().Buffer,
 		Layout: mygoeditor.DiffSplit, Inline: mygoeditor.DiffInlineChar,
@@ -75,7 +77,7 @@ func (d *Diff) rememberVersions() {
 func (d *Diff) refreshResult() {
 	for i, pane := range d.panes {
 		if d.versions[i] != pane.State().Buffer.Version() {
-			d.result = editor.Result{Message: "内容已修改"}
+			d.result = editor.Result{Message: locales.ContentModified()}
 			d.currentHunk = -1
 			d.rememberVersions()
 			return
@@ -111,7 +113,7 @@ func (d *Diff) View(c *ui.Context, options editor.ViewOptions) {
 			d.preview.Theme = editor.JSONTheme(t.Dark)
 			d.preview.Wrap = d.WrapEnabled()
 			view := mygoeditor.DiffView(c.Key("preview"), &d.preview).Fill().
-				Focusable().FocusRing(false).Label("JSON 差异预览").Bind(&d.previewFocus)
+				Focusable().FocusRing(false).Label(locales.DiffPreviewLabel()).Bind(&d.previewFocus)
 			if focus {
 				view.Focus()
 			}

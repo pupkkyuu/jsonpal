@@ -1,7 +1,7 @@
 package jsondoc
 
 import (
-	"strings"
+	"errors"
 	"testing"
 )
 
@@ -37,7 +37,8 @@ func TestCompactRejectsInvalidInput(t *testing.T) {
 		}
 	}
 	_, err := Compact("{\n  \"中文😀\": ]\n}")
-	if err == nil || !strings.Contains(err.Error(), "第 2 行，第 10 列") {
+	var located *LocationError
+	if !errors.As(err, &located) || located.Line != 2 || located.Column != 10 {
 		t.Fatalf("wrong Unicode error location: %v", err)
 	}
 }

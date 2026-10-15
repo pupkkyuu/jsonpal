@@ -1,7 +1,7 @@
 package jsondoc
 
 import (
-	"strings"
+	"fmt"
 	"testing"
 )
 
@@ -22,7 +22,7 @@ func TestJSONDiagnosticLocations(t *testing.T) {
 				t.Fatalf("diagnostics = %v", diagnostics)
 			}
 			d := diagnostics[0]
-			if got := test.source[d.Start:d.End]; got != test.marked || !strings.Contains(d.Message, test.location) {
+			if got := test.source[d.Start:d.End]; got != test.marked || fmt.Sprintf("第 %d 行，第 %d 列", d.Line, d.Column) != test.location {
 				t.Fatalf("unexpected diagnostic: %+v (marked %q)", d, got)
 			}
 		})

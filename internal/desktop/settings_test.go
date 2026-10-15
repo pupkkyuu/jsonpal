@@ -76,18 +76,25 @@ func TestSettingsThemeSelectionAndEditorState(t *testing.T) {
 }
 
 func TestSettingsDialogFitsNarrowWindow(t *testing.T) {
-	app := newEditingApplication()
-	tt := newApplicationTester(app, 760, 400)
-	tt.SetPreferences(ui.Preferences{ReduceMotion: true})
-	tt.Key(ui.Cmd, ui.KeyComma)
-	for _, label := range []string{"主题选择", "关闭设置", "搜索设置"} {
-		r, ok := tt.Find(label)
-		if !ok || r.X < 0 || r.Y < 0 || r.X+r.W > 760 || r.Y+r.H > 400 {
-			t.Fatalf("settings control %q is outside the viewport: %v", label, r)
-		}
-	}
-	tt.ClickAt(2, 2)
-	if app.settings.IsOpen() {
-		t.Fatal("clicking the backdrop did not close settings")
+	for name, prefs := range map[string]ui.Preferences{
+		"default":              {ReduceMotion: true},
+		"scaled-high-contrast": {ReduceMotion: true, TextScale: 1.5, HighContrast: true},
+	} {
+		t.Run(name, func(t *testing.T) {
+			app := newEditingApplication()
+			tt := newApplicationTester(app, 760, 400)
+			tt.SetPreferences(prefs)
+			tt.Key(ui.Cmd, ui.KeyComma)
+			for _, label := range []string{"主题选择", "关闭设置", "搜索设置"} {
+				r, ok := tt.Find(label)
+				if !ok || r.X < 0 || r.Y < 0 || r.X+r.W > 760 || r.Y+r.H > 400 {
+					t.Fatalf("settings control %q is outside the viewport: %v", label, r)
+				}
+			}
+			tt.ClickAt(2, 2)
+			if app.settings.IsOpen() {
+				t.Fatal("clicking the backdrop did not close settings")
+			}
+		})
 	}
 }

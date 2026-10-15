@@ -14,9 +14,10 @@ func TestPanelWorksWithoutWorkspace(t *testing.T) {
 		changes = append(changes, source)
 	})
 	tt := ui.NewTester(func(c *ui.Context) {
-		theme.Apply(c, theme.Auto)
+		theme.Apply(c)
 		panel.View(c)
 	}, 760, 400)
+	tt.SetLocale("zh-Hans")
 	tt.SetPreferences(ui.Preferences{ReduceMotion: true})
 	panel.Open()
 	tt.Frame()

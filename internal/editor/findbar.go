@@ -3,10 +3,12 @@ package editor
 import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
+
+	"jsonpal/locales"
 )
 
-// FindBar retains MyGo v0.4.8's default find layout and behavior, adding
-// shortcut hints through its public renderer hook. The editor still owns
+// FindBar retains MyGo's default find layout and behavior, adding localized
+// labels and shortcut hints through its public renderer hook. The editor still owns
 // queries, matching, replacement, keyboard handling and focus.
 func FindBar(c *ui.Context, bar ui.Element, f *mygoeditor.FindBar) {
 	t := c.Theme()
@@ -23,7 +25,7 @@ func FindBar(c *ui.Context, bar ui.Element, f *mygoeditor.FindBar) {
 	}
 	bar.Children(func() {
 		ui.Row(c).Gap(t.Space(1)).AlignItems(ui.Center).Children(func() {
-			f.QueryInput(field(f.Query(), "Find"))
+			f.QueryInput(field(f.Query(), locales.FindQuery()))
 			toggle := func(on *bool, glyph, label, hint string) {
 				b := ui.ToggleBase(c, on).Padding(t.Space(.5), t.Space(1.5)).Radius(t.Radius - 2).Label(label).Tooltip(hint).KeepFocus()
 				if *on {
@@ -31,33 +33,33 @@ func FindBar(c *ui.Context, bar ui.Element, f *mygoeditor.FindBar) {
 				}
 				b.Children(func() { ui.Text(c, glyph).FontSize(t.FontSize - 1) })
 			}
-			toggle(f.CaseSensitive(), "Aa", "Match case", "Match case")
-			toggle(f.WholeWord(), "ab", "Match whole word", "Match whole word")
-			toggle(f.Regexp(), ".*", "Use regular expression", "Use regular expression")
-			toggle(f.InSelection(), "[ ]", "Find in selection", "Find in selection（⌘⌥L）")
+			toggle(f.CaseSensitive(), "Aa", locales.FindMatchCase(), locales.FindMatchCase())
+			toggle(f.WholeWord(), "ab", locales.FindWholeWord(), locales.FindWholeWord())
+			toggle(f.Regexp(), ".*", locales.FindRegexp(), locales.FindRegexp())
+			toggle(f.InSelection(), "[ ]", locales.FindInSelection(), locales.WithShortcut(locales.FindInSelection(), "⌘⌥L"))
 			ui.Text(c, f.Status()).FontSize(t.FontSize - 2).TextColor(t.TextMuted).FontFeatures("tnum").MinWidth(t.Space(16)).Role(ui.RoleStatus)
-			if button("↑", "Previous match", "Previous match（⌘⇧G）").Clicked() {
+			if button("↑", locales.FindPrevious(), locales.WithShortcut(locales.FindPrevious(), "⌘⇧G")).Clicked() {
 				f.Previous()
 			}
-			if button("↓", "Next match", "Next match（⌘G）").Clicked() {
+			if button("↓", locales.FindNext(), locales.WithShortcut(locales.FindNext(), "⌘G")).Clicked() {
 				f.Next()
 			}
-			if f.CanReplace() && button("⇄", "Replace", "Replace（打开：⌘⌥F / ⌘⇧H）").Clicked() {
+			if f.CanReplace() && button("⇄", locales.FindReplace(), locales.FindOpenReplaceHint()).Clicked() {
 				f.SetReplacing(!f.Replacing())
 			}
-			if button("✕", "Close", "Close（Esc）").Clicked() {
+			if button("✕", locales.FindClose(), locales.WithShortcut(locales.FindClose(), "Esc")).Clicked() {
 				f.Close()
 			}
 		})
 		if f.Replacing() {
 			ui.Row(c).Gap(t.Space(1)).AlignItems(ui.Center).Children(func() {
-				f.ReplacementInput(field(f.Replacement(), "Replace"))
-				if ui.Button(c, "Replace").Padding(t.Space(.5), t.Space(2)).FontSize(t.FontSize - 1).
-					Tooltip("Replace（替换框：Enter）").Clicked() {
+				f.ReplacementInput(field(f.Replacement(), locales.FindReplace()))
+				if ui.Button(c, locales.FindReplace()).Padding(t.Space(.5), t.Space(2)).FontSize(t.FontSize - 1).
+					Tooltip(locales.FindReplaceHint()).Clicked() {
 					f.Replace()
 				}
-				if ui.Button(c, "Replace All").Padding(t.Space(.5), t.Space(2)).FontSize(t.FontSize - 1).
-					Tooltip("Replace All（替换框：⌘Enter）").Clicked() {
+				if ui.Button(c, locales.FindReplaceAll()).Padding(t.Space(.5), t.Space(2)).FontSize(t.FontSize - 1).
+					Tooltip(locales.FindReplaceAllHint()).Clicked() {
 					f.ReplaceAll()
 				}
 			})

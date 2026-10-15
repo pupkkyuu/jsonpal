@@ -1,6 +1,6 @@
 # JSONPal 快捷键
 
-适用于当前 macOS 原生版本。编辑器快捷键沿用项目固定依赖的 MyGo v0.4.8；应用快捷键由 JSONPal 工作区处理。
+适用于当前 macOS 原生版本。编辑器快捷键沿用项目固定依赖的 MyGo v0.5.1；应用快捷键由 JSONPal 工作区处理。
 
 ## 按键说明
 
@@ -49,7 +49,7 @@
 
 对比输入模式的原生编辑快捷键作用于当前聚焦的一侧，两侧分别保存查找状态。
 
-查找框中 `Enter` / `⇧Enter` 跳到下一个 / 上一个结果，`⌥Enter` 选择所有结果；替换框中 `Enter` 替换当前结果，`⌘Enter` 全部替换。查找栏按钮的 tooltip 也会显示相应快捷键。
+查找框中 `Enter` / `⇧Enter` 跳到下一个 / 上一个结果，`⌥Enter` 选择所有结果；替换框中 `Enter` 替换当前结果，`⌘Enter` 全部替换。查找栏及其状态已中文化，按钮的 tooltip 也会显示相应快捷键。错误行背景仅提供视觉提示，没有新增跳转快捷键。
 
 ## 编辑、行操作与缩进
 
@@ -133,4 +133,4 @@
 - 标签循环与切换：[`internal/desktop/tabs.go`](../internal/desktop/tabs.go)。
 - JSON 编辑器快捷键适配：[`internal/editor/json.go`](../internal/editor/json.go)、[`internal/editor/wrapping.go`](../internal/editor/wrapping.go)。
 - 对比编辑器快捷键适配：[`internal/diffeditor/diff.go`](../internal/diffeditor/diff.go)。
-- 原生默认绑定：MyGo v0.4.8 的 `ui/editor/keymap.go` 中 `macCodeBindings`。
+- 原生默认绑定：MyGo v0.5.1 的 `ui/editor/keymap.go` 中 `macCodeBindings`。

@@ -11,7 +11,7 @@
 | `internal/editor` | 编辑器接口与 JSON 实现，拥有文档状态、渲染、操作、主题和校验调度 | `Editor`、`ViewOptions`、`Result`、`JSON`、`NewJSON` |
 | `internal/diffeditor` | 双文档输入、原生差异预览、模式切换及双侧操作 | `Diff`、`New` |
 | `internal/setting` | 设置面板、分类、主题偏好及选择交互 | `Panel`、`NewPanel` |
-| `internal/jsondoc` | JSON 格式化、压缩、排序、转义、校验及错误定位，不依赖 UI | `Format`、`Compact`、`SortFields`、`Escape`、`Unescape`、`Validate`、`DiagnosticsForError`、`Diagnostic` |
+| `internal/jsondoc` | JSON 格式化、压缩、排序、转义、校验及错误定位，不依赖 UI | `Format`、`Compact`、`SortFields`、`Escape`、`Unescape`、`Validate`、`DiagnosticsForError`、`Diagnostic`、`LocationError` |
 | `docs` | 当前工程说明及历史迁移资料 | — |
 
 依赖方向为 `cmd/jsonpal → internal/desktop`，桌面层依赖 `editor`、`diffeditor` 和 `setting`；`diffeditor → editor → jsondoc`，对比编辑器还直接调用 `jsondoc` 来预计算双侧变换。编辑器与设置包不依赖桌面层。MyGo 用于桌面界面与编辑器；Onevra 负责桌面组件与设置布局；JSON 处理模块只使用 Go 标准库。
@@ -26,7 +26,7 @@
 
 全文复制按钮通过可选的 `CopyAvailability` 接口控制可用性；默认启用，对比编辑器始终禁用。原生编辑器的选区复制快捷键保持原有行为。
 
-可选的 `ToolbarShortcuts` 接口提供当前模式下与工具栏操作等价的快捷键提示；桌面层只组合 tooltip 文本，保留原有控件标签。`editor.FindBar` 通过 MyGo 的 `RenderFindBar` 扩展点沿用默认布局并补充提示，查找、替换、焦点与按键处理仍交由原生编辑器。桌面层保留创建后的 Shell 引用，侧栏按钮和 `⌘B` 共享 Shell 的展开状态，避免各自维护状态而不同步。
+可选的 `ToolbarShortcuts` 接口提供当前模式下与工具栏操作等价的快捷键提示；桌面层只组合 tooltip 文本，保留原有控件标签。`editor.FindBar` 通过 MyGo 的 `RenderFindBar` 扩展点沿用默认布局并补充本地化标签和快捷键提示，查找、替换、焦点与按键处理仍交由原生编辑器。桌面层保留创建后的 Shell 引用，侧栏按钮和 `⌘B` 共享 Shell 的展开状态，避免各自维护状态而不同步。
 
 工具栏的转义、去转义、排序、清空、全文复制、自动换行与搜索也通过 `Editor` 接口调用。全文复制接收宿主的剪贴板写入函数，不改动选区；搜索使用原生编辑器命令。`WrapEnabled` 返回当前换行偏好，工具栏据此绘制激活背景；按钮与原生换行快捷键都更新公开的 `SoftWrap` 配置，避免原生私有开关与按钮状态不同步。文档操作共用撤销、位置重置和诊断更新流程；解码结果为普通文本时，操作成功但仍显示该文本的 JSON 校验诊断。
 
@@ -67,3 +67,13 @@ go test -race ./...
 go vet ./...
 go build -o build/jsonpal ./cmd/jsonpal
 ```
+
+## 主题与本地化
+
+MyGo 固定为 v0.5.1，Onevra 固定为 `315079ee0379` 对应的伪版本。Shell 显式传入 `Theme: theme.Onevra`，外观来源由 `mygo.Theme.SetSource` 控制；独立测试宿主调用 `theme.Apply(c)` 或执行 Shell 配置的主题函数。Onevra 调色板保留其配色，并跟随桌面文字缩放和高对比偏好。
+
+`mygo.json` 的 `i18n` 指向 `locales`，源语言为 `zh-Hans`。`locales/zh-Hans.json` 是应用文案的唯一来源，生成的 `catalog_gen.go` 与目录一同提交，供桌面、编辑器、对比和设置包调用。MyGo 和 Onevra 通过各自语言目录提供内置文案，仅有产品定制的标签或提示才由应用覆盖。新增英文时添加同名消息与占位参数的 `en.json` 并重新生成，不需要替换界面调用接口；当前没有语言切换入口。
+
+`jsondoc.Diagnostic` 返回 UTF-8 范围、一基行列与原始错误详情，`LocationError` 通过 `Unwrap` 保留解析器错误。该包仍仅依赖标准库，界面层使用语言目录组合诊断与操作结果。后台校验仅返回结构化数据，本地化与 UI 更新都在界面线程执行。
+
+错误行背景通过 MyGo `LineBackgrounds` 绘制，位置取诊断起始字节对应的零基行号。缓冲区版本变化时立即移除旧诊断与背景；通过版本检查的校验结果重新生成背景，颜色每帧跟随 `Danger` 与高对比偏好。对比输入复用相同逻辑，差异预览保留原有差异配色。

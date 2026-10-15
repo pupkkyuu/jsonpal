@@ -4,16 +4,16 @@ package jsondoc
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 )
 
 // Diagnostic describes a syntax error using UTF-8 byte offsets in the source.
-// Message includes a one-based line and Unicode column for display.
+// Line and Column are one-based; Detail is the parser's original error text.
 type Diagnostic struct {
-	Start, End int
-	Message    string
+	Start, End   int
+	Line, Column int
+	Detail       string
 }
 
 // Validate returns the first syntax error, or nil for valid or empty input.
@@ -38,6 +38,10 @@ func DiagnosticsForError(source string, err error) []Diagnostic {
 	}
 	start := 0
 	detail := err.Error()
+	var located *LocationError
+	if errors.As(err, &located) {
+		detail = located.Cause.Error()
+	}
 	var syntax *json.SyntaxError
 	if errors.As(err, &syntax) {
 		detail = syntax.Error()
@@ -64,6 +68,6 @@ func DiagnosticsForError(source string, err error) []Diagnostic {
 	column := utf8.RuneCountInString(prefix[strings.LastIndex(prefix, "\n")+1:]) + 1
 	return []Diagnostic{{
 		Start: start, End: end,
-		Message: fmt.Sprintf("JSON 格式错误：第 %d 行，第 %d 列：%s", line, column, detail),
+		Line: line, Column: column, Detail: detail,
 	}}
 }

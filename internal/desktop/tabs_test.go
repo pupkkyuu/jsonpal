@@ -8,15 +8,15 @@ import (
 
 	"github.com/egoist/mygo/ui"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
-	"github.com/oneo-me/onevra/source/theme"
+
 	"jsonpal/internal/diffeditor"
 )
 
 // Compose the real Shell slots with a sidebar to exercise tab navigation.
 func newWorkspaceTester(app *application, width, height int) *ui.Tester {
 	options := app.shellOptions()
-	return ui.NewTester(func(c *ui.Context) {
-		theme.Apply(c, options.Appearance)
+	tt := ui.NewTester(func(c *ui.Context) {
+		c.SetTheme(options.Theme(c))
 		ui.Row(c).Fill().Children(func() {
 			ui.Column(c.Key("left")).Width(220).Shrink(0).FillHeight().Children(func() {
 				ui.Column(c).Grow(1).FillWidth().MinHeight(0).Children(func() { options.Left(c) })
@@ -28,6 +28,8 @@ func newWorkspaceTester(app *application, width, height int) *ui.Tester {
 			})
 		})
 	}, width, height)
+	tt.SetLocale("zh-Hans")
+	return tt
 }
 
 func TestNewFormatTabsAndIndependentUndo(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 )
 
 func newJSONTester(e *JSON, width, height int) *ui.Tester {
-	return ui.NewTester(func(c *ui.Context) {
-		theme.Apply(c, theme.Auto)
+	tt := ui.NewTester(func(c *ui.Context) {
+		theme.Apply(c)
 		ui.Column(c).Fill().Children(func() {
 			ui.Row(c).Height(48).Children(func() {
 				if components.Button(c, "格式化 JSON", components.ButtonGhost).KeepFocus().Clicked() {
@@ -20,6 +20,8 @@ func newJSONTester(e *JSON, width, height int) *ui.Tester {
 			e.View(c, ViewOptions{Shortcuts: true})
 		})
 	}, width, height)
+	tt.SetLocale("zh-Hans")
+	return tt
 }
 
 func TestJSONEditorWorksWithoutWorkspace(t *testing.T) {

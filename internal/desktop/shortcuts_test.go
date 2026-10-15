@@ -6,6 +6,7 @@ import (
 	"github.com/egoist/mygo/ui"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
 	"github.com/oneo-me/onevra/source/theme"
+
 	"jsonpal/internal/diffeditor"
 )
 
@@ -55,7 +56,7 @@ func TestToolbarShortcutTooltipsFollowEditorMode(t *testing.T) {
 				}
 			}
 			tt := ui.NewTester(func(c *ui.Context) {
-				theme.Apply(c, theme.Auto)
+				theme.Apply(c)
 				ui.Row(c).FillWidth().Height(48).Children(func() { app.titlebar(c) })
 			}, 1200, 200)
 			seen := map[string]bool{}

@@ -3,6 +3,8 @@ package editor
 import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
+
+	"jsonpal/locales"
 )
 
 // JSON owns one document, including undo, selection, scroll, search, focus,
@@ -24,11 +26,11 @@ func NewJSON(source string) *JSON {
 	e := &JSON{
 		code: &mygoeditor.State{
 			Buffer: buffer, Theme: jsonEditorTheme(false), NoActiveLine: true, NoIndentGuides: true,
-			Label: "JSON 编辑器", Placeholder: "输入或粘贴 JSON", TabSize: 2,
+			Label: locales.EditorLabel(), Placeholder: locales.EditorPlaceholder(), TabSize: 2,
 			RenderFindBar: FindBar,
 			Bindings:      []mygoeditor.Binding{{Mods: ui.Cmd | ui.Shift, Key: ui.KeyF, Command: mygoeditor.NoCommand}},
 		},
-		result: Result{Message: "输入或粘贴 JSON，点击格式化或按 ⌘⇧F"}, resultVersion: buffer.Version(),
+		result: Result{Message: locales.EditorInitialHint()}, resultVersion: buffer.Version(),
 		validation: jsonValidation{results: make(chan jsonValidationResult, 1)},
 	}
 	e.code.Select(buffer.Len(), buffer.Len())
@@ -53,7 +55,7 @@ func (e *JSON) Result() Result {
 
 func (e *JSON) refreshResult() {
 	if e.resultVersion != e.code.Buffer.Version() {
-		e.result = Result{Message: "内容已修改，按 ⌘⇧F 格式化"}
+		e.result = Result{Message: locales.EditorModifiedHint()}
 		e.resultVersion = e.code.Buffer.Version()
 	}
 }
@@ -67,6 +69,7 @@ func (e *JSON) View(c *ui.Context, options ViewOptions) {
 	if wait := e.refreshJSONDiagnostics(c.Now(), c.Services().Invalidate); wait > 0 {
 		c.After(wait)
 	}
+	e.diagnosticBackgrounds(c)
 	view := mygoeditor.View(c.Key("json"), e.code).Fill().Bind(&e.focus)
 	if !options.NoAutoFocus {
 		view.AutoFocus()

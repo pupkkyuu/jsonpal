@@ -8,13 +8,15 @@ import (
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
+
+	"jsonpal/locales"
 )
 
 var welcomeSky = ui.Hex("#519db3")
 
 func (app *application) welcome(c *ui.Context) {
 	t := c.Theme()
-	page := ui.Column(c.Key("welcome")).Fill().MinWidth(0).Clip().Label("欢迎背景").
+	page := ui.Column(c.Key("welcome")).Fill().MinWidth(0).Clip().Label(locales.WelcomeLabel()).
 		Gradient(t.Background.Mix(t.Accent, .07), t.Background, 150)
 	page.Draw(func(p *ui.Painter, r ui.Rect) {
 		strength := float32(1)
@@ -33,7 +35,7 @@ func (app *application) welcome(c *ui.Context) {
 			Padding(sidebar.HeaderHeight(c), t.Space(6), 0, t.Space(6)).Gap(t.Space(3)).Children(func() {
 			components.Icon(c, lucide.Braces()).Size(t.Space(10), t.Space(10)).TextColor(t.Accent)
 			components.Text(c, "JSONPal").FontSize(t.Rem(2.5)).SingleLine()
-			components.Text(c, "从侧边栏新建格式化或对比，开始处理 JSON").TextColor(t.TextMuted).TextAlign(ui.Center).Wrap()
+			components.Text(c, locales.WelcomeHint()).TextColor(t.TextMuted).TextAlign(ui.Center).Wrap()
 		})
 	})
 }

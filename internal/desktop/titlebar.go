@@ -5,7 +5,9 @@ import (
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
+
 	"jsonpal/internal/editor"
+	"jsonpal/locales"
 )
 
 func (app *application) titlebar(c *ui.Context) {
@@ -19,13 +21,13 @@ func (app *application) titlebar(c *ui.Context) {
 		ui.Spacer(c)
 		// Horizontal scrolling keeps every action reachable in a narrow header.
 		components.ScrollView(c.Key("editor-tools"), components.ScrollViewOptions{Axes: components.ScrollHorizontal}).
-			Label("编辑工具栏").MinWidth(0).Shrink(1).Children(func() {
+			Label(locales.EditorToolbar()).MinWidth(0).Shrink(1).Children(func() {
 			ui.Row(c).AlignItems(ui.Center).Gap(t.Space(.5)).Children(func() {
 				toolButton := func(action string, icon *ui.SVG, label string) ui.Element {
 					tip := label
 					if shortcuts, ok := app.activeTab.editor.(editor.ToolbarShortcuts); ok {
 						if hint := shortcuts.ToolbarShortcut(action); hint != "" {
-							tip += "（" + hint + "）"
+							tip = locales.WithShortcut(label, hint)
 						}
 					}
 					return sidebar.IconButton(c.Key(action), icon, tip).Label(label)
@@ -37,30 +39,30 @@ func (app *application) titlebar(c *ui.Context) {
 				if availability, ok := app.activeTab.editor.(editor.TransformAvailability); ok {
 					canTransform = availability.TransformEnabled()
 				}
-				if toolButton("format", lucide.Braces(), "格式化 JSON").Disabled(!canTransform).KeepFocus().Clicked() {
+				if toolButton("format", lucide.Braces(), locales.FormatJSON()).Disabled(!canTransform).KeepFocus().Clicked() {
 					app.activeTab.editor.Format()
 				}
-				if toolButton("compress", lucide.Minimize2(), "压缩").Disabled(!canTransform).KeepFocus().Clicked() {
+				if toolButton("compress", lucide.Minimize2(), locales.Compact()).Disabled(!canTransform).KeepFocus().Clicked() {
 					app.activeTab.editor.Compact()
 				}
 				toolbarDivider(c.Key("transform-divider"))
-				if toolButton("escape", lucide.FileCode(), "转义").Disabled(!canTransform).KeepFocus().Clicked() {
+				if toolButton("escape", lucide.FileCode(), locales.Escape()).Disabled(!canTransform).KeepFocus().Clicked() {
 					app.activeTab.editor.Escape()
 				}
-				if toolButton("unescape", lucide.Code(), "去转义").Disabled(!canTransform).KeepFocus().Clicked() {
+				if toolButton("unescape", lucide.Code(), locales.Unescape()).Disabled(!canTransform).KeepFocus().Clicked() {
 					app.activeTab.editor.Unescape()
 				}
-				if toolButton("sort", lucide.ArrowDownAZ(), "字段排序").Disabled(!canTransform).KeepFocus().Clicked() {
+				if toolButton("sort", lucide.ArrowDownAZ(), locales.SortFields()).Disabled(!canTransform).KeepFocus().Clicked() {
 					app.activeTab.editor.SortFields()
 				}
 				toolbarDivider(c.Key("code-divider"))
-				if toolButton("collapse", lucide.ChevronsDownUp(), "全部折叠").KeepFocus().Clicked() {
+				if toolButton("collapse", lucide.ChevronsDownUp(), locales.FoldAll()).KeepFocus().Clicked() {
 					app.activeTab.editor.FoldAll()
 				}
-				if toolButton("expand", lucide.ChevronsUpDown(), "全部展开").KeepFocus().Clicked() {
+				if toolButton("expand", lucide.ChevronsUpDown(), locales.UnfoldAll()).KeepFocus().Clicked() {
 					app.activeTab.editor.UnfoldAll()
 				}
-				wrap := toolButton("wrap", lucide.TextWrap(), "自动换行").KeepFocus()
+				wrap := toolButton("wrap", lucide.TextWrap(), locales.SoftWrap()).KeepFocus()
 				if wrap.Clicked() {
 					app.activeTab.editor.ToggleWrap()
 				}
@@ -69,17 +71,17 @@ func (app *application) titlebar(c *ui.Context) {
 					wrap.Background(t.Text.Alpha(.1))
 				}
 				toolbarDivider(c.Key("document-divider"))
-				if toolButton("search", lucide.Search(), "搜索").KeepFocus().Clicked() {
+				if toolButton("search", lucide.Search(), locales.Search()).KeepFocus().Clicked() {
 					app.activeTab.editor.Search()
 				}
 				canCopy := true
 				if availability, ok := app.activeTab.editor.(editor.CopyAvailability); ok {
 					canCopy = availability.CopyEnabled()
 				}
-				if toolButton("copy", lucide.Copy(), "复制").Disabled(!canCopy).KeepFocus().Clicked() {
+				if toolButton("copy", lucide.Copy(), locales.Copy()).Disabled(!canCopy).KeepFocus().Clicked() {
 					app.activeTab.editor.CopyAll(c.WriteClipboard)
 				}
-				if toolButton("clear", lucide.Trash(), "清空").KeepFocus().Clicked() {
+				if toolButton("clear", lucide.Trash(), locales.Clear()).KeepFocus().Clicked() {
 					app.activeTab.editor.Clear()
 				}
 			})

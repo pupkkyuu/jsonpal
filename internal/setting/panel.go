@@ -8,6 +8,8 @@ import (
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
+
+	"jsonpal/locales"
 )
 
 // Panel owns the settings dialog, navigation and current appearance preference.
@@ -35,14 +37,12 @@ func (p *Panel) View(c *ui.Context) {
 	w, h := c.Size()
 	inset := sidebar.HeaderHeight(c)
 	width := min(t.Space(180), w*.82, max(0, w-2*inset))
-	components.Dialog(c.Key("settings-dialog"), &p.open, components.DialogOptions{Label: "设置", Inset: inset}, func(panel ui.Element) {
+	components.Dialog(c.Key("settings-dialog"), &p.open, components.DialogOptions{Label: locales.Settings(), Inset: inset}, func(panel ui.Element) {
 		panel.Width(width).Height(min(t.Space(110), h*.75)).Padding(0).Gap(0).Clip()
 		components.Settings(c, &p.view, p.categories(), components.SettingsOptions{
-			Narrow: width < t.Space(170), Title: "设置",
-			SearchLabel: "搜索设置", SearchPlaceholder: "搜索设置",
-			CategoryLabel: "设置分类", ResultsTitle: "搜索结果", EmptyText: "没有找到匹配的设置",
+			Narrow: width < t.Space(170),
 			HeaderActions: func(c *ui.Context) {
-				if sidebar.IconButton(c.Key("close-settings"), lucide.X(), "关闭设置（Esc）").Label("关闭设置").Clicked() {
+				if sidebar.IconButton(c.Key("close-settings"), lucide.X(), locales.WithShortcut(locales.CloseSettings(), "Esc")).Label(locales.CloseSettings()).Clicked() {
 					p.open = false
 				}
 			},

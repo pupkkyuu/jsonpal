@@ -5,15 +5,17 @@ import (
 	"github.com/egoist/mygo/ui"
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
+
+	"jsonpal/locales"
 )
 
 func (p *Panel) categories() []components.SettingsCategory {
 	return []components.SettingsCategory{{
-		ID: "appearance", Title: "外观", Icon: lucide.Palette(),
+		ID: "appearance", Title: locales.Appearance(), Icon: lucide.Palette(),
 		Groups: []components.SettingsGroup{{
 			ID: "theme", Items: []components.SettingsItem{{
-				ID: "theme", Title: "主题", Description: "切换后立即生效，自动模式跟随系统外观。",
-				Keywords: []string{"明亮", "夜晚", "自动", "Light", "Dark", "System"}, Build: p.themeSelector,
+				ID: "theme", Title: locales.Theme(), Description: locales.ThemeDescription(),
+				Keywords: []string{locales.LightTheme(), locales.DarkTheme(), locales.SystemTheme(), "Light", "Dark", "System"}, Build: p.themeSelector,
 			}},
 		}},
 	}}
@@ -22,7 +24,7 @@ func (p *Panel) categories() []components.SettingsCategory {
 func (p *Panel) themeSelector(c *ui.Context) {
 	choice := p.appearance
 	selectBox := components.Select(c, &choice)
-	selectBox.Trigger.Label("主题选择").MinWidth(c.Theme().Space(32)).MaxWidthPercent(100).Children(func() {
+	selectBox.Trigger.Label(locales.ThemeSelector()).MinWidth(c.Theme().Space(32)).MaxWidthPercent(100).Children(func() {
 		components.Text(c, themeChoiceLabel(choice)).SingleLine()
 	})
 	selectBox.Popup(func(panel ui.Element) {
@@ -43,10 +45,10 @@ func (p *Panel) themeSelector(c *ui.Context) {
 func themeChoiceLabel(source mygo.ThemeSource) string {
 	switch source {
 	case mygo.ThemeLight:
-		return "明亮"
+		return locales.LightTheme()
 	case mygo.ThemeDark:
-		return "夜晚"
+		return locales.DarkTheme()
 	default:
-		return "自动"
+		return locales.SystemTheme()
 	}
 }

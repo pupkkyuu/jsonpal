@@ -1,7 +1,9 @@
 package jsondoc
 
 import (
-	"strings"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -45,7 +47,9 @@ func TestFormatJSONErrorLocation(t *testing.T) {
 		{`{"emoji😀":]}`, "第 1 行，第 11 列"},
 	} {
 		_, err := Format(test.source)
-		if err == nil || !strings.Contains(err.Error(), test.location) {
+		var located *LocationError
+		var syntax *json.SyntaxError
+		if !errors.As(err, &located) || !errors.As(err, &syntax) || fmt.Sprintf("第 %d 行，第 %d 列", located.Line, located.Column) != test.location {
 			t.Errorf("error for %q = %v; want %s", test.source, err, test.location)
 		}
 	}

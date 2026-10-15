@@ -5,6 +5,8 @@ import (
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
+
+	"jsonpal/locales"
 )
 
 func (d *Diff) Hunks() []mygoeditor.DiffHunk { return d.preview.Hunks() }
@@ -47,16 +49,16 @@ func (d *Diff) goDifference(direction int) {
 func (d *Diff) Toolbar(c *ui.Context) {
 	if d.comparing {
 		count := len(d.Hunks())
-		if sidebar.IconButton(c.Key("previous-difference"), lucide.ArrowUp(), "上一个差异").Disabled(count == 0).KeepFocus().Clicked() {
+		if sidebar.IconButton(c.Key("previous-difference"), lucide.ArrowUp(), locales.PreviousDifference()).Disabled(count == 0).KeepFocus().Clicked() {
 			d.PreviousDifference()
 		}
-		if sidebar.IconButton(c.Key("next-difference"), lucide.ArrowDown(), "下一个差异").Disabled(count == 0).KeepFocus().Clicked() {
+		if sidebar.IconButton(c.Key("next-difference"), lucide.ArrowDown(), locales.NextDifference()).Disabled(count == 0).KeepFocus().Clicked() {
 			d.NextDifference()
 		}
 	}
-	label, icon := "对比 JSON", lucide.FileDiff()
+	label, icon := locales.CompareJSON(), lucide.FileDiff()
 	if d.comparing {
-		label, icon = "编辑 JSON", lucide.Pencil()
+		label, icon = locales.EditJSON(), lucide.Pencil()
 	}
 	if sidebar.IconButton(c.Key("comparison-toggle"), icon, label).KeepFocus().Clicked() {
 		d.ToggleComparison()

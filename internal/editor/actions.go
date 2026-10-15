@@ -1,48 +1,48 @@
 package editor
 
 import (
-	"fmt"
 	"strings"
 
 	"jsonpal/internal/jsondoc"
+	"jsonpal/locales"
 )
 
 func (e *JSON) Format() {
-	e.transformJSON(jsondoc.Format, "JSON 有效，已格式化（2 空格缩进）")
+	e.transformJSON(jsondoc.Format, locales.FormatSuccess())
 }
 
 func (e *JSON) Compact() {
-	e.transformJSON(jsondoc.Compact, "JSON 有效，已压缩")
+	e.transformJSON(jsondoc.Compact, locales.CompactSuccess())
 }
 
 func (e *JSON) Escape() {
-	e.transformText(jsondoc.Escape, "已转义")
+	e.transformText(jsondoc.Escape, locales.EscapeSuccess())
 }
 
 func (e *JSON) Unescape() {
-	e.transformText(jsondoc.Unescape, "已去除一层转义")
+	e.transformText(jsondoc.Unescape, locales.UnescapeSuccess())
 }
 
 func (e *JSON) SortFields() {
-	e.transformJSON(jsondoc.SortFields, "JSON 有效，已按字段排序")
+	e.transformJSON(jsondoc.SortFields, locales.SortSuccess())
 }
 
 func (e *JSON) Clear() {
-	e.ApplyText("", "等待输入 JSON")
+	e.ApplyText("", locales.WaitingForJSON())
 }
 
 // CopyAll copies the complete buffer without disturbing selections or scrolling.
 // The host supplies its clipboard service so editors do not own platform access.
 func (e *JSON) CopyAll(writeClipboard func(string)) {
 	writeClipboard(e.code.Buffer.String())
-	e.result = Result{Message: "已复制全部内容"}
+	e.result = Result{Message: locales.CopySuccess()}
 	e.resultVersion = e.code.Buffer.Version()
 	e.focus.Focus()
 }
 
 func (e *JSON) transformJSON(transform func(string) (string, error), success string) {
 	if strings.TrimSpace(e.code.Buffer.String()) == "" {
-		e.ApplyText(e.code.Buffer.String(), "等待输入 JSON")
+		e.ApplyText(e.code.Buffer.String(), locales.WaitingForJSON())
 		return
 	}
 	e.transformText(transform, success)
@@ -73,7 +73,7 @@ func (e *JSON) ApplyText(result, message string) {
 
 // ReportError diagnoses a failed operation against the unchanged document.
 func (e *JSON) ReportError(err error) {
-	e.result = Result{Message: fmt.Sprintf("JSON 格式错误：%s", err), HasError: true}
+	e.result = Result{Message: errorMessage(e.code.Buffer.String(), err), HasError: true}
 	e.setJSONDiagnostics(editorDiagnostics(jsondoc.DiagnosticsForError(e.code.Buffer.String(), err)))
 	e.resetPosition()
 }

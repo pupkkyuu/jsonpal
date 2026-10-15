@@ -3,8 +3,11 @@ package editor
 import (
 	"time"
 
+	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
+
 	"jsonpal/internal/jsondoc"
+	"jsonpal/locales"
 )
 
 const jsonValidationDelay = 300 * time.Millisecond
@@ -22,7 +25,7 @@ type jsonValidation struct {
 
 type jsonValidationResult struct {
 	version     uint64
-	diagnostics []mygoeditor.Diagnostic
+	diagnostics []jsondoc.Diagnostic
 }
 
 func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration {
@@ -33,12 +36,13 @@ func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration 
 		v.deadline = now.Add(jsonValidationDelay)
 		// Old diagnostics describe an earlier document; remove them on input.
 		e.code.SetDiagnostics(version, nil)
+		e.code.LineBackgrounds = nil
 	}
 	select {
 	case result := <-v.results:
 		v.running = false
 		if result.version == version && v.pending {
-			e.setJSONDiagnostics(result.diagnostics)
+			e.setJSONDiagnostics(editorDiagnostics(result.diagnostics))
 		}
 	default:
 	}
@@ -53,7 +57,7 @@ func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration 
 		snapshot, results := e.code.Buffer.Snapshot(), v.results
 		go func() {
 			results <- jsonValidationResult{
-				version: snapshot.Version(), diagnostics: editorDiagnostics(jsondoc.Validate(snapshot.String())),
+				version: snapshot.Version(), diagnostics: jsondoc.Validate(snapshot.String()),
 			}
 			wake()
 		}()
@@ -64,6 +68,9 @@ func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration 
 func (e *JSON) setJSONDiagnostics(diagnostics []mygoeditor.Diagnostic) {
 	version := e.code.Buffer.Version()
 	e.code.SetDiagnostics(version, diagnostics)
+	// Line backgrounds are fixed line numbers, so never retain them from a
+	// different diagnostic set. The next view supplies the frame's color.
+	e.code.LineBackgrounds = nil
 	e.validation.version, e.validation.initialized, e.validation.pending = version, true, false
 }
 
@@ -74,7 +81,34 @@ func editorDiagnostics(diagnostics []jsondoc.Diagnostic) []mygoeditor.Diagnostic
 	}
 	result := make([]mygoeditor.Diagnostic, len(diagnostics))
 	for i, d := range diagnostics {
-		result[i] = mygoeditor.Diagnostic{Start: d.Start, End: d.End, Message: d.Message, Severity: mygoeditor.SeverityError, Source: "JSON"}
+		result[i] = mygoeditor.Diagnostic{Start: d.Start, End: d.End, Message: locales.JsonErrorLocation(d.Line, d.Column, d.Detail), Severity: mygoeditor.SeverityError, Source: "JSON"}
 	}
 	return result
+}
+
+// errorMessage formats parser details at the UI boundary, keeping jsondoc free
+// of locale and framework dependencies.
+func errorMessage(source string, err error) string {
+	if ds := jsondoc.DiagnosticsForError(source, err); len(ds) != 0 {
+		d := ds[0]
+		return locales.JsonErrorLocation(d.Line, d.Column, d.Detail)
+	}
+	return ""
+}
+
+func (e *JSON) diagnosticBackgrounds(c *ui.Context) {
+	e.code.LineBackgrounds = e.code.LineBackgrounds[:0]
+	alpha := float32(.10)
+	if c.Preferences().HighContrast {
+		alpha = .16
+	}
+	for _, d := range e.code.Diagnostics() {
+		if d.Severity != mygoeditor.SeverityError {
+			continue
+		}
+		line := e.code.Buffer.Pos(d.Start).Line
+		e.code.LineBackgrounds = append(e.code.LineBackgrounds, mygoeditor.LineBackground{
+			First: line, Last: line, Color: c.Theme().Danger.Alpha(alpha),
+		})
+	}
 }

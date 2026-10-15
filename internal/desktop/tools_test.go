@@ -167,7 +167,7 @@ func TestSearchButtonOpensNativeFindBar(t *testing.T) {
 	if count, _ := state.FindMatches(); count != 2 {
 		t.Fatalf("search did not use the selected text: %d matches", count)
 	}
-	if _, ok := tt.Find("Find"); !ok {
+	if _, ok := tt.Find("查找"); !ok {
 		t.Fatal("search button did not open the native find bar")
 	}
 	tt.Key(0, ui.KeyEscape)

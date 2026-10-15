@@ -4,8 +4,11 @@ import (
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
+	"github.com/oneo-me/onevra/source/theme"
+
 	"jsonpal/internal/editor"
 	"jsonpal/internal/setting"
+	"jsonpal/locales"
 )
 
 type application struct {
@@ -29,11 +32,11 @@ func newApplication() *application {
 
 func (app *application) shellOptions() sidebar.ShellOptions {
 	return sidebar.ShellOptions{
-		Title: "JSONPal",
+		Title: "JSONPal", Theme: theme.Onevra,
 		Width: 1000, Height: 650, MinWidth: 760, MinHeight: 400,
 		LeftMinWidth: 180, LeftMaxWidth: 320,
-		LeftToggleLabel: "侧边栏（⌘B）", LeftResizeLabel: "调整侧边栏宽度",
-		Left: app.sidebar, LeftToolbar: app.sidebarFooter,
+		LeftToggleLabel: locales.WithShortcut(locales.SidebarToggle(), "⌘B"),
+		Left:            app.sidebar, LeftToolbar: app.sidebarFooter,
 		ContentTitle: app.titlebar, Content: app.view,
 	}
 }

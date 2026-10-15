@@ -1,18 +1,18 @@
 package diffeditor
 
 import (
-	"fmt"
 	"strings"
 
 	"jsonpal/internal/editor"
 	"jsonpal/internal/jsondoc"
+	"jsonpal/locales"
 )
 
-func (d *Diff) Format()     { d.transform(jsondoc.Format, "两侧已格式化") }
-func (d *Diff) Compact()    { d.transform(jsondoc.Compact, "两侧已压缩") }
-func (d *Diff) Escape()     { d.transform(jsondoc.Escape, "两侧已转义") }
-func (d *Diff) Unescape()   { d.transform(jsondoc.Unescape, "两侧已去除一层转义") }
-func (d *Diff) SortFields() { d.transform(jsondoc.SortFields, "两侧已按字段排序") }
+func (d *Diff) Format()     { d.transform(jsondoc.Format, locales.DiffFormatSuccess()) }
+func (d *Diff) Compact()    { d.transform(jsondoc.Compact, locales.DiffCompactSuccess()) }
+func (d *Diff) Escape()     { d.transform(jsondoc.Escape, locales.DiffEscapeSuccess()) }
+func (d *Diff) Unescape()   { d.transform(jsondoc.Unescape, locales.DiffUnescapeSuccess()) }
+func (d *Diff) SortFields() { d.transform(jsondoc.SortFields, locales.DiffSortSuccess()) }
 
 // Calculate both results first so a failure never partially updates a pair.
 func (d *Diff) transform(transform func(string) (string, error), message string) {
@@ -29,7 +29,11 @@ func (d *Diff) transform(transform func(string) (string, error), message string)
 		result, err := transform(source)
 		if err != nil {
 			pane.ReportError(err)
-			d.result = editor.Result{Message: fmt.Sprintf("%s：%s", []string{"左侧", "右侧"}[i], err), HasError: true}
+			message := locales.DiffLeftError(pane.Result().Message)
+			if i == 1 {
+				message = locales.DiffRightError(pane.Result().Message)
+			}
+			d.result = editor.Result{Message: message, HasError: true}
 			d.rememberVersions()
 			d.activeSide, d.requestFocus = i, true
 			return
@@ -81,7 +85,7 @@ func (d *Diff) setWrap(enabled bool) {
 
 func (d *Diff) CopyAll(writeClipboard func(string)) {
 	writeClipboard(d.Left().State().Buffer.String() + "\n" + d.Right().State().Buffer.String())
-	d.result = editor.Result{Message: "已复制两侧内容"}
+	d.result = editor.Result{Message: locales.DiffCopySuccess()}
 	d.rememberVersions()
 }
 
@@ -96,7 +100,7 @@ func (d *Diff) Clear() {
 		pane.Clear()
 	}
 	d.comparing, d.activeSide, d.currentHunk = false, 0, -1
-	d.result = editor.Result{Message: "等待输入两侧 JSON"}
+	d.result = editor.Result{Message: locales.DiffWaiting()}
 	d.rememberVersions()
 	d.requestFocus = true
 }
