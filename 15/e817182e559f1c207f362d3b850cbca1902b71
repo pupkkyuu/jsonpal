@@ -1,0 +1,83 @@
+locales/zh-Hans.json
+  s_122c7ddbdbfa8a::t_021a6a7b3b48a6 19-22
+internal/desktop/titlebar.go
+  s_122c7ddbdbfa8a::t_202857a1d2b91b 30-32
+internal/desktop/tabs_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 55
+internal/desktop/app.go
+  s_122c7ddbdbfa8a::t_e60a5970bb3a7f 37
+internal/editor/json.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 13-18,20
+  s_122c7ddbdbfa8a::t_a3bd950cff9fc6 19,67-70
+internal/desktop/app_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 39,64,78,96,106,177
+  s_122c7ddbdbfa8a::t_2909d1bfa2bb1e 6,13-29
+  s_122c7ddbdbfa8a::t_26561994a78844 30
+internal/desktop/tools_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 34,72
+internal/editor/diagnostics_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 82
+  s_122c7ddbdbfa8a::t_fa4570759225b4 84
+TODO.md
+  s_122c7ddbdbfa8a::t_f32be1c70cb1b7 35-36
+docs/architecture.zh-CN.md
+  s_122c7ddbdbfa8a::t_f32be1c70cb1b7 25-27,43,46
+internal/desktop/document_position_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 57,98
+internal/editor/editor.go
+  s_122c7ddbdbfa8a::t_202857a1d2b91b 31-36
+internal/diffeditor/diff.go
+  s_122c7ddbdbfa8a::t_03ebb046e250f3 66-69
+  s_122c7ddbdbfa8a::t_021a6a7b3b48a6 25,62,70,102-108
+  s_122c7ddbdbfa8a::t_00fb214411e166 14-24,61
+internal/desktop/comparison_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 31,50
+internal/editor/json_test.go
+  s_122c7ddbdbfa8a::t_2909d1bfa2bb1e 5,12-24
+  s_122c7ddbdbfa8a::t_00fb214411e166 46,51
+  s_122c7ddbdbfa8a::t_d99e9644645f11 25
+internal/editor/actions.go
+  s_122c7ddbdbfa8a::t_a3bd950cff9fc6 4-5,32-35,48,52-59,63-69,73-95,97
+internal/diffeditor/transform_test.go
+  s_122c7ddbdbfa8a::t_e8c3c14119b23d 1-100
+internal/diffeditor/actions.go
+  s_122c7ddbdbfa8a::t_021a6a7b3b48a6 4-5,18,20,23-39,41-42,44-47,59,61,114
+internal/desktop/background_test.go
+  s_122c7ddbdbfa8a::t_e8c3c14119b23d 1-60
+internal/editor/transform.go
+  s_122c7ddbdbfa8a::t_021a6a7b3b48a6 51-53
+  s_122c7ddbdbfa8a::t_03ebb046e250f3 32,47,100
+  s_122c7ddbdbfa8a::t_a3bd950cff9fc6 1-31,33-46,48-50,54-91,95-99,101-105
+  s_122c7ddbdbfa8a::t_202857a1d2b91b 92-94
+README.md
+  s_122c7ddbdbfa8a::t_f32be1c70cb1b7 8,29,39
+internal/desktop/document_actions_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 20,39,57,78
+internal/diffeditor/diff_test.go
+  s_122c7ddbdbfa8a::t_2909d1bfa2bb1e 6,15-27
+  s_122c7ddbdbfa8a::t_00fb214411e166 162,171,178,186,188,194
+  s_122c7ddbdbfa8a::t_bc7f2216d3d329 28
+internal/editor/backgrounds_test.go
+  s_122c7ddbdbfa8a::t_00fb214411e166 22,84
+internal/editor/transform_test.go
+  s_122c7ddbdbfa8a::t_e8c3c14119b23d 26-29
+  s_122c7ddbdbfa8a::t_03ebb046e250f3 1-25,30-120
+locales/catalog_gen.go
+  s_122c7ddbdbfa8a::t_976673d140b9a6 94-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "15e817182e559f1c207f362d3b850cbca1902b71",
+  "prompts": {},
+  "sessions": {
+    "s_122c7ddbdbfa8a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a13ecd-447d-7413-b621-f20ba84733c7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "pupkkyuu <pupkkyuu@gmail.com>"
+    }
+  }
+}
