@@ -1,4 +1,4 @@
-package jsondoc
+package json
 
 import (
 	"encoding/json"

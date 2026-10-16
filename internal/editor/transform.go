@@ -7,7 +7,7 @@ import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 
-	"jsonpal/internal/jsondoc"
+	"jsonpal/internal/json"
 )
 
 // PreparedTransform contains immutable worker output for one document version.
@@ -18,7 +18,7 @@ type PreparedTransform struct {
 	Changed     bool
 	Empty       bool
 	HasError    bool
-	Diagnostics []jsondoc.Diagnostic
+	Diagnostics []json.Diagnostic
 }
 
 // TransformTask runs at most one single- or multi-document operation at a time.
@@ -57,12 +57,12 @@ func (task *TransformTask) Start(snapshots []mygoeditor.Snapshot, transform func
 				result.Empty = true
 			} else if text, err := transform(source); err != nil {
 				result.HasError = true
-				result.Diagnostics = jsondoc.DiagnosticsForError(source, err)
+				result.Diagnostics = json.DiagnosticsForError(source, err)
 			} else {
 				result.Text, result.Changed = text, text != source
 				// Unescape can produce ordinary text. Diagnose every result here
 				// so committing it never revalidates the whole document on UI.
-				result.Diagnostics = jsondoc.Validate(text)
+				result.Diagnostics = json.Validate(text)
 			}
 			prepared[i] = result
 			if result.HasError {

@@ -1,6 +1,7 @@
-package desktop
+package welcome
 
 import (
+	"jsonpal/locales"
 	"math"
 	"sync"
 
@@ -8,13 +9,11 @@ import (
 	"github.com/oneo-me/onevra/source/components"
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
-
-	"jsonpal/locales"
 )
 
 var welcomeSky = ui.Hex("#519db3")
 
-func (app *application) welcome(c *ui.Context) {
+func View(c *ui.Context) {
 	t := c.Theme()
 	page := ui.Column(c.Key("welcome")).Fill().MinWidth(0).Clip().Label(locales.WelcomeLabel()).
 		Gradient(t.Background.Mix(t.Accent, .07), t.Background, 150)

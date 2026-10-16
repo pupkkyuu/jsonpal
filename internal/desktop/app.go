@@ -1,39 +1,64 @@
 package desktop
 
 import (
+	"jsonpal/internal/welcome"
+
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
-	"github.com/oneo-me/onevra/source/shells/sidebar"
+	onevraSidebar "github.com/oneo-me/onevra/source/shells/sidebar"
 	"github.com/oneo-me/onevra/source/theme"
 
 	"jsonpal/internal/editor"
-	"jsonpal/internal/setting"
+	"jsonpal/internal/settings"
+	"jsonpal/internal/sidebar"
 	"jsonpal/locales"
 )
 
 type application struct {
-	shell                *sidebar.Shell
+	shell                *onevraSidebar.Shell
 	tabs                 []*workspaceTab
 	activeTab            *workspaceTab
 	nextTabNumber        int
 	nextComparisonNumber int
 	focusEditor          bool
 	revealTab            string
-	settings             *setting.Panel
+
+	// 分割线
+	settings      *settings.Settings
+	isSettingOpen bool
+
+	sidebar *sidebar.Sidebar
 }
 
-// Run initializes the native window and runs the desktop application's event loop.
 func Run() error {
 	app := &application{
-		// The default Shell palette and editor theme follow the native appearance.
-		settings: setting.NewPanel(mygo.Theme.Source(), mygo.Theme.SetSource),
+		settings: settings.NewSetting(),
+		sidebar:  sidebar.NewSidebar(),
 	}
-	mygo.App.WhenReady(func() { app.shell = sidebar.NewShell(app.shellOptions()) })
+
+	app.settings.OnClose = func() {
+		app.isSettingOpen = false
+	}
+
+	app.sidebar.OnSettingsClicked = func() {
+		app.isSettingOpen = true
+	}
+
+	app.sidebar.OnNewFormatClicked = func() {
+		// 渲染左侧的标签
+		// 右侧编辑器暂时没有
+	}
+
+	// todo test only
+	tabs := []sidebar.Tab{{0, "格式112233"}}
+	app.sidebar.SetTabs(tabs, 0)
+
+	mygo.App.WhenReady(func() { app.shell = onevraSidebar.NewShell(app.shellOptions()) })
 	return mygo.App.Run()
 }
 
-func (app *application) shellOptions() sidebar.ShellOptions {
-	return sidebar.ShellOptions{
+func (app *application) shellOptions() onevraSidebar.ShellOptions {
+	return onevraSidebar.ShellOptions{
 		Title:           "JSONPal",
 		Theme:           theme.Onevra,
 		Width:           1000,
@@ -44,8 +69,8 @@ func (app *application) shellOptions() sidebar.ShellOptions {
 		LeftMinWidth:    180,
 		LeftMaxWidth:    320,
 		LeftToggleLabel: locales.WithShortcut(locales.SidebarToggle(), "⌘B"),
-		Left:            app.sidebar,
-		LeftToolbar:     app.sidebarFooter,
+		Left:            app.sidebar.View,
+		LeftToolbar:     app.sidebar.FooterView,
 		ContentTitle:    app.titlebar,
 		Content:         app.view,
 	}
@@ -53,9 +78,9 @@ func (app *application) shellOptions() sidebar.ShellOptions {
 
 func (app *application) view(c *ui.Context) {
 	if c.Shortcut(ui.Cmd, ui.KeyComma) {
-		app.settings.Open()
+		app.isSettingOpen = true
 	}
-	if !app.settings.IsOpen() {
+	if !app.isSettingOpen {
 		if c.Shortcut(ui.Cmd, ui.KeyB) && app.shell != nil {
 			app.shell.SetLeftExpanded(!app.shell.LeftExpanded())
 			c.Invalidate()
@@ -75,20 +100,21 @@ func (app *application) view(c *ui.Context) {
 	tab := app.activeTab
 
 	if tab == nil {
-		app.welcome(c)
+		welcome.View(c)
 	} else {
 		// The host provides layout and a stable identity; the editor owns its view.
 		ui.
 			Column(c.Key("editor-area")).
 			Fill().
-			Padding(sidebar.HeaderHeight(c), 0, 0, 0).
+			Padding(onevraSidebar.HeaderHeight(c), 0, 0, 0).
 			Children(func() {
 				tab.editor.View(c.Key(tab.id), editor.ViewOptions{
 					Focus:     app.focusEditor,
-					Shortcuts: !app.settings.IsOpen(),
+					Shortcuts: !app.isSettingOpen,
 				})
 				app.focusEditor = false
 			})
 	}
-	app.settings.View(c)
+
+	app.settings.View(c, app.isSettingOpen)
 }

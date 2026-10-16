@@ -11,7 +11,7 @@
 | `internal/editor` | 编辑器接口与 JSON 实现，拥有文档状态、渲染、操作、主题和校验调度 | `Editor`、`ViewOptions`、`Result`、`JSON`、`NewJSON` |
 | `internal/diffeditor` | 双文档输入、原生差异预览、模式切换及双侧操作 | `Diff`、`New` |
 | `internal/setting` | 设置面板、分类、主题偏好及选择交互 | `Panel`、`NewPanel` |
-| `internal/jsondoc` | JSON 格式化、压缩、排序、转义、校验及错误定位，不依赖 UI | `Format`、`Compact`、`SortFields`、`Escape`、`Unescape`、`Validate`、`DiagnosticsForError`、`Diagnostic`、`LocationError` |
+| `../internal/json` | JSON 格式化、压缩、排序、转义、校验及错误定位，不依赖 UI | `Format`、`Compact`、`SortFields`、`Escape`、`Unescape`、`Validate`、`DiagnosticsForError`、`Diagnostic`、`LocationError` |
 | `docs` | 当前工程说明及历史迁移资料 | — |
 
 依赖方向为 `cmd/jsonpal → internal/desktop`，桌面层依赖 `editor`、`diffeditor` 和 `setting`；`diffeditor → editor → jsondoc`，对比编辑器还直接调用 `jsondoc` 来预计算双侧变换。编辑器与设置包不依赖桌面层。MyGo 用于桌面界面与编辑器；Onevra 负责桌面组件与设置布局；JSON 处理模块只使用 Go 标准库。
@@ -42,7 +42,7 @@
 - 窗口级共享状态保留在 `desktop/app.go`；标签只持有导航信息和编辑器引用，不持有文档或校验状态。
 - 标签关闭及邻居选择由 `desktop/tabs.go` 处理。关闭按钮与导航按钮为同级控件，避免关闭非活动标签时先激活；删除在标签列表构建后执行，最后一项关闭时清空活动标签并返回欢迎画面。
 - 设置面板状态与布局放在 `setting/panel.go`，主题分类与选择交互放在 `setting/appearance.go`。新增设置项放入设置包，通过明确的宿主回调应用需要影响应用的变更。
-- 格式化、排序、转义等不需要界面的 JSON 操作放在 `internal/jsondoc`，由编辑器层调用。
+- 格式化、排序、转义等不需要界面的 JSON 操作放在 `../internal/json`，由编辑器层调用。
 - 编辑器的文档状态和渲染放在 `editor/json.go`，文档操作放在 `editor/actions.go`，共用后台任务、可撤销提交和诊断更新流程；任务调度放在 `editor/transform.go`。主题与校验调度分别放在 `theme.go` 和 `diagnostics.go`。
 - 折叠操作放在 `editor/folding.go`，使用原生编辑器命令。它们只改变视图，不经过文档变换流程、不新增撤销记录。
 - 换行和查找入口分别放在 `editor/wrapping.go` 与 `editor/search.go`。换行偏好由编辑器管理，保留原生组合快捷键及同前缀的其他命令。纯文本转义与字段排序分别放在 `jsondoc/escape.go` 与 `jsondoc/sort.go`，排序不通过 map/float64 改写数据。

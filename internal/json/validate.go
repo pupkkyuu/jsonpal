@@ -1,5 +1,5 @@
-// Package jsondoc formats and validates JSON without depending on UI frameworks.
-package jsondoc
+// Package json formats and validates JSON without depending on UI frameworks.
+package json
 
 import (
 	"encoding/json"

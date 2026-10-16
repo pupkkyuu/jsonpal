@@ -4,28 +4,28 @@ import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 
-	"jsonpal/internal/jsondoc"
+	"jsonpal/internal/json"
 	"jsonpal/locales"
 )
 
 func (e *JSON) Format() {
-	e.transformJSON(jsondoc.Format, locales.FormatSuccess())
+	e.transformJSON(json.Format, locales.FormatSuccess())
 }
 
 func (e *JSON) Compact() {
-	e.transformJSON(jsondoc.Compact, locales.CompactSuccess())
+	e.transformJSON(json.Compact, locales.CompactSuccess())
 }
 
 func (e *JSON) Escape() {
-	e.transformText(jsondoc.Escape, locales.EscapeSuccess())
+	e.transformText(json.Escape, locales.EscapeSuccess())
 }
 
 func (e *JSON) Unescape() {
-	e.transformText(jsondoc.Unescape, locales.UnescapeSuccess())
+	e.transformText(json.Unescape, locales.UnescapeSuccess())
 }
 
 func (e *JSON) SortFields() {
-	e.transformJSON(jsondoc.SortFields, locales.SortSuccess())
+	e.transformJSON(json.SortFields, locales.SortSuccess())
 }
 
 func (e *JSON) Clear() {

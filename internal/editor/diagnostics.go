@@ -6,7 +6,7 @@ import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 
-	"jsonpal/internal/jsondoc"
+	"jsonpal/internal/json"
 	"jsonpal/locales"
 )
 
@@ -25,7 +25,7 @@ type jsonValidation struct {
 
 type jsonValidationResult struct {
 	version     uint64
-	diagnostics []jsondoc.Diagnostic
+	diagnostics []json.Diagnostic
 }
 
 func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration {
@@ -57,7 +57,7 @@ func (e *JSON) refreshJSONDiagnostics(now time.Time, wake func()) time.Duration 
 		snapshot, results := e.code.Buffer.Snapshot(), v.results
 		go func() {
 			results <- jsonValidationResult{
-				version: snapshot.Version(), diagnostics: jsondoc.Validate(snapshot.String()),
+				version: snapshot.Version(), diagnostics: json.Validate(snapshot.String()),
 			}
 			wake()
 		}()
@@ -74,8 +74,8 @@ func (e *JSON) setJSONDiagnostics(diagnostics []mygoeditor.Diagnostic) {
 	e.validation.version, e.validation.initialized, e.validation.pending = version, true, false
 }
 
-// Translate document diagnostics at the UI boundary; jsondoc stays UI-independent.
-func editorDiagnostics(diagnostics []jsondoc.Diagnostic) []mygoeditor.Diagnostic {
+// Translate document diagnostics at the UI boundary; json stays UI-independent.
+func editorDiagnostics(diagnostics []json.Diagnostic) []mygoeditor.Diagnostic {
 	if len(diagnostics) == 0 {
 		return nil
 	}

@@ -5,15 +5,15 @@ import (
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 
 	"jsonpal/internal/editor"
-	"jsonpal/internal/jsondoc"
+	"jsonpal/internal/json"
 	"jsonpal/locales"
 )
 
-func (d *Diff) Format()     { d.transform(jsondoc.Format, locales.DiffFormatSuccess()) }
-func (d *Diff) Compact()    { d.transform(jsondoc.Compact, locales.DiffCompactSuccess()) }
-func (d *Diff) Escape()     { d.transform(jsondoc.Escape, locales.DiffEscapeSuccess()) }
-func (d *Diff) Unescape()   { d.transform(jsondoc.Unescape, locales.DiffUnescapeSuccess()) }
-func (d *Diff) SortFields() { d.transform(jsondoc.SortFields, locales.DiffSortSuccess()) }
+func (d *Diff) Format()     { d.transform(json.Format, locales.DiffFormatSuccess()) }
+func (d *Diff) Compact()    { d.transform(json.Compact, locales.DiffCompactSuccess()) }
+func (d *Diff) Escape()     { d.transform(json.Escape, locales.DiffEscapeSuccess()) }
+func (d *Diff) Unescape()   { d.transform(json.Unescape, locales.DiffUnescapeSuccess()) }
+func (d *Diff) SortFields() { d.transform(json.SortFields, locales.DiffSortSuccess()) }
 
 // Calculate both results off the UI thread before committing either document.
 func (d *Diff) transform(transform func(string) (string, error), message string) {
