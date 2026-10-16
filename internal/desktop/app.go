@@ -34,12 +34,20 @@ func Run() error {
 
 func (app *application) shellOptions() sidebar.ShellOptions {
 	return sidebar.ShellOptions{
-		Title: "JSONPal", Theme: theme.Onevra,
-		Width: 1000, Height: 650, MinWidth: 760, MinHeight: 400,
-		LeftWidth: 200, LeftMinWidth: 180, LeftMaxWidth: 320,
+		Title:           "JSONPal",
+		Theme:           theme.Onevra,
+		Width:           1000,
+		Height:          650,
+		MinWidth:        760,
+		MinHeight:       400,
+		LeftWidth:       200,
+		LeftMinWidth:    180,
+		LeftMaxWidth:    320,
 		LeftToggleLabel: locales.WithShortcut(locales.SidebarToggle(), "⌘B"),
-		Left:            app.sidebar, LeftToolbar: app.sidebarFooter,
-		ContentTitle: app.titlebar, Content: app.view,
+		Left:            app.sidebar,
+		LeftToolbar:     app.sidebarFooter,
+		ContentTitle:    app.titlebar,
+		Content:         app.view,
 	}
 }
 
@@ -70,10 +78,17 @@ func (app *application) view(c *ui.Context) {
 		app.welcome(c)
 	} else {
 		// The host provides layout and a stable identity; the editor owns its view.
-		ui.Column(c.Key("editor-area")).Fill().Padding(sidebar.HeaderHeight(c), 0, 0, 0).Children(func() {
-			tab.editor.View(c.Key(tab.id), editor.ViewOptions{Focus: app.focusEditor, Shortcuts: !app.settings.IsOpen()})
-			app.focusEditor = false
-		})
+		ui.
+			Column(c.Key("editor-area")).
+			Fill().
+			Padding(sidebar.HeaderHeight(c), 0, 0, 0).
+			Children(func() {
+				tab.editor.View(c.Key(tab.id), editor.ViewOptions{
+					Focus:     app.focusEditor,
+					Shortcuts: !app.settings.IsOpen(),
+				})
+				app.focusEditor = false
+			})
 	}
 	app.settings.View(c)
 }
