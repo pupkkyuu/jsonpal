@@ -131,6 +131,6 @@
 
 - 应用级快捷键：[`internal/desktop/app.go`](../internal/desktop/app.go)。
 - 标签循环与切换：[`internal/desktop/tabs.go`](../internal/desktop/tabs.go)。
-- JSON 编辑器快捷键适配：[`internal/editor/json.go`](../internal/editor/json.go)、[`internal/editor/wrapping.go`](../internal/editor/wrapping.go)。
+- JSON 编辑器快捷键适配：[`internal/editor/json.go`](../internal/editor/json.go)、[`internal/editor/wrapping.go`](../internal/editor_back/wrapping.go)。
 - 对比编辑器快捷键适配：[`internal/diffeditor/diff.go`](../internal/diffeditor/diff.go)。
 - 原生默认绑定：MyGo v0.5.1 的 `ui/editor/keymap.go` 中 `macCodeBindings`。

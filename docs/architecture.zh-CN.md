@@ -8,7 +8,7 @@
 |---|---|---|
 | `cmd/jsonpal` | 可执行程序入口，启动应用并处理退出错误 | `main` |
 | `internal/desktop` | 原生窗口生命周期、工作区导航、工具栏、编辑器宿主及设置入口 | `Run` |
-| `internal/editor` | 编辑器接口与 JSON 实现，拥有文档状态、渲染、操作、主题和校验调度 | `Editor`、`ViewOptions`、`Result`、`JSON`、`NewJSON` |
+| `../internal/editor_back` | 编辑器接口与 JSON 实现，拥有文档状态、渲染、操作、主题和校验调度 | `Editor`、`ViewOptions`、`Result`、`JSON`、`NewJSON` |
 | `internal/diffeditor` | 双文档输入、原生差异预览、模式切换及双侧操作 | `Diff`、`New` |
 | `internal/setting` | 设置面板、分类、主题偏好及选择交互 | `Panel`、`NewPanel` |
 | `../internal/json` | JSON 格式化、压缩、排序、转义、校验及错误定位，不依赖 UI | `Format`、`Compact`、`SortFields`、`Escape`、`Unescape`、`Validate`、`DiagnosticsForError`、`Diagnostic`、`LocationError` |

@@ -1,38 +1,54 @@
 package settings
 
 import (
-	"github.com/egoist/mygo"
+	"jsonpal/locales"
+
 	"github.com/egoist/mygo/ui"
+	"github.com/oneo-me/onevra/source/components"
+	"github.com/oneo-me/onevra/source/icons/lucide"
+	"github.com/oneo-me/onevra/source/shells/sidebar"
 )
 
-type Settings struct {
-	state   *State
-	view    *View
-	OnClose func()
+type State struct {
+	Open bool
+	components.SettingsState
 }
 
-func NewSetting() *Settings {
-	setting := &Settings{
-		state: NewState(),
-		view:  NewView(),
-	}
-	setting.view.OnAppearanceChanged = mygo.Theme.SetSource
-	setting.view.OnClose = func() {
-		if setting.OnClose != nil {
-			setting.OnClose()
-		}
-	}
-
-	return setting
-}
-
-func (s *Settings) View(c *ui.Context, isOpen bool) {
-	if !isOpen {
+func View(c *ui.Context, state *State) {
+	if !state.Open {
 		return
 	}
-	open := &isOpen
-	s.view.Render(c, s.state, open)
-	if !isOpen && s.OnClose != nil {
-		s.OnClose()
-	}
+
+	t := c.Theme()
+	w, h := c.Size()
+	inset := sidebar.HeaderHeight(c)
+	width := min(t.Space(180), w*.82, max(0, w-2*inset))
+	dialogOptions := components.DialogOptions{Label: locales.Settings(), Inset: inset}
+	components.Dialog(c.Key("settings-dialog"), &state.Open, dialogOptions, func(panel ui.Element) {
+		panel.Width(width).Height(min(t.Space(110), h*.75)).Padding(0).Gap(0).Clip()
+		settingsOptions := components.SettingsOptions{
+			Narrow: width < t.Space(170),
+			HeaderActions: func(c *ui.Context) {
+				if closeButton(c).Clicked() {
+					state.Open = false
+				}
+			},
+		}
+
+		categories := []components.SettingsCategory{
+			appearance(),
+		}
+
+		components.Settings(c, &state.SettingsState, categories, settingsOptions)
+	})
+
+}
+
+func closeButton(c *ui.Context) ui.Element {
+	button := sidebar.IconButton(
+		c.Key("close-settings"),
+		lucide.X(),
+		locales.WithShortcut(locales.CloseSettings(), "Esc"),
+	).Label(locales.CloseSettings())
+	return button
 }

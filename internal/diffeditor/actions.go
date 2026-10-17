@@ -4,7 +4,7 @@ import (
 	"github.com/egoist/mygo/ui"
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 
-	"jsonpal/internal/editor"
+	"jsonpal/internal/editor_back"
 	"jsonpal/internal/json"
 	"jsonpal/locales"
 )

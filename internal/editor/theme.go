@@ -5,32 +5,34 @@ import (
 	mygoeditor "github.com/egoist/mygo/ui/editor"
 )
 
-type jsonPalette struct {
+type Palette struct {
 	text, key, stringValue, number, comment string
 }
 
-var (
-	jsonLightTheme = buildJSONEditorTheme(jsonPalette{
-		text: "#000000", key: "#A31515", stringValue: "#0451A5",
-		number: "#098658", comment: "#008000",
-	})
-	jsonDarkTheme = buildJSONEditorTheme(jsonPalette{
-		text: "#DCDCDC", key: "#9CDCFE", stringValue: "#CE9178",
-		number: "#B5CEA8", comment: "#608B4E",
-	})
-)
+var vsLight = buildTheme(Palette{
+	text:        "#000000",
+	key:         "#A31515",
+	stringValue: "#0451A5",
+	number:      "#098658",
+	comment:     "#008000",
+})
 
-func jsonEditorTheme(dark bool) *mygoeditor.Theme {
+var vsDark = buildTheme(Palette{
+	text:        "#DCDCDC",
+	key:         "#9CDCFE",
+	stringValue: "#CE9178",
+	number:      "#B5CEA8",
+	comment:     "#608B4E",
+})
+
+func Theme(dark bool) *mygoeditor.Theme {
 	if dark {
-		return jsonDarkTheme
+		return vsDark
 	}
-	return jsonLightTheme
+	return vsLight
 }
 
-// JSONTheme shares the token palette with alternate JSON editing surfaces.
-func JSONTheme(dark bool) *mygoeditor.Theme { return jsonEditorTheme(dark) }
-
-func buildJSONEditorTheme(palette jsonPalette) *mygoeditor.Theme {
+func buildTheme(palette Palette) *mygoeditor.Theme {
 	// Unspecified colors (background, gutter, selection, etc.) follow Shell.
 	t := &mygoeditor.Theme{Text: ui.Hex(palette.text)}
 	colors := map[mygoeditor.TokenKind]string{

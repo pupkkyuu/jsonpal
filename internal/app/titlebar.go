@@ -8,18 +8,18 @@ import (
 	"github.com/oneo-me/onevra/source/icons/lucide"
 	"github.com/oneo-me/onevra/source/shells/sidebar"
 
-	"jsonpal/internal/editor"
+	//"jsonpal/internal/editor"
 	"jsonpal/locales"
 )
 
-func (app *application) titlebar(c *ui.Context) {
+func (app *Application) titlebar(c *ui.Context) {
 	t := c.Theme()
-	if app.activeTab == nil {
+	if app.active == nil {
 		components.Text(c, "JSONPal").SingleLine()
 		return
 	}
 	ui.Row(c.Key("document-header")).Fill().AlignItems(ui.Center).Gap(t.Space(2)).Children(func() {
-		title := app.activeTab.title
+		title := app.active.Title()
 		// Keep text layout and accessibility while drawing at a stable pixel
 		// phase as the Shell moves the header through fractional coordinates.
 		components.Text(c, title).SingleLine().Shrink(0).TextColor(ui.Transparent).
@@ -27,9 +27,9 @@ func (app *application) titlebar(c *ui.Context) {
 				x := float32(math.Round(float64(r.X)))
 				p.Text(x, r.Y, title, t.FontSize, t.Text)
 			})
-		if work, ok := app.activeTab.editor.(editor.BackgroundWork); ok && work.Busy() {
-			components.Text(c, locales.Processing()).SingleLine().Shrink(0).TextColor(t.TextMuted)
-		}
+		//if work, ok := app.active.(editor.BackgroundWork); ok && work.Busy() {
+		//	components.Text(c, locales.Processing()).SingleLine().Shrink(0).TextColor(t.TextMuted)
+		//}
 		ui.Spacer(c)
 		// Horizontal scrolling keeps every action reachable in a narrow header.
 		components.ScrollView(c.Key("editor-tools"), components.ScrollViewOptions{Axes: components.ScrollHorizontal}).
@@ -37,65 +37,65 @@ func (app *application) titlebar(c *ui.Context) {
 			ui.Row(c).AlignItems(ui.Center).Gap(t.Space(.5)).Children(func() {
 				toolButton := func(action string, icon *ui.SVG, label string) ui.Element {
 					tip := label
-					if shortcuts, ok := app.activeTab.editor.(editor.ToolbarShortcuts); ok {
-						if hint := shortcuts.ToolbarShortcut(action); hint != "" {
-							tip = locales.WithShortcut(label, hint)
-						}
-					}
+					//if shortcuts, ok := app.activeTab.editor.(editor.ToolbarShortcuts); ok {
+					//	if hint := shortcuts.ToolbarShortcut(action); hint != "" {
+					//		tip = locales.WithShortcut(label, hint)
+					//	}
+					//}
 					return sidebar.IconButton(c.Key(action), icon, tip).Label(label)
 				}
-				if toolbar, ok := app.activeTab.editor.(editor.Toolbar); ok {
-					toolbar.Toolbar(c.Key("type-tools"))
-				}
+				//if toolbar, ok := app.active.editor.(editor.Toolbar); ok {
+				//	toolbar.Toolbar(c.Key("type-tools"))
+				//}
 				canTransform := true
-				if availability, ok := app.activeTab.editor.(editor.TransformAvailability); ok {
-					canTransform = availability.TransformEnabled()
-				}
+				//if availability, ok := app.activeTab.editor.(editor.TransformAvailability); ok {
+				//	canTransform = availability.TransformEnabled()
+				//}
 				if toolButton("format", lucide.Braces(), locales.FormatJSON()).Disabled(!canTransform).KeepFocus().Clicked() {
-					app.activeTab.editor.Format()
+					app.active.Format()
 				}
 				if toolButton("compress", lucide.Minimize2(), locales.Compact()).Disabled(!canTransform).KeepFocus().Clicked() {
-					app.activeTab.editor.Compact()
+					//app.activeTab.editor.Compact()
 				}
 				toolbarDivider(c.Key("transform-divider"))
 				if toolButton("escape", lucide.FileCode(), locales.Escape()).Disabled(!canTransform).KeepFocus().Clicked() {
-					app.activeTab.editor.Escape()
+					//app.activeTab.editor.Escape()
 				}
 				if toolButton("unescape", lucide.Code(), locales.Unescape()).Disabled(!canTransform).KeepFocus().Clicked() {
-					app.activeTab.editor.Unescape()
+					//app.activeTab.editor.Unescape()
 				}
 				if toolButton("sort", lucide.ArrowDownAZ(), locales.SortFields()).Disabled(!canTransform).KeepFocus().Clicked() {
-					app.activeTab.editor.SortFields()
+					//app.activeTab.editor.SortFields()
 				}
 				toolbarDivider(c.Key("code-divider"))
 				if toolButton("collapse", lucide.ChevronsDownUp(), locales.FoldAll()).KeepFocus().Clicked() {
-					app.activeTab.editor.FoldAll()
+					//app.activeTab.editor.FoldAll()
 				}
 				if toolButton("expand", lucide.ChevronsUpDown(), locales.UnfoldAll()).KeepFocus().Clicked() {
-					app.activeTab.editor.UnfoldAll()
+					//app.activeTab.editor.UnfoldAll()
 				}
 				wrap := toolButton("wrap", lucide.TextWrap(), locales.SoftWrap()).KeepFocus()
 				if wrap.Clicked() {
-					app.activeTab.editor.ToggleWrap()
+					//app.activeTab.editor.ToggleWrap()
 				}
-				wrap.Selected(app.activeTab.editor.WrapEnabled()).TextColor(t.TextMuted)
-				if app.activeTab.editor.WrapEnabled() {
-					wrap.Background(t.Text.Alpha(.1))
-				}
-				toolbarDivider(c.Key("document-divider"))
-				if toolButton("search", lucide.Search(), locales.Search()).KeepFocus().Clicked() {
-					app.activeTab.editor.Search()
-				}
-				canCopy := true
-				if availability, ok := app.activeTab.editor.(editor.CopyAvailability); ok {
-					canCopy = availability.CopyEnabled()
-				}
-				if toolButton("copy", lucide.Copy(), locales.Copy()).Disabled(!canCopy).KeepFocus().Clicked() {
-					app.activeTab.editor.CopyAll(c.WriteClipboard)
-				}
-				if toolButton("clear", lucide.Trash(), locales.Clear()).KeepFocus().Clicked() {
-					app.activeTab.editor.Clear()
-				}
+				//wrap.Selected(app.activeTab.editor.WrapEnabled()).TextColor(t.TextMuted)
+				//if app.activeTab.editor.WrapEnabled() {
+				//	wrap.Background(t.Text.Alpha(.1))
+				//}
+				//toolbarDivider(c.Key("document-divider"))
+				//if toolButton("search", lucide.Search(), locales.Search()).KeepFocus().Clicked() {
+				//	app.activeTab.editor.Search()
+				//}
+				//canCopy := true
+				//if availability, ok := app.activeTab.editor.(editor.CopyAvailability); ok {
+				//	canCopy = availability.CopyEnabled()
+				//}
+				//if toolButton("copy", lucide.Copy(), locales.Copy()).Disabled(!canCopy).KeepFocus().Clicked() {
+				//	app.activeTab.editor.CopyAll(c.WriteClipboard)
+				//}
+				//if toolButton("clear", lucide.Trash(), locales.Clear()).KeepFocus().Clicked() {
+				//	app.activeTab.editor.Clear()
+				//}
 			})
 		})
 	})

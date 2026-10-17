@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jsonpal/internal/desktop"
+	"jsonpal/internal/app"
 	"log"
 )
 
